@@ -144,13 +144,13 @@ MINUS_INTEGER   = -[1-9][0-9]*
 						if (x < -32768) return symbol(TokenNames.ERROR.ordinal());
 						else return symbol(TokenNames.INT.ordinal(), x);
 					}
-{ID}				{ return symbol(TokenNames.ID, new String( yytext()));}   
+{ID}				{ return symbol(TokenNames.ID.ordinal(), new String( yytext()));}   
 {WhiteSpace}		{ /* just skip what was found, do nothing */ }
 <<EOF>>				{ return symbol(TokenNames.EOF.ordinal());}
 }
 
 <STRING> {
-\"                  { yybegin(YYINITIAL); return symbol(TokenNames.STRING, string.toString()); }
+\"                  { yybegin(YYINITIAL); return symbol(TokenNames.STRING.ordinal(), string.toString()); }
 [a-zA-Z]+           { string.append( yytext() ); }
 }
 

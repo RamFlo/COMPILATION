@@ -106,47 +106,47 @@ MINUS_INTEGER   = -[1-9][0-9]*
 
 <YYINITIAL> {
 
-"+"					{ return symbol(TokenNames.PLUS);}
-"-"					{ return symbol(TokenNames.MINUS);}
-"*"					{ return symbol(TokenNames.TIMES);}
-"/"					{ return symbol(TokenNames.DIVIDE);}
-"("					{ return symbol(TokenNames.LPAREN);}
-")"					{ return symbol(TokenNames.RPAREN);}
-"["					{ return symbol(TokenNames.LBRACK);}
-"]"					{ return symbol(TokenNames.RBRACK);}
-"{"					{ return symbol(TokenNames.LBRACE);}
-"}"					{ return symbol(TokenNames.RBRACE);}
-","					{ return symbol(TokenNames.COMMA);}
-"."					{ return symbol(TokenNames.DOT);}
-";"					{ return symbol(TokenNames.SEMICOLON);}
-":="				{ return symbol(TokenNames.ASSIGN);}
-"="					{ return symbol(TokenNames.EQ);}
-"<"					{ return symbol(TokenNames.LT);}
-">"					{ return symbol(TokenNames.GT);}
-"class"				{ return symbol(TokenNames.CLASS);}
-"nil"				{ return symbol(TokenNames.NIL);}
-"array"				{ return symbol(TokenNames.ARRAY	);}
-"while"				{ return symbol(TokenNames.WHILE);}
-"extends"			{ return symbol(TokenNames.EXTENDS);}
-"return"			{ return symbol(TokenNames.RETURN);}
-"new"				{ return symbol(TokenNames.NEW);}
-"if"				{ return symbol(TokenNames.IF);}
+"+"					{ return symbol(TokenNames.PLUS.ordinal());}
+"-"					{ return symbol(TokenNames.MINUS.ordinal());}
+"*"					{ return symbol(TokenNames.TIMES.ordinal());}
+"/"					{ return symbol(TokenNames.DIVIDE.ordinal());}
+"("					{ return symbol(TokenNames.LPAREN.ordinal());}
+")"					{ return symbol(TokenNames.RPAREN.ordinal());}
+"["					{ return symbol(TokenNames.LBRACK.ordinal());}
+"]"					{ return symbol(TokenNames.RBRACK.ordinal());}
+"{"					{ return symbol(TokenNames.LBRACE.ordinal());}
+"}"					{ return symbol(TokenNames.RBRACE.ordinal());}
+","					{ return symbol(TokenNames.COMMA.ordinal());}
+"."					{ return symbol(TokenNames.DOT.ordinal());}
+";"					{ return symbol(TokenNames.SEMICOLON.ordinal());}
+":="				{ return symbol(TokenNames.ASSIGN.ordinal());}
+"="					{ return symbol(TokenNames.EQ.ordinal());}
+"<"					{ return symbol(TokenNames.LT.ordinal());}
+">"					{ return symbol(TokenNames.GT.ordinal());}
+"class"				{ return symbol(TokenNames.CLASS.ordinal());}
+"nil"				{ return symbol(TokenNames.NIL.ordinal());}
+"array"				{ return symbol(TokenNames.ARRAY.ordinal()	);}
+"while"				{ return symbol(TokenNames.WHILE.ordinal());}
+"extends"			{ return symbol(TokenNames.EXTENDS.ordinal());}
+"return"			{ return symbol(TokenNames.RETURN.ordinal());}
+"new"				{ return symbol(TokenNames.NEW.ordinal());}
+"if"				{ return symbol(TokenNames.IF.ordinal());}
 \"                  { string.setLength(0); yybegin(STRING); }
 "//"				{ yybegin(COMMENT_ONE_LINE); }
 "/*"				{ yybegin(COMMENT_MULTI_LINE); }
 {INTEGER}			{ 
 						Integer x = new Integer(yytext());
-						if (x > 32767) return symbol(TokenNames.ERROR);
-						else return symbol(TokenNames.INT, x);
+						if (x > 32767) return symbol(TokenNames.ERROR.ordinal());
+						else return symbol(TokenNames.INT.ordinal(), x);
 					}
 {MINUS_INTEGER}		{ 
 						Integer x = new Integer(yytext());
-						if (x < -32768) return symbol(TokenNames.ERROR);
-						else return symbol(TokenNames.INT, x);
+						if (x < -32768) return symbol(TokenNames.ERROR.ordinal());
+						else return symbol(TokenNames.INT.ordinal(), x);
 					}
 {ID}				{ return symbol(TokenNames.ID, new String( yytext()));}   
 {WhiteSpace}		{ /* just skip what was found, do nothing */ }
-<<EOF>>				{ return symbol(TokenNames.EOF);}
+<<EOF>>				{ return symbol(TokenNames.EOF.ordinal());}
 }
 
 <STRING> {
@@ -156,7 +156,7 @@ MINUS_INTEGER   = -[1-9][0-9]*
 
 <COMMENT_ONE_LINE> {
 {LineTerminator}    									{ yybegin(YYINITIAL); }
-<<EOF>>    												{ return symbol(TokenNames.EOF); }
+<<EOF>>    												{ return symbol(TokenNames.EOF.ordinal()); }
 [-a-zA-Z0-9\. \t\f\(\)\{\}\[\]\?\!\+\*\/\;]+            { /* comment still ongoing, do nothing */ }
 }
 
@@ -166,5 +166,5 @@ MINUS_INTEGER   = -[1-9][0-9]*
 }
 
 /* error fallback */
-[^]                              { return symbol(TokenNames.ERROR); }
+[^]                              { return symbol(TokenNames.ERROR.ordinal()); }
 

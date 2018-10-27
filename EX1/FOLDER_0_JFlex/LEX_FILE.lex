@@ -65,6 +65,15 @@ import java_cup.runtime.*;
 	/* Enable token position extraction from main */
 	/**********************************************/
 	public int getTokenStartPosition() { return yycolumn + 1; } 
+	/**********************************************/
+	/* Create string buffer for strings */
+	/**********************************************/
+	StringBuffer string = new StringBuffer();
+	
+	/**********************************************/
+	/* Create integer buffer for strings */
+	/**********************************************/
+	StringBuffer myInt = new StringBuffer();
 %}
 
 /***********************/
@@ -73,8 +82,12 @@ import java_cup.runtime.*;
 LineTerminator	= \r|\n|\r\n
 WhiteSpace		= {LineTerminator} | [ \t\f]
 INTEGER			= 0 | [1-9][0-9]*
-ID				= [a-z]+
+ID				= [a-zA-Z][a-zA-Z0-9]*
+MINUS_INTEGER   = -[1-9][0-9]*
 
+%state STRING
+%state COMMENT_ONE_LINE
+%state COMMENT_MULTI_LINE
 /******************************/
 /* DOLAR DOLAR - DON'T TOUCH! */
 /******************************/
@@ -95,12 +108,63 @@ ID				= [a-z]+
 
 "+"					{ return symbol(TokenNames.PLUS);}
 "-"					{ return symbol(TokenNames.MINUS);}
-"PPP"				{ return symbol(TokenNames.TIMES);}
+"*"					{ return symbol(TokenNames.TIMES);}
 "/"					{ return symbol(TokenNames.DIVIDE);}
 "("					{ return symbol(TokenNames.LPAREN);}
 ")"					{ return symbol(TokenNames.RPAREN);}
-{INTEGER}			{ return symbol(TokenNames.NUMBER, new Integer(yytext()));}
-{ID}				{ return symbol(TokenNames.ID,     new String( yytext()));}   
+"["					{ return symbol(TokenNames.LBRACK);}
+"]"					{ return symbol(TokenNames.RBRACK);}
+"{"					{ return symbol(TokenNames.LBRACE);}
+"}"					{ return symbol(TokenNames.RBRACE);}
+","					{ return symbol(TokenNames.COMMA);}
+"."					{ return symbol(TokenNames.DOT);}
+";"					{ return symbol(TokenNames.SEMICOLON);}
+":="				{ return symbol(TokenNames.ASSIGN);}
+"="					{ return symbol(TokenNames.EQ);}
+"<"					{ return symbol(TokenNames.LT);}
+">"					{ return symbol(TokenNames.GT);}
+"class"				{ return symbol(TokenNames.CLASS);}
+"nil"				{ return symbol(TokenNames.NIL);}
+"array"				{ return symbol(TokenNames.ARRAY	);}
+"while"				{ return symbol(TokenNames.WHILE);}
+"extends"			{ return symbol(TokenNames.EXTENDS);}
+"return"			{ return symbol(TokenNames.RETURN);}
+"new"				{ return symbol(TokenNames.NEW);}
+"if"				{ return symbol(TokenNames.IF);}
+\"                  { string.setLength(0); yybegin(STRING); }
+"//"				{ yybegin(COMMENT_ONE_LINE); }
+"/*"				{ yybegin(COMMENT_MULTI_LINE); }
+{INTEGER}			{ 
+						Integer x = new Integer(yytext());
+						if (x > 32767) return symbol(TokenNames.ERROR);
+						else return symbol(TokenNames.INT, x);
+					}
+{MINUS_INTEGER}		{ 
+						Integer x = new Integer(yytext());
+						if (x < -32768) return symbol(TokenNames.ERROR);
+						else return symbol(TokenNames.INT, x);
+					}
+{ID}				{ return symbol(TokenNames.ID, new String( yytext()));}   
 {WhiteSpace}		{ /* just skip what was found, do nothing */ }
 <<EOF>>				{ return symbol(TokenNames.EOF);}
 }
+
+<STRING> {
+\"                  { yybegin(YYINITIAL); return symbol(TokenNames.STRING, string.toString()); }
+[a-zA-Z]+           { string.append( yytext() ); }
+}
+
+<COMMENT_ONE_LINE> {
+{LineTerminator}    									{ yybegin(YYINITIAL); }
+<<EOF>>    												{ return symbol(TokenNames.EOF); }
+[-a-zA-Z0-9\. \t\f\(\)\{\}\[\]\?\!\+\*\/\;]+            { /* comment still ongoing, do nothing */ }
+}
+
+<COMMENT_MULTI_LINE> {
+"*/"    															{ yybegin(YYINITIAL); }
+[-a-zA-Z0-9\. \t\f\(\)\{\}\[\]\?\!\+\*\/\;(\r\n|\r|\n)]+            { /* comment still ongoing, do nothing */ }
+}
+
+/* error fallback */
+[^]                              { return symbol(TokenNames.ERROR); }
+

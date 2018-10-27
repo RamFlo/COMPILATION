@@ -14,7 +14,6 @@ public class Main
 		PrintWriter file_writer;
 		String inputFilename = argv[0];
 		String outputFilename = argv[1];
-		
 		try
 		{
 			/********************************/
@@ -40,7 +39,7 @@ public class Main
 			/********************************/
 			/* [5] Main reading tokens loop */
 			/********************************/
-			while (s.sym != TokenNames.EOF)
+			while (s.sym != TokenNames.EOF.ordinal())
 			{
 				/************************/
 				/* [6] Print to console */
@@ -53,12 +52,31 @@ public class Main
 				System.out.print(s.value);
 				System.out.print("\n");
 				
+				
+				
+				TokenNames curToken = TokenNames.values()[s.sym];
+				
+				/************************/
+				/* [7.5] Error Handling */
+				/************************/
+				if (curToken==TokenNames.ERROR) {
+					file_writer.close();
+					file_writer = new PrintWriter(outputFilename);
+					file_writer.print("ERROR");
+					break;
+				}
+				
 				/*********************/
 				/* [7] Print to file */
 				/*********************/
+				file_writer.print(curToken.toString());
+				if (curToken==TokenNames.INT || curToken==TokenNames.STRING || curToken==TokenNames.ID)
+					file_writer.print("("+s.value+")");
+				file_writer.print("[");
 				file_writer.print(l.getLine());
-				file_writer.print(": ");
-				file_writer.print(s.value);
+				file_writer.print(",");
+				file_writer.print(l.getTokenStartPosition());
+				file_writer.print("]");
 				file_writer.print("\n");
 				
 				/***********************/

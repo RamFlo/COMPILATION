@@ -86,6 +86,7 @@ WhiteSpace		= {LineTerminator} | [ \t\f]
 INTEGER			= 0 | [1-9][0-9]*
 ID				= [a-zA-Z][a-zA-Z0-9]*
 MINUS_INTEGER   = -[1-9][0-9]*
+LEADING_ZEROES  = ([0]+[0-9]+)|([-0]+[0-9]+)
 
 %state STRING
 %state COMMENT_ONE_LINE
@@ -137,15 +138,19 @@ MINUS_INTEGER   = -[1-9][0-9]*
 "//"				{ yybegin(COMMENT_ONE_LINE); }
 "/*"				{ yybegin(COMMENT_MULTI_LINE); }
 {INTEGER}			{ 
+						if (yytext().length() > 5) return symbol(TokenNames.ERROR.ordinal());
 						Integer x = new Integer(yytext());
 						if (x > 32767) return symbol(TokenNames.ERROR.ordinal());
 						else return symbol(TokenNames.INT.ordinal(), x);
 					}
-{MINUS_INTEGER}		{ 
+{MINUS_INTEGER}		{
+						if (yytext().length() > 6) return symbol(TokenNames.ERROR.ordinal());
 						Integer x = new Integer(yytext());
 						if (x < -32768) return symbol(TokenNames.ERROR.ordinal());
 						else return symbol(TokenNames.INT.ordinal(), x);
 					}
+{LEADING_ZEROES} 	{ return symbol(TokenNames.ERROR.ordinal()); }				 
+"-0"				{ return symbol(TokenNames.ERROR.ordinal()); }
 {ID}				{ return symbol(TokenNames.ID.ordinal(), new String( yytext()));}   
 {WhiteSpace}		{ /* just skip what was found, do nothing */ }
 <<EOF>>				{ return symbol(TokenNames.EOF.ordinal());}
@@ -153,6 +158,7 @@ MINUS_INTEGER   = -[1-9][0-9]*
 
 <STRING> {
 \"                  { yybegin(YYINITIAL); return symbol(TokenNames.STRING.ordinal(), string.toString()); }
+<<EOF>>    			{ return symbol(TokenNames.ERROR.ordinal()); }
 [a-zA-Z]+           { string.append( yytext() ); }
 }
 
@@ -164,6 +170,7 @@ MINUS_INTEGER   = -[1-9][0-9]*
 
 <COMMENT_MULTI_LINE> {
 "*/"    															{ yybegin(YYINITIAL); }
+<<EOF>>    															{ return symbol(TokenNames.ERROR.ordinal()); }
 [-a-zA-Z0-9\. \t\f\(\)\{\}\[\]\?\!\+\*\/\;(\r\n|\r|\n)]             { /* comment still ongoing, do nothing */ }
 }
 

@@ -41,6 +41,7 @@ public class Main
 			/********************************/
 			while (s.sym != TokenNames.EOF.ordinal())
 			{
+				TokenNames curToken = TokenNames.values()[s.sym];
 				/************************/
 				/* [6] Print to console */
 				/************************/
@@ -49,12 +50,11 @@ public class Main
 				System.out.print(",");
 				System.out.print(l.getTokenStartPosition());
 				System.out.print("]:");
+				System.out.print(curToken.toString());
+				System.out.print("(");
 				System.out.print(s.value);
+				System.out.print(")");
 				System.out.print("\n");
-				
-				
-				
-				TokenNames curToken = TokenNames.values()[s.sym];
 				
 				/************************/
 				/* [7.5] Error Handling */

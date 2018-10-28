@@ -39,7 +39,9 @@ import java_cup.runtime.*;
 /* CUP compatibility mode interfaces with a CUP generated parser. */
 /******************************************************************/
 %cup
-
+%eofval{
+return symbol(TokenNames.EOF.ordinal());
+%eofval}
 /****************/
 /* DECLARATIONS */
 /****************/
@@ -162,7 +164,7 @@ MINUS_INTEGER   = -[1-9][0-9]*
 
 <COMMENT_MULTI_LINE> {
 "*/"    															{ yybegin(YYINITIAL); }
-[-a-zA-Z0-9\. \t\f\(\)\{\}\[\]\?\!\+\*\/\;(\r\n|\r|\n)]+            { /* comment still ongoing, do nothing */ }
+[-a-zA-Z0-9\. \t\f\(\)\{\}\[\]\?\!\+\*\/\;(\r\n|\r|\n)]             { /* comment still ongoing, do nothing */ }
 }
 
 /* error fallback */

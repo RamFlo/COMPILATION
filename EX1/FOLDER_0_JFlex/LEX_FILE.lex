@@ -82,13 +82,13 @@ return symbol(TokenNames.EOF.ordinal());
 /* MACRO DECALARATIONS */
 /***********************/
 LineTerminator	= \r|\n|\r\n
-WhiteSpace		= {LineTerminator} | [ \t\f]
-INTEGER			= 0 | [1-9][0-9]*
-ID				= [a-zA-Z][a-zA-Z0-9]*
+WhiteSpace	= {LineTerminator} | [ \t\f]
+INTEGER		= 0 | [1-9][0-9]*
+ID		= [a-zA-Z][a-zA-Z0-9]*
 MINUS_INTEGER   = -[1-9][0-9]*
 LEADING_ZEROES  = ([0]+[0-9]+)|([-0]+[0-9]+)
+STRINGS		= \"([a-zA-Z]*)\"
 
-%state STRING
 %state COMMENT_ONE_LINE
 %state COMMENT_MULTI_LINE
 /******************************/
@@ -134,7 +134,7 @@ LEADING_ZEROES  = ([0]+[0-9]+)|([-0]+[0-9]+)
 "return"			{ return symbol(TokenNames.RETURN.ordinal());}
 "new"				{ return symbol(TokenNames.NEW.ordinal());}
 "if"				{ return symbol(TokenNames.IF.ordinal());}
-\"                  { string.setLength(0); yybegin(STRING); }
+{STRINGS}			{ return symbol(TokenNames.STRING.ordinal(), yytext()); }
 "//"				{ yybegin(COMMENT_ONE_LINE); }
 "/*"				{ yybegin(COMMENT_MULTI_LINE); }
 {INTEGER}			{ 
@@ -154,12 +154,6 @@ LEADING_ZEROES  = ([0]+[0-9]+)|([-0]+[0-9]+)
 {ID}				{ return symbol(TokenNames.ID.ordinal(), new String( yytext()));}   
 {WhiteSpace}		{ /* just skip what was found, do nothing */ }
 <<EOF>>				{ return symbol(TokenNames.EOF.ordinal());}
-}
-
-<STRING> {
-\"                  { yybegin(YYINITIAL); return symbol(TokenNames.STRING.ordinal(), string.toString()); }
-<<EOF>>    			{ return symbol(TokenNames.ERROR.ordinal()); }
-[a-zA-Z]+           { string.append( yytext() ); }
 }
 
 <COMMENT_ONE_LINE> {

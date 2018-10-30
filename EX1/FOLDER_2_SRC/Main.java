@@ -45,7 +45,7 @@ public class Main
 				/************************/
 				/* [6] Print to console */
 				/************************/
-				System.out.print("[");
+				/*System.out.print("[");
 				System.out.print(l.getLine());
 				System.out.print(",");
 				System.out.print(l.getTokenStartPosition());
@@ -54,10 +54,10 @@ public class Main
 				System.out.print("(");
 				System.out.print(s.value);
 				System.out.print(")");
-				System.out.print("\n");
+				System.out.print("\n");*/
 				
 				/************************/
-				/* [7.5] Error Handling */
+				/* [6.5] Error Handling */
 				/************************/
 				if (curToken==TokenNames.ERROR) {
 					file_writer.close();

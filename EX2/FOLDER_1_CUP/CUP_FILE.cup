@@ -74,11 +74,6 @@ terminal EXTENDS;
 terminal ARRAY;
 terminal NIL;
 
-
-
-
-
-
 /*************/
 /* TERMINALS */
 /*************/
@@ -89,22 +84,34 @@ terminal String STRING;
 /*****************/
 /* NON TERMINALS */
 /*****************/
+non terminal AST_DEC_LIST	decList;
+non terminal AST_DEC		dec;
+non terminal AST_DEC_VAR	varDec;
+non terminal AST_DEC_FUNC	funcDec;
+non terminal AST_DEC_CLASS	classDec;
+non terminal AST_DEC_ARRAY	arrayDec;
 non terminal AST_EXP exp;
-non terminal AST_VAR var;
-non terminal AST_STMT stmt;
 non terminal AST_STMT_LIST stmtList;
+non terminal AST_STMT stmt;
+non terminal AST_NEWEXP newExp;
+non terminal AST_EXP_VAR	varExp;
+non terminal AST_EXP_CALL	callExp;
+non terminal AST_EXP_LIST	expListComma;
+non terminal AST_TYPE_NAME		typeName;
+non terminal AST_TYPE_NAME_LIST	typeNameListComma;
+non terminal AST_CFIELDLIST cFieldList;
 
 /***********************/
 /* OPERATOR PRECEDENCE */
 /***********************/
-precedence left ASSIGN;
+precedence nonassoc ASSIGN;
 precedence left EQ;
-precedence left GT;
-precedence left LT;
-precedence left PLUS;
-precedence left MINUS;
-precedence left TIMES;
-precedence left DIVIDE;
+precedence left LT, GT;
+precedence left PLUS, MINUS;
+precedence left TIMES, DIVIDE;
+/*precedence nonassoc LBRACK;
+precedence nonassoc LPAREN;*/
+precedence left DOT;
 
 /************************/
 /* START WITH: decList */

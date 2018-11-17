@@ -22,7 +22,7 @@ public class AST_STMT_ASSIGN extends AST_STMT
 		/***************************************/
 		/* PRINT CORRESPONDING DERIVATION RULE */
 		/***************************************/
-		System.out.print("====================== stmt -> var ASSIGN exp SEMICOLON\n");
+		System.out.print("====================== stmt -> var ASSIGNB exp SEMICOLON\n");
 		System.out.println("assign 1"); //KAKI
 
 		/*******************************/

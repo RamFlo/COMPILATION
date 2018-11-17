@@ -7,11 +7,12 @@ public class AST_STMT_ASSIGN extends AST_STMT
 	/***************/
 	public AST_VAR var;
 	public AST_EXP exp;
+	public AST_NEWEXP newExp;
 
 	/*******************/
 	/*  CONSTRUCTOR(S) */
 	/*******************/
-	public AST_STMT_ASSIGN(AST_VAR var,AST_EXP exp)
+	public AST_STMT_ASSIGN(AST_VAR var,AST_EXP exp,AST_NEWEXP newExp)
 	{
 		/******************************/
 		/* SET A UNIQUE SERIAL NUMBER */
@@ -28,7 +29,9 @@ public class AST_STMT_ASSIGN extends AST_STMT
 		/*******************************/
 		this.var = var;
 		this.exp = exp;
+		this.newExp = newExp;
 	}
+	
 
 	/*********************************************************/
 	/* The printing message for an assign statement AST node */
@@ -43,8 +46,9 @@ public class AST_STMT_ASSIGN extends AST_STMT
 		/***********************************/
 		/* RECURSIVELY PRINT VAR + EXP ... */
 		/***********************************/
-		if (var != null) var.PrintMe();
+		var.PrintMe();
 		if (exp != null) exp.PrintMe();
+		if (newExp != null) exp.PrintMe();
 
 		/***************************************/
 		/* PRINT Node to AST GRAPHVIZ DOT file */
@@ -57,6 +61,7 @@ public class AST_STMT_ASSIGN extends AST_STMT
 		/* PRINT Edges to AST GRAPHVIZ DOT file */
 		/****************************************/
 		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,var.SerialNumber);
-		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,exp.SerialNumber);
+		if (exp != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,exp.SerialNumber);
+		if (newExp != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,newExp.SerialNumber);
 	}
 }

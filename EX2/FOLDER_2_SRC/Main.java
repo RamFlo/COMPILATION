@@ -13,7 +13,7 @@ public class Main
 		Symbol s;
 		AST_STMT_LIST AST;
 		FileReader file_reader;
-		PrintWriter file_writer;
+		PrintWriter file_writer = null;
 		String inputFilename = argv[0];
 		String outputFilename = argv[1];
 		
@@ -63,9 +63,10 @@ public class Main
 		
 		catch (ParserRuntimeException e)
 		{
-			file_writer = new PrintWriter(outputFilename);
-			file_writer.print(e.getMessage());
-			file_writer.close();
+			if (file_writer != null) {
+				file_writer.print(e.getMessage());
+				file_writer.close();
+			}
 			e.printStackTrace();
 			return;
 			

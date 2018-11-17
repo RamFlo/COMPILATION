@@ -77,6 +77,7 @@ terminal NIL;
 terminal GT;
 terminal LT;
 terminal CLASS;
+terminal RETURN;
 
 /*************/
 /* TERMINALS */

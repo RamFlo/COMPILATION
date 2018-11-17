@@ -32,8 +32,8 @@ public class AST_EXP_CALL extends AST_EXP
 		/*************************************************/
 		/* AST NODE TYPE = AST NODE FUNCTION DECLARATION */
 		/*************************************************/
-		if (callingObjectName == null) System.out.format("CALL(%s)\nWITH:\n",funcName);
-		else System.out.format("CALLER: %s\nCALL(%s)\nWITH:\n",callingObjectName,funcName);
+		if (callingObjectName == null) System.out.format("CALL(%s)\nWITH:...",funcName);
+		else System.out.format("CALLER: %s\nCALL(%s)\nWITH:...",callingObjectName,funcName);
 
 		/***************************************/
 		/* RECURSIVELY PRINT params + body ... */
@@ -45,8 +45,10 @@ public class AST_EXP_CALL extends AST_EXP
 		/***************************************/
 		if (callingObjectName == null) AST_GRAPHVIZ.getInstance().logNode(
 			SerialNumber,
-			String.format("CALL(%s)\nWITH",funcName));
-		else 
+			String.format("CALL(%s)\nWITH...",funcName));
+		else AST_GRAPHVIZ.getInstance().logNode(
+				SerialNumber,
+				String.format("CALLER: %s\nCALL(%s)\nWITH...",callingObjectName,funcName));
 		
 		/****************************************/
 		/* PRINT Edges to AST GRAPHVIZ DOT file */

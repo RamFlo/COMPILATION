@@ -131,12 +131,12 @@ STRINGS		= \"([a-zA-Z]*)\"
 						if (x > 32767) return symbol(TokenNames.error);
 						else return symbol(TokenNames.INT, x);
 					}
-{MINUS_INTEGER}		{
+/*{MINUS_INTEGER}		{
 						if (yytext().length() > 6) return symbol(TokenNames.error);
 						Integer x = new Integer(yytext());
 						if (x < -32768) return symbol(TokenNames.error);
 						else return symbol(TokenNames.INT, x);
-					}
+					}*/
 {LEADING_ZEROES} 	{ return symbol(TokenNames.error); }				 
 "-0"				{ return symbol(TokenNames.error); }
 {ID}				{ return symbol(TokenNames.ID, new String( yytext()));}   

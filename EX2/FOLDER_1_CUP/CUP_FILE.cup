@@ -21,7 +21,8 @@ parser code
 		System.out.print(":");
 		System.out.print(lexer.getCharPos());
 		System.out.print("] ");		
-		System.exit(0);
+		throw new ParserRuntimeException(String.format("ERROR(%d)",lexer.getLine()));
+		//System.exit(0);
 	}
 :}
 
@@ -131,9 +132,9 @@ dec			::=		varDec:d		{: RESULT = d; :}
 					| classDec:d	{: RESULT = d; :}
 					| arrayDec:d 	{: RESULT = d; :};
 										
-varDec		::=		ID:type ID:var SEMICOLON	            {: RESULT = new AST_DEC_VAR(type,var,null); :}
-					| ID:type ID:var ASSIGN exp:e SEMICOLON {: RESULT = new AST_DEC_VAR(type,var,e); :}
-					| ID:type ID:var ASSIGN newExp:e SEMICOLON {: RESULT = new AST_DEC_VAR(type,var,e); :};				
+varDec		::=		ID:type ID:var SEMICOLON	            {: RESULT = new AST_DEC_VAR(type,var,null, null); :}
+					| ID:type ID:var ASSIGN exp:e SEMICOLON {: RESULT = new AST_DEC_VAR(type,var,e, null); :}
+					| ID:type ID:var ASSIGN newExp:e SEMICOLON {: RESULT = new AST_DEC_VAR(type,var,null,e); :};				
 
 funcDec		::=		ID:ret ID:name LPAREN typeNameListComma:tnl RPAREN LBRACE stmtList:body RBRACE
 					{: RESULT = new AST_DEC_FUNC(ret,name,tnl,body); :}
@@ -148,7 +149,7 @@ arrayDec	::=		ARRAY ID:name EQ ID:type LBRACK RBRACK {: RESULT = new AST_DEC_ARR
 exp			::=		INT:i			{: RESULT = new AST_EXP_INT(i);    :}
 					| STRING:s		{: RESULT = new AST_EXP_STRING(s); :}
 					| LPAREN exp:e RPAREN {: RESULT = e; :}
-					| NIL {: RESULT = new AST_EXP_NIL(); :}
+					| NIL		    {: RESULT = new AST_EXP_NIL(); :}
 					| varExp:v		{: RESULT = v; :}
 					| callExp:e		{: RESULT = e; :}
 					| exp:e1 binop:b exp:e2	{: RESULT = new AST_EXP_BINOP(e1,e2,b); :};
@@ -197,8 +198,10 @@ typeName				::=		ID:type ID:name									{: RESULT = new AST_TYPE_NAME(type,name
 typeNameListComma		::=		typeName:tn COMMA typeNameListComma:tnl			{: RESULT = new AST_TYPE_NAME_LIST(tn,tnl);  :}
 								| typeName:tn									{: RESULT = new AST_TYPE_NAME_LIST(tn,null); :};
 
-cField					::=		varDec:v										{: RESULT = v; :}
-								| funcDec:f										{: RESULT = f; :};
+/*cField					::=		varDec:v										{: RESULT = v; :}
+								| funcDec:f										{: RESULT = f; :};*/
 
-cFieldList				::=		cField:f cFieldList:l 							{: RESULT = new AST_CFIELDLIST(f,l); :}
-								| cField:f										{: RESULT = new AST_CFIELDLIST(f,null); :};
+cFieldList				::=		varDec:v cFieldList:l 							{: RESULT = new AST_CFIELDLIST(v,l); :}
+								| varDec:v										{: RESULT = new AST_CFIELDLIST(v,null); :}
+								funcDec:f cFieldList:l 							{: RESULT = new AST_CFIELDLIST(f,l); :}
+								| funcDec:f										{: RESULT = new AST_CFIELDLIST(f,null); :};

@@ -52,6 +52,7 @@ public class Main
 			/*************************/
 			/* [7] Close output file */
 			/*************************/
+			file_writer.print("OK");
 			file_writer.close();
 			
 			/*************************************/
@@ -59,11 +60,20 @@ public class Main
 			/*************************************/
 			AST_GRAPHVIZ.getInstance().finalizeFile();
     	}
-			     
+		
+		catch (ParserRuntimeException e)
+		{
+			file_writer.print(e.getMessage());
+			file_writer.close();
+			e.printStackTrace();
+			return;
+			
+		}	     
 		catch (Exception e)
 		{
 			e.printStackTrace();
 		}
+		
 	}
 }
 

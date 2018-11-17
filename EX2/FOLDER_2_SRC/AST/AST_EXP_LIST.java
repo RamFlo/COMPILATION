@@ -1,19 +1,17 @@
 package AST;
 
-import TYPES.*;
-
-public class AST_DEC_LIST extends AST_Node
+public class AST_EXP_LIST extends AST_Node
 {
 	/****************/
 	/* DATA MEMBERS */
 	/****************/
-	public AST_DEC head;
-	public AST_DEC_LIST tail;
+	public AST_EXP head;
+	public AST_EXP_LIST tail;
 
 	/******************/
 	/* CONSTRUCTOR(S) */
 	/******************/
-	public AST_DEC_LIST(AST_DEC head,AST_DEC_LIST tail)
+	public AST_EXP_LIST(AST_EXP head,AST_EXP_LIST tail)
 	{
 		/******************************/
 		/* SET A UNIQUE SERIAL NUMBER */
@@ -23,27 +21,15 @@ public class AST_DEC_LIST extends AST_Node
 		this.head = head;
 		this.tail = tail;
 	}
-
-	public TYPE SemantMe()
-	{		
-		/*************************************/
-		/* RECURSIVELY PRINT HEAD + TAIL ... */
-		/*************************************/
-		if (head != null) head.SemantMe();
-		if (tail != null) tail.SemantMe();
-		
-		return null;	
-	}
-
-	/********************************************************/
-	/* The printing message for a declaration list AST node */
-	/********************************************************/
+	/******************************************************/
+	/* The printing message for a statement list AST node */
+	/******************************************************/
 	public void PrintMe()
 	{
 		/********************************/
-		/* AST NODE TYPE = AST DEC LIST */
+		/* AST NODE TYPE = AST EXP LIST */
 		/********************************/
-		System.out.print("AST NODE DEC LIST\n");
+		System.out.print("AST NODE EXP LIST\n");
 
 		/*************************************/
 		/* RECURSIVELY PRINT HEAD + TAIL ... */
@@ -56,8 +42,8 @@ public class AST_DEC_LIST extends AST_Node
 		/**********************************/
 		AST_GRAPHVIZ.getInstance().logNode(
 			SerialNumber,
-			"DEC\nLIST\n");
-				
+			"EXP\nLIST\n");
+		
 		/****************************************/
 		/* PRINT Edges to AST GRAPHVIZ DOT file */
 		/****************************************/

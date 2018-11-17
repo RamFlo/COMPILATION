@@ -40,8 +40,8 @@ public class AST_VAR_SUBSCRIPT extends AST_VAR
 		/****************************************/
 		/* RECURSIVELY PRINT VAR + SUBSRIPT ... */
 		/****************************************/
-		if (var != null) var.PrintMe();
-		if (subscript != null) subscript.PrintMe();
+		var.PrintMe();
+		subscript.PrintMe();
 		
 		/***************************************/
 		/* PRINT Node to AST GRAPHVIZ DOT file */
@@ -53,7 +53,7 @@ public class AST_VAR_SUBSCRIPT extends AST_VAR
 		/****************************************/
 		/* PRINT Edges to AST GRAPHVIZ DOT file */
 		/****************************************/
-		if (var       != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,var.SerialNumber);
-		if (subscript != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,subscript.SerialNumber);
+		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,var.SerialNumber);
+		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,subscript.SerialNumber);
 	}
 }

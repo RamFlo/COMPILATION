@@ -1,8 +1,5 @@
 package AST;
 
-import TYPES.*;
-import SYMBOL_TABLE.*;
-
 public class AST_DEC_VAR extends AST_DEC
 {
 	/****************/
@@ -11,11 +8,12 @@ public class AST_DEC_VAR extends AST_DEC
 	public String type;
 	public String name;
 	public AST_EXP initialValue;
+	public AST_NEWEXP initialValueNew;
 	
 	/******************/
 	/* CONSTRUCTOR(S) */
 	/******************/
-	public AST_DEC_VAR(String type,String name,AST_EXP initialValue)
+	public AST_DEC_VAR(String type,String name,AST_EXP initialValue, AST_NEWEXP newInitialValue)
 	{
 		/******************************/
 		/* SET A UNIQUE SERIAL NUMBER */
@@ -25,7 +23,9 @@ public class AST_DEC_VAR extends AST_DEC
 		this.type = type;
 		this.name = name;
 		this.initialValue = initialValue;
+		this.initialValueNew = newInitialValue;
 	}
+	
 
 	/********************************************************/
 	/* The printing message for a declaration list AST node */
@@ -36,12 +36,14 @@ public class AST_DEC_VAR extends AST_DEC
 		/* AST NODE TYPE = AST DEC LIST */
 		/********************************/
 		if (initialValue != null) System.out.format("VAR-DEC(%s):%s := initialValue\n",name,type);
-		if (initialValue == null) System.out.format("VAR-DEC(%s):%s                \n",name,type);
+		if (initialValueNew != null) System.out.format("VAR-DEC(%s):%s := initialValueNew\n",name,type);
+		if (initialValue == null && initialValueNew == null) System.out.format("VAR-DEC(%s):%s\n",name,type);
 
 		/**************************************/
 		/* RECURSIVELY PRINT initialValue ... */
 		/**************************************/
 		if (initialValue != null) initialValue.PrintMe();
+		if (initialValueNew != null) initialValueNew.PrintMe();
 
 		/**********************************/
 		/* PRINT to AST GRAPHVIZ DOT file */
@@ -54,40 +56,7 @@ public class AST_DEC_VAR extends AST_DEC
 		/* PRINT Edges to AST GRAPHVIZ DOT file */
 		/****************************************/
 		if (initialValue != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,initialValue.SerialNumber);		
+		if (initialValueNew != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,initialValueNew.SerialNumber);
 			
 	}
-
-	public TYPE SemantMe()
-	{
-		TYPE t;
-	
-		/****************************/
-		/* [1] Check If Type exists */
-		/****************************/
-		t = SYMBOL_TABLE.getInstance().find(type);
-		if (t == null)
-		{
-			System.out.format(">> ERROR [%d:%d] non existing type %s\n",2,2,type);
-			System.exit(0);
-		}
-		
-		/**************************************/
-		/* [2] Check That Name does NOT exist */
-		/**************************************/
-		if (SYMBOL_TABLE.getInstance().find(name) != null)
-		{
-			System.out.format(">> ERROR [%d:%d] variable %s already exists in scope\n",2,2,name);				
-		}
-
-		/***************************************************/
-		/* [3] Enter the Function Type to the Symbol Table */
-		/***************************************************/
-		SYMBOL_TABLE.getInstance().enter(name,t);
-
-		/*********************************************************/
-		/* [4] Return value is irrelevant for class declarations */
-		/*********************************************************/
-		return null;		
-	}
-	
 }

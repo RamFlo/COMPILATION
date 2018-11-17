@@ -1,19 +1,16 @@
 package AST;
 
-import TYPES.*;
-
-public class AST_STMT_LIST extends AST_Node
-{
+public class AST_NEWEXP extends AST_Node{
 	/****************/
 	/* DATA MEMBERS */
 	/****************/
-	public AST_STMT head;
-	public AST_STMT_LIST tail;
+	public AST_EXP e;
+	public String type;
 
 	/******************/
 	/* CONSTRUCTOR(S) */
 	/******************/
-	public AST_STMT_LIST(AST_STMT head,AST_STMT_LIST tail)
+	public AST_NEWEXP( String type, AST_EXP e)
 	{
 		/******************************/
 		/* SET A UNIQUE SERIAL NUMBER */
@@ -23,14 +20,14 @@ public class AST_STMT_LIST extends AST_Node
 		/***************************************/
 		/* PRINT CORRESPONDING DERIVATION RULE */
 		/***************************************/
-		if (tail != null) System.out.print("====================== stmts -> stmt stmts\n");
-		if (tail == null) System.out.print("====================== stmts -> stmt      \n");
+		if (e != null) System.out.format("NEW %s(exp)\n", type);
+		else System.out.format("NEW %s\n", type);
 
 		/*******************************/
 		/* COPY INPUT DATA NENBERS ... */
 		/*******************************/
-		this.head = head;
-		this.tail = tail;
+		this.e = e;
+		this.type = type;
 	}
 
 	/******************************************************/
@@ -39,35 +36,26 @@ public class AST_STMT_LIST extends AST_Node
 	public void PrintMe()
 	{
 		/**************************************/
-		/* AST NODE TYPE = AST STATEMENT LIST */
+		/* AST NODE TYPE = AST NEWEXP KAKI */
 		/**************************************/
-		System.out.print("AST NODE STMT LIST\n");
+		System.out.print("AST NODE NEWEXP\n");
 
 		/*************************************/
 		/* RECURSIVELY PRINT HEAD + TAIL ... */
 		/*************************************/
-		if (head != null) head.PrintMe();
-		if (tail != null) tail.PrintMe();
+		if (e != null) e.PrintMe();
 
 		/**********************************/
 		/* PRINT to AST GRAPHVIZ DOT file */
 		/**********************************/
 		AST_GRAPHVIZ.getInstance().logNode(
 			SerialNumber,
-			"STMT\nLIST\n");
+			"NEWEXP\n");
 		
 		/****************************************/
 		/* PRINT Edges to AST GRAPHVIZ DOT file */
 		/****************************************/
-		if (head != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,head.SerialNumber);
-		if (tail != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,tail.SerialNumber);
+		if (e != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,e.SerialNumber);
 	}
 	
-	public TYPE SemantMe()
-	{
-		if (head != null) head.SemantMe();
-		if (tail != null) tail.SemantMe();
-		
-		return null;
-	}
 }

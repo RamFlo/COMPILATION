@@ -11,12 +11,12 @@ public class AST_DEC_CLASS extends AST_DEC
 	/****************/
 	/* DATA MEMBERS */
 	/****************/
-	public AST_TYPE_NAME_LIST data_members;
+	public AST_CFIELDLIST class_fields;
 	
 	/******************/
 	/* CONSTRUCTOR(S) */
 	/******************/
-	public AST_DEC_CLASS(String name,String supername, AST_TYPE_NAME_LIST data_members)
+	public AST_DEC_CLASS(String name,String supername, AST_CFIELDLIST class_fields)
 	{
 		/******************************/
 		/* SET A UNIQUE SERIAL NUMBER */
@@ -25,7 +25,7 @@ public class AST_DEC_CLASS extends AST_DEC
 	
 		this.name = name;
 		this.supername = supername;
-		this.data_members = data_members;
+		this.class_fields = class_fields;
 	}
 
 	/*********************************************************/
@@ -37,8 +37,8 @@ public class AST_DEC_CLASS extends AST_DEC
 		/* RECURSIVELY PRINT HEAD + TAIL ... */
 		/*************************************/
 		System.out.format("CLASS DEC = %s\n",name);
-		if (supername != null) System.out.format("extends %s\n",supername);
-		if (data_members != null) data_members.PrintMe();
+		if (supername != null) System.out.format("EXTENDS %s\n",supername);
+		if (class_fields != null) class_fields.PrintMe();
 		
 		/***************************************/
 		/* PRINT Node to AST GRAPHVIZ DOT file */
@@ -55,6 +55,6 @@ public class AST_DEC_CLASS extends AST_DEC
 		/****************************************/
 		/* PRINT Edges to AST GRAPHVIZ DOT file */
 		/****************************************/
-		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,data_members.SerialNumber);		
+		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,class_fields.SerialNumber);		
 	}
 }

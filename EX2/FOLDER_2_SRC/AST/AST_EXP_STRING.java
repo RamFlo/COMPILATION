@@ -1,44 +1,38 @@
 package AST;
 
-import TYPES.*;
-
-public class AST_EXP_INT extends AST_EXP
-{
-	public int value;
+public class AST_EXP_STRING extends AST_EXP {
+	
+	public String value;
 	
 	/******************/
 	/* CONSTRUCTOR(S) */
 	/******************/
-	public AST_EXP_INT(int value)
+	public AST_EXP_STRING(String value)
 	{
 		/******************************/
 		/* SET A UNIQUE SERIAL NUMBER */
 		/******************************/
 		SerialNumber = AST_Node_Serial_Number.getFresh();
 
-		System.out.format("====================== exp -> INT( %d )\n", value);
+		System.out.format("====================== exp -> STRING( %s )\n", value);
 		this.value = value;
 	}
 
-	/************************************************/
-	/* The printing message for an INT EXP AST node */
-	/************************************************/
+	/******************************************************/
+	/* The printing message for a STRING EXP AST node */
+	/******************************************************/
 	public void PrintMe()
 	{
 		/*******************************/
-		/* AST NODE TYPE = AST INT EXP */
+		/* AST NODE TYPE = AST STRING EXP */
 		/*******************************/
-		System.out.format("AST NODE INT( %d )\n",value);
+		System.out.format("AST NODE STRING( %s )\n",value);
 
 		/***************************************/
 		/* PRINT Node to AST GRAPHVIZ DOT file */
 		/***************************************/
 		AST_GRAPHVIZ.getInstance().logNode(
 			SerialNumber,
-			String.format("INT(%d)",value));
-	}
-	public TYPE SemantMe()
-	{
-		return TYPE_INT.getInstance();
+			String.format("STRING\n%s",value)); // String.format("STRING\n%s",value.replace('"','\'')
 	}
 }

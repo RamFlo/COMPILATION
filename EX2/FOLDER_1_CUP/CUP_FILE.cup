@@ -153,7 +153,7 @@ classDec	::=		CLASS ID:name LBRACE cFieldList:l RBRACE {: RESULT = new AST_DEC_C
 arrayDec	::=		ARRAY ID:name EQ ID:type LBRACK RBRACK {: RESULT = new AST_DEC_ARRAY(name, type); :};
 				
 exp			::=		INT:i			{: RESULT = new AST_EXP_INT(i);    :}
-					| MINUS INT:i	{: RESULT = new AST_EXP_INT(-i);   :}
+					| MINUS INT:i	{: RESULT = new AST_EXP_INT(-i); System.out.println("minus int");  :}
 					| STRING:s		{: RESULT = new AST_EXP_STRING(s); :}
 					| LPAREN exp:e RPAREN {: RESULT = e; :}
 					| NIL		    {: RESULT = new AST_EXP_NIL(); :}

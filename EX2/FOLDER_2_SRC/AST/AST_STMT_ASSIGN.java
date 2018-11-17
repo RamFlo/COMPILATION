@@ -48,7 +48,7 @@ public class AST_STMT_ASSIGN extends AST_STMT
 		/***********************************/
 		var.PrintMe();
 		if (exp != null) exp.PrintMe();
-		if (newExp != null) exp.PrintMe();
+		if (newExp != null) newExp.PrintMe();
 
 		/***************************************/
 		/* PRINT Node to AST GRAPHVIZ DOT file */

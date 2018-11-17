@@ -104,6 +104,7 @@ non terminal AST_EXP_LIST	expListComma;
 non terminal AST_TYPE_NAME		typeName;
 non terminal AST_TYPE_NAME_LIST	typeNameListComma;
 non terminal AST_CFIELDLIST cFieldList;
+non terminal AST_EXP_BINOP binop;
 
 /***********************/
 /* OPERATOR PRECEDENCE */

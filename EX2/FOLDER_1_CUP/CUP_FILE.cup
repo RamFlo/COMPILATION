@@ -152,14 +152,14 @@ classDec	::=		CLASS ID:name LBRACE cFieldList:l RBRACE {: RESULT = new AST_DEC_C
 
 arrayDec	::=		ARRAY ID:name EQ ID:type LBRACK RBRACK {: RESULT = new AST_DEC_ARRAY(name, type); :};
 				
-exp			::=		INT:i			{: RESULT = new AST_EXP_INT(i);    :}
-					| MINUS INT:i	{: RESULT = new AST_EXP_INT(-i); System.out.println("minus int");  :}
-					| STRING:s		{: RESULT = new AST_EXP_STRING(s); :}
-					| LPAREN exp:e RPAREN {: RESULT = e; :}
-					| NIL		    {: RESULT = new AST_EXP_NIL(); :}
-					| var:v			{: RESULT = v; :}
-					| callExp:e		{: RESULT = e; :}
-					| exp:e1 binop:b exp:e2	{: RESULT = new AST_EXP_BINOP(e1,e2,b); :};
+exp			::=		INT:i			{:  System.out.println("int"); RESULT = new AST_EXP_INT(i);    :}
+					| MINUS INT:i	{:  System.out.println("minus int"); RESULT = new AST_EXP_INT(-i);   :}
+					| STRING:s		{:  System.out.println("string");RESULT = new AST_EXP_STRING(s); :}
+					| LPAREN exp:e RPAREN {:  System.out.println("1");RESULT = e; :}
+					| NIL		    {:  System.out.println("2");RESULT = new AST_EXP_NIL(); :}
+					| var:v			{:System.out.println("3"); RESULT = v; :}
+					| callExp:e		{: System.out.println("4");RESULT = e; :}
+					| exp:e1 binop:b exp:e2	{:System.out.println("5"); RESULT = new AST_EXP_BINOP(e1,e2,b); :};
 					
 
 				

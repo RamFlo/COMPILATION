@@ -22,7 +22,7 @@ parser code
 		System.out.print(lexer.getCharPos());
 		System.out.print("] \n");
 		System.out.print(message);
-		throw new ParserRuntimeException(String.format("ERROR(%d)",lexer.getLine()));
+		throw new ParserRuntimeException(String.format("ERROR(%d)\n",lexer.getLine()));
 		//System.exit(0);
 	}
 :}
@@ -130,10 +130,10 @@ start with decList;
 /********************/
 
 
-decList		::=		dec:d decList:l	{: RESULT = new AST_DEC_LIST(d,l);    :}
-					| dec:d			{: RESULT = new AST_DEC_LIST(d,null); :};
+decList		::=		dec:d decList:l	{: RESULT = new AST_DEC_LIST(d,l);   System.out.println("decList"); :}
+					| dec:d			{: RESULT = new AST_DEC_LIST(d,null); System.out.println("dec");:};
 
-dec			::=		varDec:d		{: RESULT = d; :}
+dec			::=		varDec:d		{: RESULT = d; System.out.println("dec->varDec");:}
 					| funcDec:d		{: RESULT = d; :}
 					| classDec:d	{: RESULT = d; :}
 					| arrayDec:d 	{: RESULT = d; :};

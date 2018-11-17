@@ -194,9 +194,10 @@ binop		::=		PLUS					{: RESULT = 0; :}
 					| EQ					{: RESULT = 6; :};
 					 
 					
-callExp		::=		ID:funcName LPAREN expListComma:el RPAREN				{: RESULT = new AST_EXP_CALL(null,funcName,el); :}
-					| var:v DOT ID:funcName LPAREN expListComma:el RPAREN	{: RESULT = new AST_EXP_CALL(v,funcName,el);    :}
-					| var:v DOT ID:funcName LPAREN RPAREN					{: RESULT = new AST_EXP_CALL(v,funcName,null);  :};
+callExp		::=		ID:funcName LPAREN expListComma:el RPAREN				{: RESULT = new AST_EXP_CALL(null,funcName,el);   :}
+					| ID:funcName LPAREN RPAREN								{: RESULT = new AST_EXP_CALL(null,funcName,null); :}
+					| var:v DOT ID:funcName LPAREN expListComma:el RPAREN	{: RESULT = new AST_EXP_CALL(v,funcName,el);      :}
+					| var:v DOT ID:funcName LPAREN RPAREN					{: RESULT = new AST_EXP_CALL(v,funcName,null);    :};
 
 expListComma	::=		exp:e COMMA expListComma:el	{: RESULT = new AST_EXP_LIST(e,el);   :}
 						| exp:e						{: RESULT = new AST_EXP_LIST(e,null); :};

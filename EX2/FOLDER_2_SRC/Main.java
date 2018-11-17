@@ -11,7 +11,7 @@ public class Main
 		Lexer l;
 		Parser p;
 		Symbol s;
-		AST_STMT_LIST AST;
+		AST_DEC_LIST AST;
 		FileReader file_reader;
 		PrintWriter file_writer = null;
 		String inputFilename = argv[0];
@@ -42,7 +42,7 @@ public class Main
 			/***********************************/
 			/* [5] 3 ... 2 ... 1 ... Parse !!! */
 			/***********************************/
-			AST = (AST_STMT_LIST) p.parse().value;
+			AST = (AST_DEC_LIST) p.parse().value;
 			
 			/*************************/
 			/* [6] Print the AST ... */
@@ -69,7 +69,6 @@ public class Main
 			}
 			e.printStackTrace();
 			return;
-			
 		}	     
 		catch (Exception e)
 		{

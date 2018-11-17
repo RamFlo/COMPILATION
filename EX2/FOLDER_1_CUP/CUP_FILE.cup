@@ -130,10 +130,10 @@ start with decList;
 /********************/
 
 
-decList		::=		dec:d decList:l	{: RESULT = new AST_DEC_LIST(d,l);   System.out.println("decList"); :}
-					| dec:d			{: RESULT = new AST_DEC_LIST(d,null); System.out.println("dec");:};
+decList		::=		dec:d decList:l	{: RESULT = new AST_DEC_LIST(d,l); :}
+					| dec:d			{: RESULT = new AST_DEC_LIST(d,null); :};
 
-dec			::=		varDec:d		{: RESULT = d; System.out.println("dec->varDec");:}
+dec			::=		varDec:d		{: RESULT = d; :}
 					| funcDec:d		{: RESULT = d; :}
 					| classDec:d	{: RESULT = d; :}
 					| arrayDec:d 	{: RESULT = d; :};
@@ -153,6 +153,7 @@ classDec	::=		CLASS ID:name LBRACE cFieldList:l RBRACE {: RESULT = new AST_DEC_C
 arrayDec	::=		ARRAY ID:name EQ ID:type LBRACK RBRACK {: RESULT = new AST_DEC_ARRAY(name, type); :};
 				
 exp			::=		INT:i			{: RESULT = new AST_EXP_INT(i);    :}
+					| MINUS INT:i	{: RESULT = new AST_EXP_INT(-i);   :}
 					| STRING:s		{: RESULT = new AST_EXP_STRING(s); :}
 					| LPAREN exp:e RPAREN {: RESULT = e; :}
 					| NIL		    {: RESULT = new AST_EXP_NIL(); :}

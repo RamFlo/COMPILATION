@@ -23,7 +23,6 @@ public class AST_STMT_ASSIGN extends AST_STMT
 		/* PRINT CORRESPONDING DERIVATION RULE */
 		/***************************************/
 		System.out.print("====================== stmt -> var ASSIGN exp SEMICOLON\n");
-		System.out.println("assign 1"); //KAKI
 
 		/*******************************/
 		/* COPY INPUT DATA NENBERS ... */
@@ -31,7 +30,6 @@ public class AST_STMT_ASSIGN extends AST_STMT
 		this.var = var;
 		this.exp = exp;
 		this.newExp = newExp;
-		System.out.println("assign 2"); //KAKI
 	}
 	
 
@@ -40,7 +38,6 @@ public class AST_STMT_ASSIGN extends AST_STMT
 	/*********************************************************/
 	public void PrintMe()
 	{
-		System.out.println("assign 3"); //KAKI
 		/********************************************/
 		/* AST NODE TYPE = AST ASSIGNMENT STATEMENT */
 		/********************************************/
@@ -66,6 +63,5 @@ public class AST_STMT_ASSIGN extends AST_STMT
 		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,var.SerialNumber);
 		if (exp != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,exp.SerialNumber);
 		if (newExp != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,newExp.SerialNumber);
-		System.out.println("assign 4"); //KAKI
 	}
 }

@@ -110,13 +110,13 @@ non terminal Integer binop;
 /***********************/
 /* OPERATOR PRECEDENCE */
 /***********************/
-precedence nonassoc ASSIGN;
+precedence left ASSIGN;
 precedence left EQ;
 precedence left LT, GT;
 precedence left PLUS, MINUS;
 precedence left TIMES, DIVIDE;
-/*precedence nonassoc LBRACK;
-precedence nonassoc LPAREN;*/
+precedence left LBRACK;
+precedence left LPAREN;
 precedence left DOT;
 
 /************************/

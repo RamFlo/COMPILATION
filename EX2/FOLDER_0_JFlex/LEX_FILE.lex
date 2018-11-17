@@ -138,7 +138,7 @@ STRINGS		= \"([a-zA-Z]*)\"
 						else return symbol(TokenNames.INT, x);
 					}*/
 {LEADING_ZEROES} 	{ return symbol(TokenNames.error); }				 
-"-0"				{ return symbol(TokenNames.error); }
+/*"-0"				{ return symbol(TokenNames.error); }*/
 {ID}				{ return symbol(TokenNames.ID, new String( yytext()));}   
 {WhiteSpace}		{ /* just skip what was found, do nothing */ }
 <<EOF>>				{ return symbol(TokenNames.EOF);}

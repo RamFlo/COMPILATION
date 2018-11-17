@@ -20,8 +20,8 @@ parser code
 		System.out.print(lexer.getLine());
 		System.out.print(":");
 		System.out.print(lexer.getCharPos());
-		System.out.print("] \n");		
-		System.out.print(message);	
+		System.out.print("] \n");
+		System.out.print(message);
 		throw new ParserRuntimeException(String.format("ERROR(%d)",lexer.getLine()));
 		//System.exit(0);
 	}

@@ -73,7 +73,7 @@ LineTerminator	= \r|\n|\r\n
 WhiteSpace	= {LineTerminator} | [ \t\f]
 INTEGER		= 0 | [1-9][0-9]*
 ID		= [a-zA-Z][a-zA-Z0-9]*
-MINUS_INTEGER   = -[1-9][0-9]*
+/*MINUS_INTEGER   = -[1-9][0-9]**/
 LEADING_ZEROES  = ([0]+[0-9]+)|([-0]+[0-9]+)
 STRINGS		= \"([a-zA-Z]*)\"
    

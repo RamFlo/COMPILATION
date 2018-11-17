@@ -9,6 +9,7 @@ public class AST_EXP_INT extends AST_EXP
 	/******************/
 	public AST_EXP_INT(int value)
 	{
+		System.out.println("exp int 1");
 		/******************************/
 		/* SET A UNIQUE SERIAL NUMBER */
 		/******************************/

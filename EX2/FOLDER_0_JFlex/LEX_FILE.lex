@@ -126,9 +126,9 @@ STRINGS		= \"([a-zA-Z]*)\"
 "//"				{ yybegin(COMMENT_ONE_LINE); }
 "/*"				{ yybegin(COMMENT_MULTI_LINE); }
 {INTEGER}			{ 
-						if (yytext().length() > 5) return symbol(TokenNames.error);
+						if (yytext().length() > 5) {System.out.println("Lexer error 4"); return symbol(TokenNames.error);}
 						Integer x = new Integer(yytext());
-						if (x > 32767) return symbol(TokenNames.error);
+						if (x > 32767) {System.out.println("Lexer error 3"); return symbol(TokenNames.error);}
 						else return symbol(TokenNames.INT, x);
 					}
 /*{MINUS_INTEGER}		{
@@ -137,7 +137,7 @@ STRINGS		= \"([a-zA-Z]*)\"
 						if (x < -32768) return symbol(TokenNames.error);
 						else return symbol(TokenNames.INT, x);
 					}*/
-{LEADING_ZEROES} 	{ return symbol(TokenNames.error); }				 
+{LEADING_ZEROES} 	{ System.out.println("Lexer error 2"); return symbol(TokenNames.error); }				 
 /*"-0"				{ return symbol(TokenNames.error); }*/
 {ID}				{ return symbol(TokenNames.ID, new String( yytext()));}   
 {WhiteSpace}		{ /* just skip what was found, do nothing */ }
@@ -152,9 +152,9 @@ STRINGS		= \"([a-zA-Z]*)\"
 
 <COMMENT_MULTI_LINE> {
 "*/"    															{ yybegin(YYINITIAL); }
-<<EOF>>    															{ return symbol(TokenNames.error); }
+<<EOF>>    															{ System.out.println("Lexer error 5"); return symbol(TokenNames.error); }
 [-a-zA-Z0-9\. \t\f\(\)\{\}\[\]\?\!\+\*\/\;(\r\n|\r|\n)]             { /* comment still ongoing, do nothing */ }
 }
 
 /* error fallback */
-[^]                              { return symbol(TokenNames.error); }
+[^]                              { System.out.println("Lexer error 1"); return symbol(TokenNames.error); }

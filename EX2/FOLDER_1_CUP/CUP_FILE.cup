@@ -180,9 +180,9 @@ stmt		::=		varDec:v                                                    {: RESULT
 newExp		::= 	NEW ID:type 						{: RESULT = new AST_NEWEXP(type,null); :}
 					| NEW ID:type LBRACK exp:e RBRACK 	{: RESULT = new AST_NEWEXP(type,e);    :};
 					
-var		::=			ID:name							{: RESULT = new AST_VAR_SIMPLE(name);       :}
-					| var:v DOT ID:fieldName		{: RESULT = new AST_VAR_FIELD(v,fieldName); :} 
-					| var:v LBRACK exp:e RBRACK		{: RESULT = new AST_VAR_SUBSCRIPT(v,e);     :};
+var		::=			ID:name							{: System.out.println("var,a,"+name); RESULT = new AST_VAR_SIMPLE(name);       :}
+					| var:v DOT ID:fieldName		{: System.out.println("var,b,"+fieldName); RESULT = new AST_VAR_FIELD(v,fieldName); :} 
+					| var:v LBRACK exp:e RBRACK		{: System.out.println("var,c"); RESULT = new AST_VAR_SUBSCRIPT(v,e);     :};
 					
 
 binop		::=		PLUS					{: RESULT = 0; :}

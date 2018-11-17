@@ -50,7 +50,7 @@ public class AST_DEC_VAR extends AST_DEC
 		/**********************************/
 		AST_GRAPHVIZ.getInstance().logNode(
 			SerialNumber,
-			String.format("VAR\nDEC(%s)\n:%s",name,type));
+			String.format("VAR\nDEC(%s)\nTYPE(%s)",name,type));
 
 		/****************************************/
 		/* PRINT Edges to AST GRAPHVIZ DOT file */

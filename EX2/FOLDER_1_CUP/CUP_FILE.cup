@@ -170,9 +170,9 @@ stmt		::=		varDec:v                                                    {: RESULT
 					| callExp:callExp SEMICOLON									{: RESULT = new AST_STMT_CALL(callExp);    :}
 					| RETURN exp:e SEMICOLON									{: RESULT = new AST_STMT_RETURN(e);        :}
 					| RETURN SEMICOLON											{: RESULT = new AST_STMT_RETURN(null);     :}
-					| var:v ASSIGN exp:e SEMICOLON							{: RESULT = new AST_STMT_ASSIGN(v,e,null);      :}
-					| var:v ASSIGN newExp:e SEMICOLON						{: RESULT = new AST_STMT_ASSIGN(v,null,e);      :}
-					| IF    LPAREN exp:cond RPAREN LBRACE stmtList:body RBRACE	{: RESULT = new AST_STMT_IF(cond,body); :}
+					| var:v ASSIGN exp:e SEMICOLON								{: RESULT = new AST_STMT_ASSIGN(v,e,null); :}
+					| var:v ASSIGN newExp:e SEMICOLON							{: RESULT = new AST_STMT_ASSIGN(v,null,e); :}
+					| IF    LPAREN exp:cond RPAREN LBRACE stmtList:body RBRACE	{: RESULT = new AST_STMT_IF(cond,body);    :}
 					| WHILE LPAREN exp:cond RPAREN LBRACE stmtList:body RBRACE	{: RESULT = new AST_STMT_WHILE(cond,body); :};
 
 
@@ -194,8 +194,9 @@ binop		::=		PLUS					{: RESULT = 0; :}
 					| EQ					{: RESULT = 6; :};
 					 
 					
-callExp		::=		ID:funcName LPAREN expListComma:el RPAREN					{: RESULT = new AST_EXP_CALL(null,funcName,el); :}
-					| var:v DOT ID:funcName LPAREN expListComma:el RPAREN	{: RESULT = new AST_EXP_CALL(v,funcName,el);    :};
+callExp		::=		ID:funcName LPAREN expListComma:el RPAREN				{: RESULT = new AST_EXP_CALL(null,funcName,el); :}
+					| var:v DOT ID:funcName LPAREN expListComma:el RPAREN	{: RESULT = new AST_EXP_CALL(v,funcName,el);    :}
+					| var:v DOT ID:funcName LPAREN RPAREN					{: RESULT = new AST_EXP_CALL(v,funcName,null);  :};
 
 expListComma	::=		exp:e COMMA expListComma:el	{: RESULT = new AST_EXP_LIST(e,el);   :}
 						| exp:e						{: RESULT = new AST_EXP_LIST(e,null); :};

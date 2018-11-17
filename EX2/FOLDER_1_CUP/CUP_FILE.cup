@@ -133,10 +133,10 @@ start with decList;
 decList		::=		dec:d decList:l	{: RESULT = new AST_DEC_LIST(d,l); :}
 					| dec:d			{: RESULT = new AST_DEC_LIST(d,null); :};
 
-dec			::=		varDec:d		{: RESULT = d; :}
-					| funcDec:d		{: RESULT = d; :}
-					| classDec:d	{: RESULT = d; :}
-					| arrayDec:d 	{: RESULT = d; :};
+dec			::=		varDec:d		{: System.out.println("dec,a"); RESULT = d; :}
+					| funcDec:d		{: System.out.println("dec,b"); RESULT = d; :}
+					| classDec:d	{: System.out.println("dec,c"); RESULT = d; :}
+					| arrayDec:d 	{: System.out.println("dec,d"); RESULT = d; :};
 										
 varDec		::=		ID:type ID:var SEMICOLON	            {: System.out.println("varDec,a");RESULT = new AST_DEC_VAR(type,var,null, null); :}
 					| ID:type ID:var ASSIGN exp:e SEMICOLON {: System.out.println("varDec,b"); RESULT = new AST_DEC_VAR(type,var,e, null); :}

@@ -208,5 +208,5 @@ typeNameListComma		::=		typeName:tn COMMA typeNameListComma:tnl			{: RESULT = ne
 
 cFieldList				::=		varDec:v cFieldList:l 							{: RESULT = new AST_CFIELDLIST(v,l); :}
 								| varDec:v										{: RESULT = new AST_CFIELDLIST(v,null); :}
-								funcDec:f cFieldList:l 							{: RESULT = new AST_CFIELDLIST(f,l); :}
+								| funcDec:f cFieldList:l 						{: RESULT = new AST_CFIELDLIST(f,l); :}
 								| funcDec:f										{: RESULT = new AST_CFIELDLIST(f,null); :};

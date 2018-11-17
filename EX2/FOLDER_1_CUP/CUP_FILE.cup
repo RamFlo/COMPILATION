@@ -82,7 +82,6 @@ terminal RETURN;
 /*************/
 /* TERMINALS */
 /*************/
-terminal Integer binop;
 terminal Integer INT;
 terminal String ID;
 terminal String STRING;
@@ -106,6 +105,7 @@ non terminal AST_EXP_LIST	expListComma;
 non terminal AST_TYPE_NAME		typeName;
 non terminal AST_TYPE_NAME_LIST	typeNameListComma;
 non terminal AST_CFIELDLIST cFieldList;
+non terminal Integer binop;
 
 /***********************/
 /* OPERATOR PRECEDENCE */

@@ -74,6 +74,8 @@ terminal COMMA;
 terminal EXTENDS;
 terminal ARRAY;
 terminal NIL;
+terminal GT;
+terminal LT;
 
 /*************/
 /* TERMINALS */

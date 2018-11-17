@@ -63,10 +63,9 @@ public class Main
 		
 		catch (ParserRuntimeException e)
 		{
-			if (file_writer != null) {
-				file_writer.print(e.getMessage());
-				file_writer.close();
-			}
+			file_writer = new PrintWriter(outputFilename);
+			file_writer.print(e.getMessage());
+			file_writer.close();
 			e.printStackTrace();
 			return;
 			

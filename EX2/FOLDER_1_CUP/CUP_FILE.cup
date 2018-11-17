@@ -76,6 +76,7 @@ terminal ARRAY;
 terminal NIL;
 terminal GT;
 terminal LT;
+terminal CLASS;
 
 /*************/
 /* TERMINALS */

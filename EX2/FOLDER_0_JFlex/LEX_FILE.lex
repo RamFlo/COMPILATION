@@ -152,7 +152,7 @@ STRINGS		= \"([a-zA-Z]*)\"
 
 <COMMENT_MULTI_LINE> {
 "*/"    															{ yybegin(YYINITIAL); }
-<<EOF>>    															{ return symbol(TokenNames.ERROR); }
+<<EOF>>    															{ return symbol(TokenNames.error); }
 [-a-zA-Z0-9\. \t\f\(\)\{\}\[\]\?\!\+\*\/\;(\r\n|\r|\n)]             { /* comment still ongoing, do nothing */ }
 }
 

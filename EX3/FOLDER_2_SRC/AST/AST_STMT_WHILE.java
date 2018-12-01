@@ -1,5 +1,6 @@
 package AST;
 
+import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.SYMBOL_TABLE;
 import TYPES.TYPE;
 import TYPES.TYPE_INT;
@@ -60,7 +61,8 @@ public class AST_STMT_WHILE extends AST_STMT
 		/****************************/
 		if (cond.SemantMe() != TYPE_INT.getInstance())
 		{
-			System.out.format(">> ERROR [%d:%d] condition inside WHILE is not integral\n",lineNum,colNum);
+			throw new SemanticRuntimeException(lineNum, colNum, "condition inside WHILE is not integral");
+			//System.out.format(">> ERROR [%d:%d] condition inside WHILE is not integral\n",lineNum,colNum);
 		}
 		
 		/*************************/

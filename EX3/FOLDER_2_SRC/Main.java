@@ -3,6 +3,7 @@ import java.io.*;
 import java.io.PrintWriter;
 import java_cup.runtime.Symbol;
 import AST.*;
+import MyExceptions.SemanticRuntimeException;
 
 public class Main
 {
@@ -80,7 +81,7 @@ public class Main
 				file_writer.print(String.format("ERROR(%d)",e.lineNum));
 				file_writer.close();
 			}
-			e.printStackTrace();
+			System.out.format(">> ERROR [%d:%d] %s", e.lineNum,e.colNum,e.getMessage());
 			return;
 		}	     
 		catch (Exception e)

@@ -1,5 +1,5 @@
 package AST;
-
+import MyExceptions.SemanticRuntimeException;
 public class AST_STMT_ASSIGN extends AST_STMT
 {
 	/***************/
@@ -63,5 +63,21 @@ public class AST_STMT_ASSIGN extends AST_STMT
 		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,var.SerialNumber);
 		if (exp != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,exp.SerialNumber);
 		if (newExp != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,newExp.SerialNumber);
+	}
+	
+	public TYPE SemantMe()
+	{
+		TYPE t1 = null;
+		TYPE t2 = null;
+		
+		t1 = var.SemantMe();
+		if (exp != null) t2 = exp.SemantMe();
+		else t2 = newExp.SemantMe();
+		
+		if (t1 != t2)
+		{
+			throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for var := exp/newExp\n");
+		}
+		return null;
 	}
 }

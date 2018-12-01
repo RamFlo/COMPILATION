@@ -18,41 +18,21 @@ import TYPES.*;
 /****************/
 public class SYMBOL_TABLE
 {
-	private int hashArraySize = 13;
 	
 	/**********************************************/
 	/* The actual symbol table data structure ... */
 	/**********************************************/
-	private SYMBOL_TABLE_ENTRY[] table = new SYMBOL_TABLE_ENTRY[hashArraySize];
+	public Map<String, List<SYMBOL_TABLE_ENTRY>> symbol_table_hash = new HashMap<String, List<SYMBOL_TABLE_ENTRY>>();
 	private SYMBOL_TABLE_ENTRY top;
 	private int top_index = 0;
-	
-	/**************************************************************/
-	/* A very primitive hash function for exposition purposes ... */
-	/**************************************************************/
-	private int hash(String s)
-	{
-		if (s.charAt(0) == 'l') {return 1;}
-		if (s.charAt(0) == 'm') {return 1;}
-		if (s.charAt(0) == 'r') {return 3;}
-		if (s.charAt(0) == 'i') {return 6;}
-		if (s.charAt(0) == 'd') {return 6;}
-		if (s.charAt(0) == 'k') {return 6;}
-		if (s.charAt(0) == 'f') {return 6;}
-		if (s.charAt(0) == 'S') {return 6;}
-		return 12;
-	}
 
 	/****************************************************************************/
 	/* Enter a variable, function, class type or array type to the symbol table */
 	/****************************************************************************/
 	public void enter(String name,TYPE t)
 	{
-		/*************************************************/
-		/* [1] Compute the hash value for this new entry */
-		/*************************************************/
-		int hashValue = hash(name);
-
+		if()
+		
 		/******************************************************************************/
 		/* [2] Extract what will eventually be the next entry in the hashed position  */
 		/*     NOTE: this entry can very well be null, but the behaviour is identical */

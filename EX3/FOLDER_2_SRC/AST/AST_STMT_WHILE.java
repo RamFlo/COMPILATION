@@ -61,14 +61,14 @@ public class AST_STMT_WHILE extends AST_STMT
 		/****************************/
 		if (cond.SemantMe() != TYPE_INT.getInstance())
 		{
-			throw new SemanticRuntimeException(lineNum, colNum, "condition inside WHILE is not integral");
+			throw new SemanticRuntimeException(lineNum, colNum, "condition inside WHILE is not integral\n");
 			//System.out.format(">> ERROR [%d:%d] condition inside WHILE is not integral\n",lineNum,colNum);
 		}
 		
 		/*************************/
 		/* [1] Begin Class Scope */
 		/*************************/
-		SYMBOL_TABLE.getInstance().beginScope();
+		SYMBOL_TABLE.getInstance().beginScope("WHILE");
 
 		/***************************/
 		/* [2] Semant Data Members */

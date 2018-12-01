@@ -1,5 +1,10 @@
 package AST;
 
+import MyExceptions.SemanticRuntimeException;
+import TYPES.TYPE;
+import TYPES.TYPE_INT;
+import TYPES.TYPE_STRING;
+
 public class AST_EXP_BINOP extends AST_EXP
 {
 	int OP;
@@ -86,5 +91,25 @@ public class AST_EXP_BINOP extends AST_EXP
 		/****************************************/
 		if (left  != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,left.SerialNumber);
 		if (right != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,right.SerialNumber);
+	}
+	
+	public TYPE SemantMe()
+	{
+		TYPE t1 = null;
+		TYPE t2 = null;
+		
+		if (left  != null) t1 = left.SemantMe();
+		if (right != null) t2 = right.SemantMe();
+		
+		if ((t1 == TYPE_INT.getInstance()) && (t2 == TYPE_INT.getInstance()))
+		{
+			return TYPE_INT.getInstance();
+		}
+		else if ((t1 == TYPE_STRING.getInstance()) && (t2 == TYPE_STRING.getInstance()) && (OP == 0))
+		{
+			return TYPE_STRING.getInstance();
+		}
+		throw new SemanticRuntimeException(lineNum, colNum, "Illegal binary operation\n");
+		return null;
 	}
 }

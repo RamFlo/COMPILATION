@@ -1,5 +1,6 @@
 package AST;
 
+import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.SYMBOL_TABLE;
 import TYPES.TYPE;
 
@@ -73,8 +74,7 @@ public class AST_DEC_VAR extends AST_DEC
 		t = SYMBOL_TABLE.getInstance().find(type);
 		if (t == null)
 		{
-			System.out.format(">> ERROR [%d:%d] non existing type %s\n",lineNum,colNum,type);
-			throw new exception name name;
+			throw new SemanticRuntimeException(lineNum,colNum,String.format("non existing type %s\n",type));
 		}
 		
 		/**************************************/
@@ -82,8 +82,7 @@ public class AST_DEC_VAR extends AST_DEC
 		/**************************************/
 		if (SYMBOL_TABLE.getInstance().find(name) != null)
 		{
-			System.out.format(">> ERROR [%d:%d] variable %s already exists in scope\n",lineNum,colNum,name);
-			throw new exception name name;
+			throw new SemanticRuntimeException(lineNum,colNum,String.format("variable %s already exists in scope\n",name));
 		}
 
 		/***************************************************/

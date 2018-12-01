@@ -1,5 +1,7 @@
 package AST;
 
+import javax.swing.event.RowSorterEvent.Type;
+
 public class AST_DEC_CLASS extends AST_DEC
 {
 	/********/
@@ -56,5 +58,50 @@ public class AST_DEC_CLASS extends AST_DEC
 		/* PRINT Edges to AST GRAPHVIZ DOT file */
 		/****************************************/
 		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,class_fields.SerialNumber);		
+	}
+	
+	public TYPE SemantMe()
+	{	
+		/*************************/
+		/* [1] Begin Class Scope */
+		/*************************/
+		SYMBOL_TABLE.getInstance().beginScope("CLASS");
+		
+		TYPE_CLASS t = null;
+		
+		/*There is no extends*/
+		if (supername == null) t = new TYPE_CLASS(null,name,data_members.SemantMe());
+		
+		else{
+			/*Searching for supername in SYMBOL_TABLE*/
+			Type superType = SYMBOL_TABLE.getInstance().find(supername);
+			/*Supername is not in SYMBOL_TABLE -> error*/
+			if (superType == null)
+				throw new SemanticRuntimeException(lineNum, colNum, String.format
+						("class %s extends undefine class %s\n", name, supername));
+			
+			/*Supername is not a class*/
+			if (!(superType instanceof TYPE_CLASS))
+				throw new SemanticRuntimeException(lineNum, colNum, String.format
+						("class %s extends %s of type %s\n", name, supername, superType.getClass()));	
+			
+			/*Supername is legal*/
+			t = new TYPE_CLASS(TYPE_CLASS,name,data_members.SemantMe());
+		}
+
+		/*****************/
+		/* [3] End Scope */
+		/*****************/
+		SYMBOL_TABLE.getInstance().endScope();
+
+		/************************************************/
+		/* [4] Enter the Class Type to the Symbol Table */
+		/************************************************/
+		SYMBOL_TABLE.getInstance().enter(name,t);
+
+		/*********************************************************/
+		/* [5] Return value is irrelevant for class declarations */
+		/*********************************************************/
+		return null;		
 	}
 }

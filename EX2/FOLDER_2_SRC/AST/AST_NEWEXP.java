@@ -48,9 +48,12 @@ public class AST_NEWEXP extends AST_Node{
 		/**********************************/
 		/* PRINT to AST GRAPHVIZ DOT file */
 		/**********************************/
-		AST_GRAPHVIZ.getInstance().logNode(
+		if (e != null) AST_GRAPHVIZ.getInstance().logNode(
 			SerialNumber,
-			"NEWEXP\n");
+			String.format("NEW %s(exp...)\n", type));
+		else AST_GRAPHVIZ.getInstance().logNode(
+				SerialNumber,
+				String.format("NEW %s\n", type));
 		
 		/****************************************/
 		/* PRINT Edges to AST GRAPHVIZ DOT file */

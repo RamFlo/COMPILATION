@@ -64,7 +64,25 @@ public class Main
 			/*************************************/
 			AST_GRAPHVIZ.getInstance().finalizeFile();			
     	}
-			     
+		
+		catch (ParserRuntimeException e)
+		{
+			if (file_writer != null) {
+				file_writer.print(e.getMessage());
+				file_writer.close();
+			}
+			e.printStackTrace();
+			return;
+		}
+		catch (SemanticRuntimeException e)
+		{
+			if (file_writer != null) {
+				file_writer.print(String.format("ERROR(%d)",e.lineNum));
+				file_writer.close();
+			}
+			e.printStackTrace();
+			return;
+		}	     
 		catch (Exception e)
 		{
 			e.printStackTrace();

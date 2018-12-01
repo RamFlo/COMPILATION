@@ -1,24 +1,22 @@
 package AST;
 
-import TYPES.*;
-import SYMBOL_TABLE.*;
-
 public class AST_DEC_CLASS extends AST_DEC
 {
 	/********/
 	/* NAME */
 	/********/
 	public String name;
+	public String supername;
 
 	/****************/
 	/* DATA MEMBERS */
 	/****************/
-	public AST_TYPE_NAME_LIST data_members;
+	public AST_CFIELDLIST class_fields;
 	
 	/******************/
 	/* CONSTRUCTOR(S) */
 	/******************/
-	public AST_DEC_CLASS(String name,AST_TYPE_NAME_LIST data_members)
+	public AST_DEC_CLASS(String name,String supername, AST_CFIELDLIST class_fields)
 	{
 		/******************************/
 		/* SET A UNIQUE SERIAL NUMBER */
@@ -26,7 +24,8 @@ public class AST_DEC_CLASS extends AST_DEC
 		SerialNumber = AST_Node_Serial_Number.getFresh();
 	
 		this.name = name;
-		this.data_members = data_members;
+		this.supername = supername;
+		this.class_fields = class_fields;
 	}
 
 	/*********************************************************/
@@ -38,46 +37,24 @@ public class AST_DEC_CLASS extends AST_DEC
 		/* RECURSIVELY PRINT HEAD + TAIL ... */
 		/*************************************/
 		System.out.format("CLASS DEC = %s\n",name);
-		if (data_members != null) data_members.PrintMe();
+		if (supername != null) System.out.format("EXTENDS %s\n",supername);
+		if (class_fields != null) class_fields.PrintMe();
 		
 		/***************************************/
 		/* PRINT Node to AST GRAPHVIZ DOT file */
 		/***************************************/
-		AST_GRAPHVIZ.getInstance().logNode(
+		if (supername != null) 
+			AST_GRAPHVIZ.getInstance().logNode(
+					SerialNumber,
+					String.format("CLASS\n%s\nEXTENDS\n%s",name,supername));
+		else
+			AST_GRAPHVIZ.getInstance().logNode(
 			SerialNumber,
 			String.format("CLASS\n%s",name));
 		
 		/****************************************/
 		/* PRINT Edges to AST GRAPHVIZ DOT file */
 		/****************************************/
-		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,data_members.SerialNumber);		
-	}
-	
-	public TYPE SemantMe()
-	{	
-		/*************************/
-		/* [1] Begin Class Scope */
-		/*************************/
-		SYMBOL_TABLE.getInstance().beginScope();
-
-		/***************************/
-		/* [2] Semant Data Members */
-		/***************************/
-		TYPE_CLASS t = new TYPE_CLASS(null,name,data_members.SemantMe());
-
-		/*****************/
-		/* [3] End Scope */
-		/*****************/
-		SYMBOL_TABLE.getInstance().endScope();
-
-		/************************************************/
-		/* [4] Enter the Class Type to the Symbol Table */
-		/************************************************/
-		SYMBOL_TABLE.getInstance().enter(name,t);
-
-		/*********************************************************/
-		/* [5] Return value is irrelevant for class declarations */
-		/*********************************************************/
-		return null;		
+		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,class_fields.SerialNumber);		
 	}
 }

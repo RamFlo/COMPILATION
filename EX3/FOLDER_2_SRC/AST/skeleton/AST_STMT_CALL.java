@@ -1,34 +1,39 @@
 package AST;
 
-public class AST_STMT_DEC_VAR extends AST_STMT {
+public class AST_STMT_CALL extends AST_STMT
+{
 	/****************/
 	/* DATA MEMBERS */
 	/****************/
-	public AST_DEC_VAR var;
-
+	public AST_EXP_CALL callExp;
+	
 	/******************/
 	/* CONSTRUCTOR(S) */
 	/******************/
-	public AST_STMT_DEC_VAR(AST_DEC_VAR var) {
+	public AST_STMT_CALL(AST_EXP_CALL callExp)
+	{
 		/******************************/
 		/* SET A UNIQUE SERIAL NUMBER */
 		/******************************/
 		SerialNumber = AST_Node_Serial_Number.getFresh();
 
-		this.var = var;
+		this.callExp = callExp;
 	}
-
-	public void PrintMe() {
-		var.PrintMe();
+	
+	public void PrintMe()
+	{
+		callExp.PrintMe();
 
 		/***************************************/
 		/* PRINT Node to AST GRAPHVIZ DOT file */
 		/***************************************/
-		AST_GRAPHVIZ.getInstance().logNode(SerialNumber, String.format("STMT\nDEC\nVAR"));
-
+		AST_GRAPHVIZ.getInstance().logNode(
+			SerialNumber,
+			String.format("STMT\nCALL"));
+		
 		/****************************************/
 		/* PRINT Edges to AST GRAPHVIZ DOT file */
 		/****************************************/
-		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, var.SerialNumber);
+		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,callExp.SerialNumber);		
 	}
 }

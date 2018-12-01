@@ -1,18 +1,19 @@
 package AST;
 
+import TYPES.*;
+
 public class AST_STMT_ASSIGN extends AST_STMT
 {
 	/***************/
 	/*  var := exp */
 	/***************/
-	public AST_VAR var;
+	public AST_EXP_VAR var;
 	public AST_EXP exp;
-	public AST_NEWEXP newExp;
 
 	/*******************/
 	/*  CONSTRUCTOR(S) */
 	/*******************/
-	public AST_STMT_ASSIGN(AST_VAR var,AST_EXP exp,AST_NEWEXP newExp)
+	public AST_STMT_ASSIGN(AST_EXP_VAR var,AST_EXP exp)
 	{
 		/******************************/
 		/* SET A UNIQUE SERIAL NUMBER */
@@ -29,9 +30,7 @@ public class AST_STMT_ASSIGN extends AST_STMT
 		/*******************************/
 		this.var = var;
 		this.exp = exp;
-		this.newExp = newExp;
 	}
-	
 
 	/*********************************************************/
 	/* The printing message for an assign statement AST node */
@@ -46,9 +45,8 @@ public class AST_STMT_ASSIGN extends AST_STMT
 		/***********************************/
 		/* RECURSIVELY PRINT VAR + EXP ... */
 		/***********************************/
-		var.PrintMe();
+		if (var != null) var.PrintMe();
 		if (exp != null) exp.PrintMe();
-		if (newExp != null) newExp.PrintMe();
 
 		/***************************************/
 		/* PRINT Node to AST GRAPHVIZ DOT file */
@@ -61,7 +59,20 @@ public class AST_STMT_ASSIGN extends AST_STMT
 		/* PRINT Edges to AST GRAPHVIZ DOT file */
 		/****************************************/
 		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,var.SerialNumber);
-		if (exp != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,exp.SerialNumber);
-		if (newExp != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,newExp.SerialNumber);
+		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,exp.SerialNumber);
+	}
+	public TYPE SemantMe()
+	{
+		TYPE t1 = null;
+		TYPE t2 = null;
+		
+		if (var != null) t1 = var.SemantMe();
+		if (exp != null) t2 = exp.SemantMe();
+		
+		if (t1 != t2)
+		{
+			System.out.format(">> ERROR [%d:%d] type mismatch for var := exp\n",6,6);				
+		}
+		return null;
 	}
 }

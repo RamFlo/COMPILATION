@@ -1,23 +1,25 @@
 package AST;
 
-public class AST_STMT_RETURN extends AST_STMT
+public class AST_EXP_CALL extends AST_EXP
 {
 	/****************/
 	/* DATA MEMBERS */
 	/****************/
-	public AST_EXP exp;
+	public String funcName;
+	public AST_EXP_LIST params;
 
-	/*******************/
-	/*  CONSTRUCTOR(S) */
-	/*******************/
-	public AST_STMT_RETURN(AST_EXP exp)
+	/******************/
+	/* CONSTRUCTOR(S) */
+	/******************/
+	public AST_EXP_CALL(String funcName,AST_EXP_LIST params)
 	{
 		/******************************/
 		/* SET A UNIQUE SERIAL NUMBER */
 		/******************************/
 		SerialNumber = AST_Node_Serial_Number.getFresh();
 
-		this.exp = exp;
+		this.funcName = funcName;
+		this.params = params;
 	}
 
 	/************************************************************/
@@ -25,27 +27,26 @@ public class AST_STMT_RETURN extends AST_STMT
 	/************************************************************/
 	public void PrintMe()
 	{
-		/*************************************/
-		/* AST NODE TYPE = AST SUBSCRIPT VAR */
-		/*************************************/
-		System.out.print("AST NODE STMT RETURN\n");
+		/*************************************************/
+		/* AST NODE TYPE = AST NODE FUNCTION DECLARATION */
+		/*************************************************/
+		System.out.format("CALL(%s)\nWITH:\n",funcName);
 
-		/*****************************/
-		/* RECURSIVELY PRINT exp ... */
-		/*****************************/
-		if (exp != null) exp.PrintMe();
-
+		/***************************************/
+		/* RECURSIVELY PRINT params + body ... */
+		/***************************************/
+		if (params != null) params.PrintMe();
+		
 		/***************************************/
 		/* PRINT Node to AST GRAPHVIZ DOT file */
 		/***************************************/
 		AST_GRAPHVIZ.getInstance().logNode(
 			SerialNumber,
-			"RETURN");
-
+			String.format("CALL(%s)\nWITH",funcName));
+		
 		/****************************************/
 		/* PRINT Edges to AST GRAPHVIZ DOT file */
 		/****************************************/
-		if (exp != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,exp.SerialNumber);
+		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,params.SerialNumber);		
 	}
 }
-

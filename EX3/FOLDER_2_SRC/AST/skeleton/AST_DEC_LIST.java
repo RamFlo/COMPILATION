@@ -1,5 +1,7 @@
 package AST;
 
+import TYPES.*;
+
 public class AST_DEC_LIST extends AST_Node
 {
 	/****************/
@@ -22,6 +24,17 @@ public class AST_DEC_LIST extends AST_Node
 		this.tail = tail;
 	}
 
+	public TYPE SemantMe()
+	{		
+		/*************************************/
+		/* RECURSIVELY PRINT HEAD + TAIL ... */
+		/*************************************/
+		if (head != null) head.SemantMe();
+		if (tail != null) tail.SemantMe();
+		
+		return null;	
+	}
+
 	/********************************************************/
 	/* The printing message for a declaration list AST node */
 	/********************************************************/
@@ -35,7 +48,7 @@ public class AST_DEC_LIST extends AST_Node
 		/*************************************/
 		/* RECURSIVELY PRINT HEAD + TAIL ... */
 		/*************************************/
-		head.PrintMe();
+		if (head != null) head.PrintMe();
 		if (tail != null) tail.PrintMe();
 
 		/**********************************/
@@ -48,8 +61,7 @@ public class AST_DEC_LIST extends AST_Node
 		/****************************************/
 		/* PRINT Edges to AST GRAPHVIZ DOT file */
 		/****************************************/
-		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,head.SerialNumber);
+		if (head != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,head.SerialNumber);
 		if (tail != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,tail.SerialNumber);
 	}
 }
-

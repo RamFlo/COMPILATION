@@ -1,5 +1,9 @@
 package AST;
 
+import MyExceptions.SemanticRuntimeException;
+import SYMBOL_TABLE.SYMBOL_TABLE;
+import TYPES.TYPE;
+
 public class AST_TYPE_NAME extends AST_Node
 {
 	/****************/
@@ -39,5 +43,36 @@ public class AST_TYPE_NAME extends AST_Node
 			SerialNumber,
 			String.format("NAME:TYPE\n%s:%s",name,type));
 	}
+	
+	/*****************/
+	/* SEMANT ME ... */
+	/*****************/
+	public TYPE SemantMe()
+	{
+		/**************/
+		/* type check */
+		/**************/
+		TYPE t = SYMBOL_TABLE.getInstance().find(type);
+		if (t == null)
+			throw new SemanticRuntimeException(lineNum, colNum, String.format("non existing type (%s) for parameter (%s)\n", type,name));
+		/**************************************************************/
+		/* name check (check if name already exists in current scope) */
+		/**************************************************************/
+		else if (SYMBOL_TABLE.getInstance().findInCurrentScope(name) != null)
+			throw new SemanticRuntimeException(lineNum, colNum, String.format("parameter's (%s) name is already in use in current scope\n",name));
+		
+		else
+		{
+			/*******************************************************/
+			/* Enter var with name=name and type=t to symbol table */
+			/*******************************************************/
+			SYMBOL_TABLE.getInstance().enter(name,t);
+		}
+
+		/****************************/
+		/* return (existing) type t */
+		/****************************/
+		return t;
+	}	
 }
 

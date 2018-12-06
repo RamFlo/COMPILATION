@@ -1,11 +1,11 @@
 package AST;
 
-import AST.skeleton.AST_TYPE_NAME_LIST;
 import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.SYMBOL_TABLE;
 import TYPES.TYPE;
 import TYPES.TYPE_FUNCTION;
 import TYPES.TYPE_LIST;
+import TYPES.TYPE_VOID;
 
 public class AST_DEC_FUNC extends AST_DEC
 {
@@ -76,18 +76,32 @@ public class AST_DEC_FUNC extends AST_DEC
 		/*******************/
 		/* [0] return type */
 		/*******************/
-		returnType = SYMBOL_TABLE.getInstance().find(returnTypeName);
+		returnType = returnTypeName.equals("void") ? TYPE_VOID.getInstance() : SYMBOL_TABLE.getInstance().find(returnTypeName);
 		if (returnType == null)
 		{
 			//System.out.format(">> ERROR [%d:%d] non existing return type %s\n",6,6,returnType);	
 			throw new SemanticRuntimeException(lineNum, colNum, String.format("non existing return type %s\n", returnType));
 		}
-	
+		
+		/*********************/
+		/* [1] function name */
+		/*********************/
+		if (SYMBOL_TABLE.getInstance().find(name) != null)
+		{
+			throw new SemanticRuntimeException(lineNum, colNum, String.format("declared function's name (%s) is already in use\n", name));
+		}
+		
+		/***************************************************/
+		/* [2] Enter the Function Type to the Symbol Table */
+		/***************************************************/
+		//must enter function into symbol table BEFORE the function's scope for recursive functionality
+		SYMBOL_TABLE.getInstance().enter(name,new TYPE_FUNCTION(returnType,name,type_list));
+		
 		/****************************/
-		/* [1] Begin Function Scope */
+		/* [3] Begin Function Scope */
 		/****************************/
 		SYMBOL_TABLE.getInstance().beginScope("FUNCTION");
-
+		
 		/***************************/
 		/* [2] Semant Input Params */
 		/***************************/
@@ -96,14 +110,18 @@ public class AST_DEC_FUNC extends AST_DEC
 			t = SYMBOL_TABLE.getInstance().find(it.head.type);
 			if (t == null)
 			{
-				System.out.format(">> ERROR [%d:%d] non existing type %s\n",2,2,it.head.type);				
+				//System.out.format(">> ERROR [%d:%d] non existing type %s\n",2,2,);	
+				throw new SemanticRuntimeException(lineNum, colNum, String.format
+						("non existing type (%s) for parameter (%s) at function (%s) decleration\n", it.head.type,it.head.name,name));
 			}
 			else
 			{
+				//should only do after new scope!!!
 				type_list = new TYPE_LIST(t,type_list);
 				SYMBOL_TABLE.getInstance().enter(it.head.name,t);
 			}
 		}
+
 
 		/*******************/
 		/* [3] Semant Body */
@@ -114,11 +132,6 @@ public class AST_DEC_FUNC extends AST_DEC
 		/* [4] End Scope */
 		/*****************/
 		SYMBOL_TABLE.getInstance().endScope();
-
-		/***************************************************/
-		/* [5] Enter the Function Type to the Symbol Table */
-		/***************************************************/
-		SYMBOL_TABLE.getInstance().enter(name,new TYPE_FUNCTION(returnType,name,type_list));
 
 		/*********************************************************/
 		/* [6] Return value is irrelevant for class declarations */

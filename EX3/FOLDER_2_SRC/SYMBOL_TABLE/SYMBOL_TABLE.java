@@ -7,6 +7,10 @@ package SYMBOL_TABLE;
 /* GENERAL IMPORTS */
 /*******************/
 import java.io.PrintWriter;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
 /*******************/
 /* PROJECT IMPORTS */
@@ -24,14 +28,14 @@ public class SYMBOL_TABLE
 	/**********************************************/
 	public Map<String, List<SYMBOL_TABLE_ENTRY>> symbol_table_hash = new HashMap<String, List<SYMBOL_TABLE_ENTRY>>();
 	private SYMBOL_TABLE_ENTRY top;
-	private int top_index = 0;
-
+	private int top_index = 0, cur_scope_level = 0;
+	
 	/****************************************************************************/
 	/* Enter a variable, function, class type or array type to the symbol table */
 	/****************************************************************************/
 	public void enter(String name,TYPE t)
 	{
-		SYMBOL_TABLE_ENTRY new_entry = new SYMBOL_TABLE_ENTRY(name,t,top,top_index++);
+		SYMBOL_TABLE_ENTRY new_entry = new SYMBOL_TABLE_ENTRY(name,t,top,top_index++,cur_scope_level);
 		top = new_entry;
 		
 		if(!symbol_table_hash.containsKey(name)){
@@ -48,12 +52,26 @@ public class SYMBOL_TABLE
 	/***********************************************/
 	public TYPE find(String name)
 	{
-		if (symbol_table_hash.containsKey(name)) return symbol_table_hash.get(name).getLast().type;
+		if (symbol_table_hash.containsKey(name)) return ((LinkedList<SYMBOL_TABLE_ENTRY>)(symbol_table_hash.get(name))).getLast().type;
+		return null;
+	}
+	
+	/***********************************************/
+	/* Find current scope element with name 'name' */
+	/***********************************************/
+	public TYPE findInCurrentScope(String name)
+	{
+		if (symbol_table_hash.containsKey(name))
+		{ 
+			SYMBOL_TABLE_ENTRY temp = ((LinkedList<SYMBOL_TABLE_ENTRY>)(symbol_table_hash.get(name))).getLast();
+			if (temp.scope_level == cur_scope_level)
+				return temp.type;
+		}
 		return null;
 	}
 
 	/***************************************************************************/
-	/* begine scope = Enter the <SCOPE-BOUNDARY> element to the data structure */
+	/* begin scope = Enter the <SCOPE-BOUNDARY> element to the data structure */
 	/***************************************************************************/
 	public void beginScope(String scope_name)
 	{
@@ -66,6 +84,11 @@ public class SYMBOL_TABLE
 		enter(
 			"SCOPE-BOUNDARY",
 			new TYPE_FOR_SCOPE_BOUNDARIES(scope_name));
+		
+		/*******************************************************/
+		/* Increase scope level for future SYMBOL_TABLE_ENTRYs */
+		/*******************************************************/
+		cur_scope_level++;
 
 		/*********************************************/
 		/* Print the symbol table after every change */
@@ -89,14 +112,19 @@ public class SYMBOL_TABLE
 			temp = top;
 			top_index = top_index-1;
 			top = top.prevtop;
-			symbol_table_hash.get(temp.name).removeLast();
+			((LinkedList<SYMBOL_TABLE_ENTRY>)(symbol_table_hash.get(temp.name))).removeLast();
 		}
 		/**************************************/
 		/* Pop the SCOPE-BOUNDARY sign itself */		
 		/**************************************/
-		symbol_table_hash.get(top.name).removeLast();		
+		((LinkedList<SYMBOL_TABLE_ENTRY>)(symbol_table_hash.get(top.name))).removeLast();		
 		top_index = top_index-1;
 		top = top.prevtop;
+		
+		/*******************************************************/
+		/* Decrease scope level for future SYMBOL_TABLE_ENTRYs */
+		/*******************************************************/
+		cur_scope_level--;
 		
 		/*********************************************/
 		/* Print the symbol table after every change */		

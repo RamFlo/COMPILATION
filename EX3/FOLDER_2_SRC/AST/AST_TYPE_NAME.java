@@ -70,6 +70,8 @@ public class AST_TYPE_NAME extends AST_Node
 		if ((t = SYMBOL_TABLE.getInstance().findInCurrentScope(name)) != null)
 			throw new SemanticRuntimeException(lineNum, colNum, String.format("parameter's (%s) name is already used in function's scope\n",name));
 		
+		t = null;
+		
 		if ((t = SYMBOL_TABLE.getInstance().find(name)) != null)
 		{
 			if (t instanceof TYPE_FUNCTION)

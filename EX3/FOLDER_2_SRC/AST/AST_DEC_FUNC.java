@@ -85,30 +85,14 @@ public class AST_DEC_FUNC extends AST_DEC
 		/*********************/
 		/* [1] function name */
 		/*********************/
-		//no need to use findInCurrentScope, as (global) functions can only be defined in the global scope
 		if (SYMBOL_TABLE.getInstance().find(name) != null)
 		{
 			throw new SemanticRuntimeException(lineNum, colNum, String.format("declared function's name (%s) is already in use\n", name));
 		}
 		
-		/***************************************************/
-		/* [2] Enter the Function Type to the Symbol Table */
-		/***************************************************/
-		//must enter function into symbol table BEFORE beginning the function's scope in order to allow recursive calls
-		SYMBOL_TABLE.getInstance().enter(name,new TYPE_FUNCTION(returnType,name,type_list)); //type_list is null!!!
-		
-		/****************************/
-		/* [3] Begin Function Scope */
-		/****************************/
-		SYMBOL_TABLE.getInstance().beginScope("FUNCTION");
-		
-		/***************************/
-		/* [2] Semant Input Params */
-		/***************************/
-		if (params != null)
-		{
-		}
-		
+		/********************************************************/
+		/* [2] Semant type of input params & populate type_list */
+		/********************************************************/
 		for (AST_TYPE_NAME_LIST it = params; it  != null; it = it.tail)
 		{
 			t = SYMBOL_TABLE.getInstance().find(it.head.type);
@@ -120,23 +104,42 @@ public class AST_DEC_FUNC extends AST_DEC
 			else
 			{
 				type_list = new TYPE_LIST(t,type_list);
-				SYMBOL_TABLE.getInstance().enter(it.head.name,t);
+				//SYMBOL_TABLE.getInstance().enter(it.head.name,t);
 			}
 		}
-
+		
+		/***************************************************/
+		/* [3] Enter the Function Type to the Symbol Table */
+		/***************************************************/
+		//must enter function into symbol table BEFORE beginning the function's scope in order to allow recursive calls
+		//(function belongs to global scope)
+		SYMBOL_TABLE.getInstance().enter(name,new TYPE_FUNCTION(returnType,name,type_list));
+		
+		/****************************/
+		/* [4] Begin Function Scope */
+		/****************************/
+		SYMBOL_TABLE.getInstance().beginScope("FUNCTION");
+		
+		/****************************************/
+		/* [5] Semant Input Params (names only) */
+		/****************************************/
+		if (params != null)
+		{
+			params.SemantMe();
+		}
 
 		/*******************/
-		/* [3] Semant Body */
+		/* [6] Semant Body */
 		/*******************/
 		body.SemantMe();
 
 		/*****************/
-		/* [4] End Scope */
+		/* [7] End Scope */
 		/*****************/
 		SYMBOL_TABLE.getInstance().endScope();
 
 		/*********************************************************/
-		/* [6] Return value is irrelevant for class declarations */
+		/* [8] Return value is irrelevant for class declarations */
 		/*********************************************************/
 		return null;		
 	}

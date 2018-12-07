@@ -3,6 +3,9 @@ package AST;
 import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.SYMBOL_TABLE;
 import TYPES.TYPE;
+import TYPES.TYPE_ARRAY;
+import TYPES.TYPE_CLASS;
+import TYPES.TYPE_FUNCTION;
 
 public class AST_TYPE_NAME extends AST_Node
 {
@@ -49,18 +52,30 @@ public class AST_TYPE_NAME extends AST_Node
 	/*****************/
 	public TYPE SemantMe()
 	{
-		/**************/
-		/* type check */
-		/**************/
-		TYPE t = SYMBOL_TABLE.getInstance().find(type);
-		if (t == null)
-			throw new SemanticRuntimeException(lineNum, colNum, String.format("non existing type (%s) for parameter (%s)\n", type,name));
-		/**************************************************************/
-		/* name check (check if name already exists in current scope) */
-		/**************************************************************/
-		else if (SYMBOL_TABLE.getInstance().findInCurrentScope(name) != null)
-			throw new SemanticRuntimeException(lineNum, colNum, String.format("parameter's (%s) name is already in use in current scope\n",name));
+		TYPE t = null;
 		
+		/**************/
+		/* type check */ //Done in AST_DEC_FUNC
+		/**************/
+//		TYPE t = SYMBOL_TABLE.getInstance().find(type);
+//		if (t == null)
+//			throw new SemanticRuntimeException(lineNum, colNum, String.format("non existing type (%s) for parameter (%s)\n", type,name));
+		
+		/**************/
+		/* name check */
+		/**************/
+		if (name.equals("int") || name.equals("string"))
+			throw new SemanticRuntimeException(lineNum, colNum, String.format("parameter's (%s) name is a generic type's name\n",name));
+		
+		if ((t = SYMBOL_TABLE.getInstance().find(name)) != null)
+		{
+			if (t instanceof TYPE_FUNCTION)
+				throw new SemanticRuntimeException(lineNum, colNum, String.format("parameter's (%s) name is already used as a global function's name\n",name));
+			if (t instanceof TYPE_CLASS)
+				throw new SemanticRuntimeException(lineNum, colNum, String.format("parameter's (%s) name is already used as a name of a class\n",name));
+			if (t instanceof TYPE_ARRAY)
+				throw new SemanticRuntimeException(lineNum, colNum, String.format("parameter's (%s) name is already used as a name of an array\n",name));
+		}
 		else
 		{
 			/*******************************************************/
@@ -72,7 +87,7 @@ public class AST_TYPE_NAME extends AST_Node
 		/****************************/
 		/* return (existing) type t */
 		/****************************/
-		return t;
+		return t; //not used, since type_list is populated in AST_DEC_FUNC before semanting the input parameters
 	}	
 }
 

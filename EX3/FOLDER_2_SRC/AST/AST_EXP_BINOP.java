@@ -110,6 +110,5 @@ public class AST_EXP_BINOP extends AST_EXP
 			return TYPE_STRING.getInstance();
 		}
 		throw new SemanticRuntimeException(lineNum, colNum, "Illegal binary operation\n");
-		return null;
 	}
 }

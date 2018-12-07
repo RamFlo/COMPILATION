@@ -69,7 +69,7 @@ public class AST_DEC_FUNC extends AST_DEC
 	
 	public TYPE SemantMe()
 	{
-		TYPE t;
+		TYPE t = null;
 		TYPE returnType = null;
 		TYPE_LIST type_list = null;
 

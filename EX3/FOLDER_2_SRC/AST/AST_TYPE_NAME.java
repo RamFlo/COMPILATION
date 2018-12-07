@@ -67,6 +67,9 @@ public class AST_TYPE_NAME extends AST_Node
 		if (name.equals("int") || name.equals("string"))
 			throw new SemanticRuntimeException(lineNum, colNum, String.format("parameter's (%s) name is a generic type's name\n",name));
 		
+		if ((t = SYMBOL_TABLE.getInstance().findInCurrentScope(name)) != null)
+			throw new SemanticRuntimeException(lineNum, colNum, String.format("parameter's (%s) name is already used in function's scope\n",name));
+		
 		if ((t = SYMBOL_TABLE.getInstance().find(name)) != null)
 		{
 			if (t instanceof TYPE_FUNCTION)
@@ -76,13 +79,11 @@ public class AST_TYPE_NAME extends AST_Node
 			if (t instanceof TYPE_ARRAY)
 				throw new SemanticRuntimeException(lineNum, colNum, String.format("parameter's (%s) name is already used as a name of an array\n",name));
 		}
-		else
-		{
-			/*******************************************************/
-			/* Enter var with name=name and type=t to symbol table */
-			/*******************************************************/
-			SYMBOL_TABLE.getInstance().enter(name,t);
-		}
+		
+		/*******************************************************/
+		/* Enter var with name=name and type=t to symbol table */
+		/*******************************************************/
+		SYMBOL_TABLE.getInstance().enter(name,t);
 
 		/****************************/
 		/* return (existing) type t */

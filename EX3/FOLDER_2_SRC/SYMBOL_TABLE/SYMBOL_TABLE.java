@@ -59,16 +59,16 @@ public class SYMBOL_TABLE
 	/***********************************************/
 	/* Find current scope element with name 'name' */
 	/***********************************************/
-//	public TYPE findInCurrentScope(String name)
-//	{
-//		if (symbol_table_hash.containsKey(name))
-//		{ 
-//			SYMBOL_TABLE_ENTRY temp = ((LinkedList<SYMBOL_TABLE_ENTRY>)(symbol_table_hash.get(name))).getLast();
-//			if (temp.scope_level == cur_scope_level)
-//				return temp.type;
-//		}
-//		return null;
-//	}
+	public TYPE findInCurrentScope(String name)
+	{
+		if (symbol_table_hash.containsKey(name))
+		{ 
+			SYMBOL_TABLE_ENTRY temp = ((LinkedList<SYMBOL_TABLE_ENTRY>)(symbol_table_hash.get(name))).getLast();
+			if (temp.scope_level == cur_scope_level)
+				return temp.type;
+		}
+		return null;
+	}
 
 	/***************************************************************************/
 	/* begin scope = Enter the <SCOPE-BOUNDARY> element to the data structure */

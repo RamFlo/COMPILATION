@@ -4,7 +4,9 @@ import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.SYMBOL_TABLE;
 import TYPES.TYPE;
 import TYPES.TYPE_FUNCTION;
+import TYPES.TYPE_INT;
 import TYPES.TYPE_LIST;
+import TYPES.TYPE_STRING;
 import TYPES.TYPE_VOID;
 
 public class AST_DEC_FUNC extends AST_DEC
@@ -76,11 +78,26 @@ public class AST_DEC_FUNC extends AST_DEC
 		/*******************/
 		/* [0] return type */
 		/*******************/
-		returnType = returnTypeName.equals("void") ? TYPE_VOID.getInstance() : SYMBOL_TABLE.getInstance().find(returnTypeName);
+		returnType = null;
+		
+		if (returnTypeName.equals("void"))
+			returnType = TYPE_VOID.getInstance();
+		else if (returnTypeName.equals("string"))
+			returnType = TYPE_STRING.getInstance();
+		else if (returnTypeName.equals("int"))
+			returnType = TYPE_INT.getInstance();
+		else
+			returnType = SYMBOL_TABLE.getInstance().find(returnTypeName);
+		
 		if (returnType == null)
 		{
 			throw new SemanticRuntimeException(lineNum, colNum, String.format("non existing return type (%s)\n", returnType));
 		}
+		
+		if (returnType instanceof TYPE_FUNCTION)
+			throw new SemanticRuntimeException(lineNum, colNum, String.format("function (%s) return type cannot be previously declared function (%s)\n",name,returnTypeName));
+		
+		//should function be able to return an array type?
 		
 		/*********************/
 		/* [1] function name */
@@ -95,17 +112,29 @@ public class AST_DEC_FUNC extends AST_DEC
 		/********************************************************/
 		for (AST_TYPE_NAME_LIST it = params; it  != null; it = it.tail)
 		{
-			t = SYMBOL_TABLE.getInstance().find(it.head.type);
+			String curParamType = it.head.type;
+			if (curParamType.equals("string"))
+				t = TYPE_STRING.getInstance();
+			else if (curParamType.equals("int"))
+				t = TYPE_INT.getInstance();
+			else
+				t = SYMBOL_TABLE.getInstance().find(curParamType);
+			
+			
+			
 			if (t == null)
 			{
 				throw new SemanticRuntimeException(lineNum, colNum, String.format
 						("non existing type (%s) for parameter (%s) at function (%s) decleration\n", it.head.type,it.head.name,name));
 			}
-			else
+			
+			if (t instanceof TYPE_FUNCTION)
 			{
-				type_list = new TYPE_LIST(t,type_list);
-				//SYMBOL_TABLE.getInstance().enter(it.head.name,t);
+				throw new SemanticRuntimeException(lineNum, colNum, String.format
+						("function (%s) argument (%s)'s type cannot be previously declared function (%s)\n",name,it.head.name,curParamType));
 			}
+			
+			type_list = new TYPE_LIST(t,type_list);
 		}
 		
 		/***************************************************/
@@ -139,7 +168,7 @@ public class AST_DEC_FUNC extends AST_DEC
 		SYMBOL_TABLE.getInstance().endScope();
 
 		/*********************************************************/
-		/* [8] Return value is irrelevant for class declarations */
+		/* [8] Return value is irrelevant for function declarations */
 		/*********************************************************/
 		return null;		
 	}

@@ -74,7 +74,7 @@ public class AST_STMT_ASSIGN extends AST_STMT
 		if (exp != null) t2 = exp.SemantMe();
 		else t2 = newExp.SemantMe();
 		
-		if (t1 != t2)
+		if (!(t2 instanceof t1))
 		{
 			throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for var := exp/newExp\n");
 		}

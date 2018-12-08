@@ -70,7 +70,7 @@ public class AST_DEC_CLASS extends AST_DEC
 		TYPE_CLASS t = null;
 		
 		/*There is no extends*/
-		if (supername == null) t = new TYPE_CLASS(null,name,data_members.SemantMe());
+		if (supername == null) t = new TYPE_CLASS(null,name,class_fields.SemantMe());
 		
 		else{
 			/*Searching for supername in SYMBOL_TABLE*/
@@ -86,7 +86,7 @@ public class AST_DEC_CLASS extends AST_DEC
 						("class %s extends %s of type %s\n", name, supername, superType.getClass()));	
 			
 			/*Supername is legal*/
-			t = new TYPE_CLASS(TYPE_CLASS,name,data_members.SemantMe());
+			t = new TYPE_CLASS(TYPE_CLASS,name,class_fields.SemantMe());
 		}
 
 		/*****************/

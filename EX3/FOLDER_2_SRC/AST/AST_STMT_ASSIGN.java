@@ -73,25 +73,38 @@ public class AST_STMT_ASSIGN extends AST_STMT
 		Type t2 = null;
 		
 		t1 = var.SemantMe();
-		if (exp != null) t2 = exp.SemantMe();
-		else t2 = newExp.SemantMe();
 		
-		if (t1.getClass() != t2.getClass()){
-			if (t2 == TYPE_NIL.getInstance()){
-				if (t1 == TYPE_INT.getInstance() || t1 == TYPE_STRING.getInstsance())
-					throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for (type=INT/STRING)var := (type=NIL)exp/newExp\n");
+		if (exp != null){
+			t2 = exp.SemantMe();
+			
+			if (t1.getClass() == t2.getClass()){
+				if (t1.getClass() == TYPE_CLASS && !isExtends((TYPE_CLASS)t1, (TYPE_CLASS)t2))
+					throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for (type=class)var := (type=class)exp (not equal/extends)\n");
+				
+				if (t1.getClass() == TYPE_ARRAY)
+					throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for (type=array)var := (type=array)exp (assign without NEW)\n");					
 			}
 			
-			else if (t1.getClass() ){
-				
+			else{ /*t1.getClass() != t2.getClass()*/
+				if (t2 == TYPE_NIL.getInstance() &&
+						(t1.getClass() != TYPE_CLASS || t1.getClass() != TYPE_ARRAY))
+					throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for (type=int/string)var := (type=nil)exp\n");
 			}
 		}
 		
-		else{
-			if (t1.getClass() == TYPE_CLASS){ /*t1==t2==type_class*/
-				if (!isExtends((TYPE_CLASS)t1, (TYPE_CLASS)t2))
-					throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for (type=class)var := (type=class)exp/newExp\n");
-			}	
+		else { /*newExp != null*/
+			t2 = newExp.SemantMe();
+			
+			if (t1.getClass() == t2.getClass()){
+				if (t1.getClass() == TYPE_CLASS && !isExtends((TYPE_CLASS)t1, (TYPE_CLASS)t2))
+					throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for (type=class)var := NEW (type=class)newExp (not equal/extends)\n");
+				
+				else{/*t1.getclass()==t2.getclass()==TYPE_ARRAY*/
+					if ((TYPE_ARRAY)t1.arrayType == (TYPE_ARRAY)t2.arrayType)
+					/*לבדוק אם הם מאותו הסוג*/
+				}
+			}
+			else throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for var := NEW newExp\n");
 		}
 		
 		return null;

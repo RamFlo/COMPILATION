@@ -91,7 +91,7 @@ public class AST_NEWEXP extends AST_Node{
 		//when encountring TYPE_ARRAY in AST_STMT_ASSIGN, should check if both sides are TYPE_ARRAY (or right side = nil) and also if both sides have the same type
 		if (e.SemantMe() != TYPE_INT.getInstance())
 			throw new SemanticRuntimeException(lineNum, colNum, "expression (exp) of 'NEW <TYPE>[<exp>]' is not an integral type\n");
-		return new TYPE_ARRAY(null,t); //anonymous array
+		return new TYPE_ARRAY(null,t,type); //anonymous array
 	}
 	
 }

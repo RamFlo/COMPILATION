@@ -73,7 +73,7 @@ public class AST_DEC_ARRAY extends AST_DEC
 		/***************************************************/
 		/* [2] Enter the array type to the Symbol Table */
 		/***************************************************/
-		SYMBOL_TABLE.getInstance().enterDataType(name,new TYPE_ARRAY(name,t));
+		SYMBOL_TABLE.getInstance().enterDataType(name,new TYPE_ARRAY(name,t,type));
 		
 		/*********************************************************/
 		/* [3] Return value is irrelevant for array declarations */

@@ -12,6 +12,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import SYMBOL_TABLE.ENTRY_CATEGORY.Category;
 /*******************/
 /* PROJECT IMPORTS */
 /*******************/
@@ -33,9 +34,9 @@ public class SYMBOL_TABLE
 	/****************************************************************************/
 	/* Enter a variable, function, class type or array type to the symbol table */
 	/****************************************************************************/
-	public void enter(String name,TYPE t)
+	public void enter(String name,TYPE t, Category entryCat)
 	{
-		SYMBOL_TABLE_ENTRY new_entry = new SYMBOL_TABLE_ENTRY(name,t,top,top_index++,cur_scope_level);
+		SYMBOL_TABLE_ENTRY new_entry = new SYMBOL_TABLE_ENTRY(name,t,entryCat,top,top_index++,cur_scope_level);
 		top = new_entry;
 		
 		if(!symbol_table_hash.containsKey(name)){
@@ -46,6 +47,16 @@ public class SYMBOL_TABLE
 		
 		//PrintMe();
 	}
+	
+	public void enterObject(String name,TYPE t)
+	{
+		this.enter(name, t, Category.object);
+	}
+	
+	public void enterDataType(String name,TYPE t)
+	{
+		this.enter(name, t, Category.dataType);
+	}
 
 	/***********************************************/
 	/* Find the inner-most scope element with name */
@@ -53,6 +64,17 @@ public class SYMBOL_TABLE
 	public TYPE find(String name)
 	{
 		if (symbol_table_hash.containsKey(name)) return ((LinkedList<SYMBOL_TABLE_ENTRY>)(symbol_table_hash.get(name))).getLast().type;
+		return null;
+	}
+	
+	public TYPE findDataType(String name)
+	{
+		SYMBOL_TABLE_ENTRY searchRes = null;
+		if (symbol_table_hash.containsKey(name)) {
+			searchRes = ((LinkedList<SYMBOL_TABLE_ENTRY>)(symbol_table_hash.get(name))).getLast();
+			if (searchRes.entryCat == Category.dataType)
+				return searchRes.type;
+		}
 		return null;
 	}
 	

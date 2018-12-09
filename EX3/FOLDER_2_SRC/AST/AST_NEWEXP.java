@@ -43,7 +43,7 @@ public class AST_NEWEXP extends AST_Node{
 	public void PrintMe()
 	{
 		/**************************************/
-		/* AST NODE TYPE = AST NEWEXP KAKI */
+		/* AST NODE TYPE = AST NEWEXP */
 		/**************************************/
 		System.out.print("AST NODE NEWEXP\n");
 
@@ -70,7 +70,7 @@ public class AST_NEWEXP extends AST_Node{
 	
 	public TYPE SemantMe()
 	{
-		TYPE t = SYMBOL_TABLE.getInstance().find(type);
+		TYPE t = SYMBOL_TABLE.getInstance().findDataType(type);
 		if (t == null)
 			throw new SemanticRuntimeException(lineNum, colNum, String.format("non existing type (%s) for (NEWEXP)\n", type));
 		/*******************************************************/
@@ -80,7 +80,7 @@ public class AST_NEWEXP extends AST_Node{
 		if (e == null)
 		{
 			if (type.equals("int") || type.equals("string"))
-				throw new SemanticRuntimeException(lineNum, colNum, String.format("an attempt to use 'NEW' with primitive type (%s)\n", type));
+				throw new SemanticRuntimeException(lineNum, colNum, String.format("an attempt to use 'NEW <CLASSNAME>' with primitive type (%s)\n", type));
 			
 			return t;
 		}
@@ -90,8 +90,8 @@ public class AST_NEWEXP extends AST_Node{
 		//allow all existing types
 		//when encountring TYPE_ARRAY in AST_STMT_ASSIGN, should check if both sides are TYPE_ARRAY (or right side = nil) and also if both sides have the same type
 		if (e.SemantMe() != TYPE_INT.getInstance())
-			throw new SemanticRuntimeException(lineNum, colNum, "expression (exp) of 'NEW <TYPE>[<exp>]' is not an integral\n");
-		return new TYPE_ARRAY(type,t);
+			throw new SemanticRuntimeException(lineNum, colNum, "expression (exp) of 'NEW <TYPE>[<exp>]' is not an integral type\n");
+		return new TYPE_ARRAY(null,t); //anonymous array
 	}
 	
 }

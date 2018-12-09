@@ -67,15 +67,25 @@ public class SYMBOL_TABLE
 		return null;
 	}
 	
-	public TYPE findDataType(String name)
+	public TYPE findByCategory(String name,Category entryCat)
 	{
 		SYMBOL_TABLE_ENTRY searchRes = null;
 		if (symbol_table_hash.containsKey(name)) {
 			searchRes = ((LinkedList<SYMBOL_TABLE_ENTRY>)(symbol_table_hash.get(name))).getLast();
-			if (searchRes.entryCat == Category.dataType)
+			if (searchRes.entryCat == entryCat)
 				return searchRes.type;
 		}
 		return null;
+	}
+	
+	public TYPE findDataType(String name)
+	{
+		return findByCategory(name, Category.dataType);
+	}
+	
+	public TYPE findObject(String name)
+	{
+		return findByCategory(name, Category.object);
 	}
 	
 	/***********************************************/

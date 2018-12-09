@@ -57,35 +57,23 @@ public class AST_TYPE_NAME extends AST_Node
 		/**************/
 		/* type check */ //Done in AST_DEC_FUNC
 		/**************/
-//		TYPE t = SYMBOL_TABLE.getInstance().find(type);
+//		TYPE t = SYMBOL_TABLE.getInstance().findDataType(type);
 //		if (t == null)
 //			throw new SemanticRuntimeException(lineNum, colNum, String.format("non existing type (%s) for parameter (%s)\n", type,name));
 		
 		/**************/
 		/* name check */
 		/**************/
-		if (name.equals("int") || name.equals("string"))
-			throw new SemanticRuntimeException(lineNum, colNum, String.format("parameter's (%s) name is a generic type's name\n",name));
+		if ( SYMBOL_TABLE.getInstance().findDataType(name) != null)
+			throw new SemanticRuntimeException(lineNum, colNum, String.format("parameter's (%s) name is an existing data type\n",name));
 		
 		if ((t = SYMBOL_TABLE.getInstance().findInCurrentScope(name)) != null)
 			throw new SemanticRuntimeException(lineNum, colNum, String.format("parameter's (%s) name is already used in function's scope\n",name));
 		
-		t = null;
-		
-		if ((t = SYMBOL_TABLE.getInstance().find(name)) != null)
-		{
-			if (t instanceof TYPE_FUNCTION)
-				throw new SemanticRuntimeException(lineNum, colNum, String.format("parameter's (%s) name is already used as a global function's name\n",name));
-			if (t instanceof TYPE_CLASS)
-				throw new SemanticRuntimeException(lineNum, colNum, String.format("parameter's (%s) name is already used as a name of a class\n",name));
-			if (t instanceof TYPE_ARRAY)
-				throw new SemanticRuntimeException(lineNum, colNum, String.format("parameter's (%s) name is already used as a name of an array\n",name));
-		}
-		
 		/*******************************************************/
 		/* Enter var with name=name and type=t to symbol table */
 		/*******************************************************/
-		SYMBOL_TABLE.getInstance().enter(name,t);
+		SYMBOL_TABLE.getInstance().enterObject(name,t);
 
 		/****************************/
 		/* return (existing) type t */

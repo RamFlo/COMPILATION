@@ -3,6 +3,7 @@ package AST;
 import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.SYMBOL_TABLE;
 import TYPES.TYPE;
+import TYPES.TYPE_FUNCTION;
 
 public class AST_VAR_SIMPLE extends AST_VAR
 {
@@ -52,8 +53,8 @@ public class AST_VAR_SIMPLE extends AST_VAR
 	
 	public TYPE SemantMe()
 	{
-		TYPE t = SYMBOL_TABLE.getInstance().find(name);
-		if (t == null)
+		TYPE t = SYMBOL_TABLE.getInstance().findObject(name);
+		if (t == null || t instanceof TYPE_FUNCTION)
 			throw new SemanticRuntimeException(lineNum, colNum, String.format("(%s) cannot be resolved to a variable\n",name));
 		return t;
 	}

@@ -78,25 +78,11 @@ public class AST_DEC_FUNC extends AST_DEC
 		/*******************/
 		/* [0] return type */
 		/*******************/
-		returnType = null;
-		
-		if (returnTypeName.equals("void"))
-			returnType = TYPE_VOID.getInstance();
-		else if (returnTypeName.equals("string"))
-			returnType = TYPE_STRING.getInstance();
-		else if (returnTypeName.equals("int"))
-			returnType = TYPE_INT.getInstance();
-		else
-			returnType = SYMBOL_TABLE.getInstance().find(returnTypeName);
-		
+		returnType = returnTypeName.equals("void") ? TYPE_VOID.getInstance() : SYMBOL_TABLE.getInstance().findDataType(returnTypeName);
 		if (returnType == null)
 		{
 			throw new SemanticRuntimeException(lineNum, colNum, String.format("non existing return type (%s)\n", returnType));
 		}
-		
-		if (returnType instanceof TYPE_FUNCTION)
-			throw new SemanticRuntimeException(lineNum, colNum, String.format("function (%s) return type cannot be previously declared function (%s)\n",name,returnTypeName));
-		
 		//should function be able to return an array type?
 		
 		/*********************/
@@ -113,26 +99,12 @@ public class AST_DEC_FUNC extends AST_DEC
 		for (AST_TYPE_NAME_LIST it = params; it  != null; it = it.tail)
 		{
 			String curParamType = it.head.type;
-			if (curParamType.equals("string"))
-				t = TYPE_STRING.getInstance();
-			else if (curParamType.equals("int"))
-				t = TYPE_INT.getInstance();
-			else
-				t = SYMBOL_TABLE.getInstance().find(curParamType);
 			
-			
+			t = SYMBOL_TABLE.getInstance().findDataType(curParamType);
 			
 			if (t == null)
-			{
 				throw new SemanticRuntimeException(lineNum, colNum, String.format
 						("non existing type (%s) for parameter (%s) at function (%s) decleration\n", it.head.type,it.head.name,name));
-			}
-			
-			if (t instanceof TYPE_FUNCTION)
-			{
-				throw new SemanticRuntimeException(lineNum, colNum, String.format
-						("function (%s) argument (%s)'s type cannot be previously declared function (%s)\n",name,it.head.name,curParamType));
-			}
 			
 			type_list = new TYPE_LIST(t,type_list);
 		}
@@ -142,7 +114,7 @@ public class AST_DEC_FUNC extends AST_DEC
 		/***************************************************/
 		//must enter function into symbol table BEFORE beginning the function's scope in order to allow recursive calls
 		//(function belongs to global scope)
-		SYMBOL_TABLE.getInstance().enter(name,new TYPE_FUNCTION(returnType,name,type_list));
+		SYMBOL_TABLE.getInstance().enterObject(name,new TYPE_FUNCTION(returnType,name,type_list));
 		
 		/****************************/
 		/* [4] Begin Function Scope */
@@ -152,10 +124,7 @@ public class AST_DEC_FUNC extends AST_DEC
 		/****************************************/
 		/* [5] Semant Input Params (names only) */
 		/****************************************/
-		if (params != null)
-		{
-			params.SemantMe();
-		}
+		if (params != null) params.SemantMe();
 
 		/*******************/
 		/* [6] Semant Body */

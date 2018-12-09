@@ -56,24 +56,11 @@ public class AST_DEC_ARRAY extends AST_DEC
 		/********************************************************/
 		/* [0] Semant type array decleration */
 		/********************************************************/
-		if (type.equals("string"))
-			t = TYPE_STRING.getInstance();
-		else if (type.equals("int"))
-			t = TYPE_INT.getInstance();
-		else
-			t = SYMBOL_TABLE.getInstance().find(type);
-
+		t = SYMBOL_TABLE.getInstance().findDataType(type);
+		
 		if (t == null)
-		{
 			throw new SemanticRuntimeException(lineNum, colNum, String.format
 					("non existing type (%s) for array (%s)\n", type,name));
-		}
-		
-		if (t instanceof TYPE_FUNCTION)
-		{
-			throw new SemanticRuntimeException(lineNum, colNum, String.format
-					("function (%s) cannot be used as a type for an array \n",type));
-		}
 		
 		/*********************/
 		/* [1] array name */
@@ -86,7 +73,7 @@ public class AST_DEC_ARRAY extends AST_DEC
 		/***************************************************/
 		/* [2] Enter the array type to the Symbol Table */
 		/***************************************************/
-		SYMBOL_TABLE.getInstance().enter(name,new TYPE_ARRAY(name,t));
+		SYMBOL_TABLE.getInstance().enterDataType(name,new TYPE_ARRAY(name,t));
 		
 		/*********************************************************/
 		/* [3] Return value is irrelevant for array declarations */

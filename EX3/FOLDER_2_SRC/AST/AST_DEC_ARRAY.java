@@ -75,13 +75,21 @@ public class AST_DEC_ARRAY extends AST_DEC
 					("function (%s) cannot be used as a type for an array \n",type));
 		}
 		
+		/*********************/
+		/* [1] array name */
+		/*********************/
+		if (SYMBOL_TABLE.getInstance().find(name) != null)
+		{
+			throw new SemanticRuntimeException(lineNum, colNum, String.format("declared array type name (%s) is already in use\n", name));
+		}
+		
 		/***************************************************/
-		/* [1] Enter the array type to the Symbol Table */
+		/* [2] Enter the array type to the Symbol Table */
 		/***************************************************/
 		SYMBOL_TABLE.getInstance().enter(name,new TYPE_ARRAY(name,t));
 		
 		/*********************************************************/
-		/* [2] Return value is irrelevant for array declarations */
+		/* [3] Return value is irrelevant for array declarations */
 		/*********************************************************/
 		return null;
 	}

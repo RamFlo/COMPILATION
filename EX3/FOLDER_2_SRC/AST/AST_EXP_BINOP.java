@@ -164,7 +164,7 @@ public class AST_EXP_BINOP extends AST_EXP
 				if (ExtendingOrSameClass((TYPE_CLASS)t1,(TYPE_CLASS)t2) || ExtendingOrSameClass((TYPE_CLASS)t2,(TYPE_CLASS)t1))
 					return TYPE_INT.getInstance();;
 					
-				throw new SemanticRuntimeException(lineNum, colNum, "equality testing cannot be done between two classes without inheritance realtion\n");
+				throw new SemanticRuntimeException(lineNum, colNum, "equality testing cannot be done between two classes that have no inheritance realtion\n");
 			}
 			
 		}

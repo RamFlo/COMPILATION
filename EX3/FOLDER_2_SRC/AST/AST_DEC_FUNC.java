@@ -69,7 +69,8 @@ public class AST_DEC_FUNC extends AST_DEC
 		if (body   != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,body.SerialNumber);		
 	}
 	
-	public TYPE SemantMe()
+	
+	public TYPE SemantFuncSignatureAndParamTypes()
 	{
 		TYPE t = null;
 		TYPE returnType = null;
@@ -113,9 +114,14 @@ public class AST_DEC_FUNC extends AST_DEC
 		/* [3] Enter the Function Type to the Symbol Table */
 		/***************************************************/
 		//must enter function into symbol table BEFORE beginning the function's scope in order to allow recursive calls
-		//(function belongs to global scope)
-		SYMBOL_TABLE.getInstance().enterObject(name,new TYPE_FUNCTION(returnType,name,type_list));
+		TYPE_FUNCTION curFunc = new TYPE_FUNCTION(returnType,name,type_list);
+		SYMBOL_TABLE.getInstance().enterObject(name,curFunc);
 		
+		return curFunc;
+	}
+	
+	public void SemantFuncParamNamesAndBody()
+	{
 		/****************************/
 		/* [4] Begin Function Scope */
 		/****************************/
@@ -135,6 +141,13 @@ public class AST_DEC_FUNC extends AST_DEC
 		/* [7] End Scope */
 		/*****************/
 		SYMBOL_TABLE.getInstance().endScope();
+	}
+	
+	public TYPE SemantMe() //used only for global functions
+	{
+		SemantFuncSignatureAndParamTypes();
+		
+		SemantFuncParamNamesAndBody();
 
 		/*********************************************************/
 		/* [8] Return value is irrelevant for function declarations */

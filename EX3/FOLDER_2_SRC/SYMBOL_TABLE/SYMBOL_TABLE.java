@@ -8,6 +8,7 @@ package SYMBOL_TABLE;
 /*******************/
 import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,7 @@ public class SYMBOL_TABLE
 		}
 		symbol_table_hash.get(name).add(new_entry);
 		
-		//PrintMe();
+		PrintMe();
 	}
 	
 	public void enterObject(String name,TYPE t)
@@ -113,9 +114,7 @@ public class SYMBOL_TABLE
 		/* a special TYPE_FOR_SCOPE_BOUNDARIES was developed for them. This     */
 		/* class only contain their type name which is the bottom sign: _|_     */
 		/************************************************************************/
-		enter(
-			"SCOPE-BOUNDARY",
-			new TYPE_FOR_SCOPE_BOUNDARIES(scope_name));
+		enter("SCOPE-BOUNDARY",	new TYPE_FOR_SCOPE_BOUNDARIES(scope_name), Category.misc);
 		
 		/*******************************************************/
 		/* Increase scope level for future SYMBOL_TABLE_ENTRYs */
@@ -125,7 +124,7 @@ public class SYMBOL_TABLE
 		/*********************************************/
 		/* Print the symbol table after every change */
 		/*********************************************/
-		//PrintMe();
+		PrintMe();
 	}
 
 	/********************************************************************************/
@@ -145,11 +144,20 @@ public class SYMBOL_TABLE
 			top_index = top_index-1;
 			top = top.prevtop;
 			((LinkedList<SYMBOL_TABLE_ENTRY>)(symbol_table_hash.get(temp.name))).removeLast();
+			
+			// if entry's linked list is empty, remove it from the hashmap (to allow printing easily)
+			if (((LinkedList<SYMBOL_TABLE_ENTRY>)(symbol_table_hash.get(temp.name))).size() == 0)
+				symbol_table_hash.remove(temp.name);
 		}
 		/**************************************/
 		/* Pop the SCOPE-BOUNDARY sign itself */		
 		/**************************************/
-		((LinkedList<SYMBOL_TABLE_ENTRY>)(symbol_table_hash.get(top.name))).removeLast();		
+		((LinkedList<SYMBOL_TABLE_ENTRY>)(symbol_table_hash.get(top.name))).removeLast();
+		
+		// if SCOPE-BOUNDARY linked list is empty, remove it from the hashmap (to allow printing easily)
+		if (((LinkedList<SYMBOL_TABLE_ENTRY>)(symbol_table_hash.get(top.name))).size() == 0)
+			symbol_table_hash.remove(top.name);
+		
 		top_index = top_index-1;
 		top = top.prevtop;
 		
@@ -161,10 +169,10 @@ public class SYMBOL_TABLE
 		/*********************************************/
 		/* Print the symbol table after every change */		
 		/*********************************************/
-		//PrintMe();
+		PrintMe();
 	}
 	
-/*	public static int n=0;
+	public static int n=0;
 	
 	public void PrintMe()
 	{
@@ -175,54 +183,56 @@ public class SYMBOL_TABLE
 
 		try
 		{
-			*//*******************************************//*
-			 [1] Open Graphviz text file for writing 
-			*//*******************************************//*
+			/*******************************************/
+			/* [1] Open Graphviz text file for writing */
+			/*******************************************/
 			PrintWriter fileWriter = new PrintWriter(dirname+filename);
 
-			*//*********************************//*
-			 [2] Write Graphviz dot prolog 
-			*//*********************************//*
+			/*********************************/
+			/* [2] Write Graphviz dot prolog */
+			/*********************************/
 			fileWriter.print("digraph structs {\n");
 			fileWriter.print("rankdir = LR\n");
 			fileWriter.print("node [shape=record];\n");
 
-			*//*******************************//*
-			 [3] Write Hash Table Itself 
-			*//*******************************//*
+			/*******************************/
+			/* [3] Write Hash Table Itself */
+			/*******************************/
 			fileWriter.print("hashTable [label=\"");
-			for (i=0;i<hashArraySize-1;i++) { fileWriter.format("<f%d>\n%d\n|",i,i); }
-			fileWriter.format("<f%d>\n%d\n\"];\n",hashArraySize-1,hashArraySize-1);
+			for (i=0; i < symbol_table_hash.entrySet().size() - 1; i++) { fileWriter.format("<f%d>\n%d\n|",i,i); }
+			fileWriter.format("<f%d>\n%d\n\"];\n", symbol_table_hash.entrySet().size() - 1, symbol_table_hash.entrySet().size() - 1);
 		
-			*//****************************************************************************//*
-			 [4] Loop over hash table array and print all linked lists per array cell 
-			*//****************************************************************************//*
-			for (i=0;i<hashArraySize;i++)
+			/****************************************************************************/
+			/* [4] Loop over hash table array and print all linked lists per array cell */
+			/****************************************************************************/
+			i = 0;
+			for (List<SYMBOL_TABLE_ENTRY> curList : symbol_table_hash.values()) 
 			{
-				if (table[i] != null)
-				{
-					*//*****************************************************//*
-					 [4a] Print hash table array[i] -> entry(i,0) edge 
-					*//*****************************************************//*
-					fileWriter.format("hashTable:f%d -> node_%d_0:f0;\n",i,i);
-				}
+				/*****************************************************/
+				/* [4a] Print hash table array[i] -> entry(i,0) edge */
+				/*****************************************************/
+				fileWriter.format("hashTable:f%d -> node_%d_0:f0;\n",i,i);
+				
 				j=0;
-				for (SYMBOL_TABLE_ENTRY it=table[i];it!=null;it=it.next)
+				for (SYMBOL_TABLE_ENTRY curEntry : curList)
 				{
-					*//*******************************//*
-					 [4b] Print entry(i,it) node 
-					*//*******************************//*
+					/*******************************/
+					/* [4b] Print entry(i,it) node */
+					/*******************************/
 					fileWriter.format("node_%d_%d ",i,j);
-					fileWriter.format("[label=\"<f0>%s|<f1>%s|<f2>prevtop=%d|<f3>next\"];\n",
-						it.name,
-						it.type.name,
-						it.prevtop_index);
+					fileWriter.format("[label=\"<f0>name=%s|<f1>TYPE=%s|<f2>type.name=%s|<f3>entryCat=%s|<f4>scope_lvl=%d|<f5>prevtop=%d|<f6>next\"];\n",
+							curEntry.name,
+							curEntry.type.getClass().getName(),
+							curEntry.type.name,
+							curEntry.entryCat.toString(),
+							curEntry.scope_level,
+							curEntry.prevtop_index);
 
-					if (it.next != null)
+					if (j != curList.size() - 1) //if not currently on last entry in list
 					{
-						*//***************************************************//*
-						 [4c] Print entry(i,it) -> entry(i,it.next) edge 
-						*//***************************************************//*
+						/***************************************************/
+						/* [4c] Print entry(i,it) -> entry(i,it.next) edge */
+						/***************************************************/
 						fileWriter.format(
 							"node_%d_%d -> node_%d_%d [style=invis,weight=10];\n",
 							i,j,i,j+1);
@@ -232,6 +242,7 @@ public class SYMBOL_TABLE
 					}
 					j++;
 				}
+				i++;
 			}
 			fileWriter.print("}\n");
 			fileWriter.close();
@@ -240,7 +251,7 @@ public class SYMBOL_TABLE
 		{
 			e.printStackTrace();
 		}		
-	}*/
+	}
 
 	/**************************************/
 	/* USUAL SINGLETON IMPLEMENTATION ... */
@@ -267,8 +278,8 @@ public class SYMBOL_TABLE
 			/*****************************************/
 			/* [1] Enter primitive types int, string */
 			/*****************************************/
-			instance.enter("int",   TYPE_INT.getInstance());
-			instance.enter("string",TYPE_STRING.getInstance());
+			instance.enterDataType("int", TYPE_INT.getInstance());
+			instance.enterDataType("string",TYPE_STRING.getInstance());
 
 			/*************************************/
 			/* [2] How should we handle void ??? */
@@ -277,7 +288,7 @@ public class SYMBOL_TABLE
 			/***************************************/
 			/* [3] Enter library function PrintInt */
 			/***************************************/
-			instance.enter(
+			instance.enterObject(
 				"PrintInt",
 				new TYPE_FUNCTION(
 					TYPE_VOID.getInstance(),
@@ -286,7 +297,7 @@ public class SYMBOL_TABLE
 						TYPE_INT.getInstance(),
 						null)));
 			
-			instance.enter(
+			instance.enterObject(
 					"PrintString",
 					new TYPE_FUNCTION(
 						TYPE_VOID.getInstance(),
@@ -295,7 +306,7 @@ public class SYMBOL_TABLE
 							TYPE_STRING.getInstance(),
 							null)));
 			
-			instance.enter(
+			instance.enterObject(
 					"PrintTrace",
 					new TYPE_FUNCTION(
 						TYPE_VOID.getInstance(),

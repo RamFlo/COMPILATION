@@ -115,8 +115,8 @@ public class AST_CFIELDLIST extends AST_Node {
 			// to compare with superclasses' data_members, in order to allow overloading and prevent shadowing)
 			
 			//TO-DO
-			//if curHeadVar !=null, compare with superclasses' data_members and throw exception in case of equal names
-			//if curHeadFunc != null, comapre with superclasses' data_members and throw exception in case of same name & non-overloading function
+			//if curHeadVar !=null, compare its name with superclasses' data_members and throw exception in case of equal names
+			//if curHeadFunc != null, comapre curFunction with superclasses' data_members and throw exception in case of same name & non-overloading function
 			
 			
 		}

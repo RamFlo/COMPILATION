@@ -1,5 +1,11 @@
 package AST;
 
+import MyExceptions.SemanticRuntimeException;
+import SYMBOL_TABLE.SYMBOL_TABLE;
+import TYPES.TYPE;
+import TYPES.TYPE_FUNCTION;
+import TYPES.TYPE_LIST;
+
 public class AST_CFIELDLIST extends AST_Node {
 	/****************/
 	/* DATA MEMBERS */
@@ -80,6 +86,54 @@ public class AST_CFIELDLIST extends AST_Node {
 		if (headVar != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,headVar.SerialNumber);
 		if (headFunc != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,headFunc.SerialNumber);
 		if (tail != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,tail.SerialNumber);
+	}
+	
+	public TYPE SemantMe()
+	{
+		//scope begins and ends in AST_DEC_CLASS, no need to begin scope here
+		
+		//TO-DO: should probably move entire SemantMe to AST_DEC_CLASS to properly handle overloading
+		
+		AST_DEC_FUNC curHeadFunc;
+		AST_DEC_VAR curHeadVar;
+		
+		TYPE_FUNCTION curFunction = null;
+		TYPE curVariant = null;
+		/*************************************************************************************/
+		/* [0] Semant data members and functions (without the functions' bodies\param names) */
+		/*************************************************************************************/
+		for (AST_CFIELDLIST it = this; it  != null; it = it.tail)
+		{
+			curHeadFunc = it.headFunc;
+			curHeadVar = it.headVar;
+			
+			if (curHeadFunc != null) curFunction = (TYPE_FUNCTION) curHeadFunc.SemantFuncSignatureAndParamTypes();
+			if (curHeadVar != null) curVariant = curHeadVar.SemantMe(); //MAKE SURE DEC_VAR returns its type!
+			
+			//TO-DO
+			//use curFunction and curVariant to populate data_members, which is a TYPE_LIST of TYPE_CLASS (use it later
+			// to compare with superclasses' data_members, in order to allow overloading and prevent shadowing)
+			
+			//TO-DO
+			//if curHeadVar !=null, compare its name with superclasses' data_members and throw exception in case of equal names
+			//if curHeadFunc != null, comapre curFunction with superclasses' data_members and throw exception in case of same name & non-overloading function
+			
+			
+		}
+		
+		/************************************************/
+		/* [1] Semant functions' param names and bodies */
+		/************************************************/
+		for (AST_CFIELDLIST it = this; it  != null; it = it.tail)
+		{
+			curHeadFunc = it.headFunc;
+			if (curHeadFunc != null) curHeadFunc.SemantFuncParamNamesAndBody();
+		}
+		
+		/**************************************************/
+		/* [2] Return value is irrelevant for CFIELDLIST  */
+		/**************************************************/
+		return null;
 	}
 	
 }

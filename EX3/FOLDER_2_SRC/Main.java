@@ -58,6 +58,7 @@ public class Main
 			/*************************/
 			/* [8] Close output file */
 			/*************************/
+			file_writer.println("OK");
 			file_writer.close();
 
 			/*************************************/
@@ -78,10 +79,10 @@ public class Main
 		catch (SemanticRuntimeException e)
 		{
 			if (file_writer != null) {
-				file_writer.print(String.format("ERROR(%d)",e.lineNum));
+				file_writer.print(String.format("ERROR(%d)",e.getLineNum()));
 				file_writer.close();
 			}
-			System.out.format(">> ERROR [%d:%d] %s", e.lineNum,e.colNum,e.getMessage());
+			System.out.format(">> ERROR [%d:%d] %s", e.getLineNum(),e.getColNum(),e.getMessage());
 			return;
 		}	     
 		catch (Exception e)

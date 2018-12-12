@@ -49,7 +49,7 @@ scan with
 	}
 	System.out.print("\n");
 	return s; 
-:}
+:};
 after reduce {:
 	if (AST_Node.class.isInstance(RESULT))
 	{

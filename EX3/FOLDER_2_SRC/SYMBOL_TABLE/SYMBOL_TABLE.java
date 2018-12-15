@@ -31,19 +31,20 @@ public class SYMBOL_TABLE
 	public Map<String, List<SYMBOL_TABLE_ENTRY>> symbol_table_hash = new HashMap<String, List<SYMBOL_TABLE_ENTRY>>();
 	private SYMBOL_TABLE_ENTRY top;
 	private int top_index = 0, cur_scope_level = 0;
+	public TYPE curFunctionReturnType = null;
 	
 	/****************************************************************************/
 	/* Enter a variable, function, class type or array type to the symbol table */
 	/****************************************************************************/
 	
-	public TYPE getReturnTypeOfClosestFunction() {
-		SYMBOL_TABLE_ENTRY cur = top;
-		while (cur != null && !(cur.type instanceof TYPE_FUNCTION)) {
-			cur = cur.prevtop;
-		}
-		if (cur != null) return ((TYPE_FUNCTION)cur.type).returnType;
-		return null;
-	}
+//	public TYPE getReturnTypeOfClosestFunction() {
+//		SYMBOL_TABLE_ENTRY cur = top;
+//		while (cur != null && !(cur.type instanceof TYPE_FUNCTION)) {
+//			cur = cur.prevtop;
+//		}
+//		if (cur != null) return ((TYPE_FUNCTION)cur.type).returnType;
+//		return null;
+//	}
 	
 	public void enter(String name,TYPE t, Category entryCat)
 	{
@@ -114,9 +115,9 @@ public class SYMBOL_TABLE
 	}
 	
 	/***********************************************/
-	/* Delete symbol table entry */
+	/* Update symbol table entry */
 	/***********************************************/
-	public void findAndUpdateEntryTypeForDataType(String name)
+	public void findAndUpdateEntryTypeForDataType(String name, TYPE t)
 	{
 		SYMBOL_TABLE_ENTRY searchRes = null;
 		if (symbol_table_hash.containsKey(name)) {
@@ -148,6 +149,12 @@ public class SYMBOL_TABLE
 		/* Print the symbol table after every change */
 		/*********************************************/
 		PrintMe();
+	}
+	
+	public void beginFunctionScope(String scope_name,TYPE funcReturnType)
+	{
+		this.curFunctionReturnType = funcReturnType;
+		this.beginScope(scope_name);
 	}
 
 	/********************************************************************************/
@@ -193,6 +200,12 @@ public class SYMBOL_TABLE
 		/* Print the symbol table after every change */		
 		/*********************************************/
 		PrintMe();
+	}
+	
+	public void endFunctionScope()
+	{
+		this.curFunctionReturnType = null;
+		this.endScope();
 	}
 	
 	public static int n=0;
@@ -329,14 +342,7 @@ public class SYMBOL_TABLE
 							TYPE_STRING.getInstance(),
 							null)));
 			
-			instance.enterObject(
-					"PrintTrace",
-					new TYPE_FUNCTION(
-						TYPE_VOID.getInstance(),
-						"PrintTrace",
-						new TYPE_LIST(
-							TYPE_VOID.getInstance(),
-							null)));
+			instance.enterObject("PrintTrace",new TYPE_FUNCTION(TYPE_VOID.getInstance(),"PrintTrace",null));
 		}
 		return instance;
 	}

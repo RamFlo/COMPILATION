@@ -119,11 +119,10 @@ public class AST_STMT_ASSIGN extends AST_STMT
 		return null;
 	}
 	
-	private boolean isExtends(TYPE_CLASS t1, TYPE_CLASS t2){
+	private boolean isExtends(TYPE_CLASS t1, TYPE_CLASS t2) {
 		if (t2 == null) return false;
 		if (t1.name.equals(t2.name)) return true;
 		TYPE_CLASS tmp = t2.father;
 		return isExtends(t1, tmp);
-		
 	}
 }

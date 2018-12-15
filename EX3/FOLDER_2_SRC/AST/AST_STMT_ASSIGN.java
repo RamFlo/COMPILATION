@@ -6,8 +6,7 @@ import TYPES.TYPE;
 import TYPES.TYPE_CLASS;
 import TYPES.TYPE_NIL;
 import TYPES.TYPE_ARRAY;
-import TYPES.TYPE_NIL;
-import MyExceptions.SemanticRuntimeException;
+
 
 public class AST_STMT_ASSIGN extends AST_STMT
 {
@@ -94,7 +93,7 @@ public class AST_STMT_ASSIGN extends AST_STMT
 			
 			else{ /*t1.getClass() != t2.getClass()*/
 				if (t2 == TYPE_NIL.getInstance() &&
-						(!(t1 instanceof TYPE_CLASS) && !(t1 instanceof TYPE_ARRAY)))
+						((!(t1 instanceof TYPE_CLASS)) && (!(t1 instanceof TYPE_ARRAY))))
 					throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for (type=int/string)var := (type=nil)exp\n");
 				
 				if (t2 != TYPE_NIL.getInstance())

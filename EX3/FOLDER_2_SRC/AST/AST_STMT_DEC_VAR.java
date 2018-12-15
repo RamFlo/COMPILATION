@@ -1,5 +1,7 @@
 package AST;
 
+import TYPES.TYPE;
+
 public class AST_STMT_DEC_VAR extends AST_STMT {
 	/****************/
 	/* DATA MEMBERS */
@@ -32,5 +34,7 @@ public class AST_STMT_DEC_VAR extends AST_STMT {
 		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber, var.SerialNumber);
 	}
 	
-	public TYPE SemantMe
+	public TYPE SemantMe() {
+		return var.SemantMe();
+	}
 }

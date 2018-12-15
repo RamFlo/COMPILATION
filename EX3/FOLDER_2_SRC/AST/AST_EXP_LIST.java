@@ -1,6 +1,9 @@
 package AST;
 
+import MyExceptions.SemanticRuntimeException;
+import SYMBOL_TABLE.SYMBOL_TABLE;
 import TYPES.TYPE;
+import TYPES.TYPE_LIST;
 
 public class AST_EXP_LIST extends AST_Node
 {
@@ -53,11 +56,14 @@ public class AST_EXP_LIST extends AST_Node
 		if (tail != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,tail.SerialNumber);
 	}
 	
-	public TYPE semantMe()
-	{
-		/*TYPE tHead = null;
-		TYPE tOrigin = null;
-
-		if ()*/
+	public TYPE_LIST semantMe()
+	{	
+		TYPE_LIST type_list = null;
+		for (AST_EXP_LIST it = this; it  != null; it = it.tail)
+		{
+			TYPE t = it.head.SemantMe();
+			type_list = new TYPE_LIST(t,type_list);
+		}
+		return type_list;
 	}
 }

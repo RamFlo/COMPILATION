@@ -1,7 +1,10 @@
 package AST;
-import javax.swing.event.RowSorterEvent.Type;
-
+import TYPES.TYPE;
+import TYPES.TYPE_ARRAY;
+import TYPES.TYPE_CLASS;
+import TYPES.TYPE_NIL
 import MyExceptions.SemanticRuntimeException;
+
 public class AST_STMT_ASSIGN extends AST_STMT
 {
 	/***************/
@@ -69,8 +72,8 @@ public class AST_STMT_ASSIGN extends AST_STMT
 	
 	public TYPE SemantMe()
 	{
-		Type t1 = null;
-		Type t2 = null;
+		TYPE t1 = null;
+		TYPE t2 = null;
 		
 		t1 = var.SemantMe();
 		
@@ -87,7 +90,7 @@ public class AST_STMT_ASSIGN extends AST_STMT
 			
 			else{ /*t1.getClass() != t2.getClass()*/
 				if (t2 == TYPE_NIL.getInstance() &&
-						(t1.getClass() != TYPE_CLASS || t1.getClass() != TYPE_ARRAY))
+						(t1.getClass() != TYPE_CLASS && t1.getClass() != TYPE_ARRAY))
 					throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for (type=int/string)var := (type=nil)exp\n");
 				
 				if (t2 != TYPE_NIL.getInstance())

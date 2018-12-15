@@ -35,6 +35,16 @@ public class SYMBOL_TABLE
 	/****************************************************************************/
 	/* Enter a variable, function, class type or array type to the symbol table */
 	/****************************************************************************/
+	
+	public TYPE getReturnTypeOfClosestFunction() {
+		SYMBOL_TABLE_ENTRY cur = top;
+		while (cur != null && !(cur.type instanceof TYPE_FUNCTION)) {
+			cur = cur.prevtop;
+		}
+		if (cur != null) return cur.type;
+		return null;
+	}
+	
 	public void enter(String name,TYPE t, Category entryCat)
 	{
 		SYMBOL_TABLE_ENTRY new_entry = new SYMBOL_TABLE_ENTRY(name,t,entryCat,top,top_index++,cur_scope_level);

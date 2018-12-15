@@ -1,5 +1,7 @@
 package AST;
 
+import TYPES.TYPE;
+
 public class AST_EXP_CALL extends AST_EXP
 {
 	/****************/
@@ -56,5 +58,9 @@ public class AST_EXP_CALL extends AST_EXP
 		/****************************************/
 		if (callingObject != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,callingObject.SerialNumber);
 		if (params != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,params.SerialNumber);		
+	}
+	
+	public TYPE SemantMe() {
+		
 	}
 }

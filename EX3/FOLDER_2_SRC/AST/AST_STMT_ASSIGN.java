@@ -89,6 +89,9 @@ public class AST_STMT_ASSIGN extends AST_STMT
 				if (t2 == TYPE_NIL.getInstance() &&
 						(t1.getClass() != TYPE_CLASS || t1.getClass() != TYPE_ARRAY))
 					throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for (type=int/string)var := (type=nil)exp\n");
+				
+				if (t2 != TYPE_NIL.getInstance())
+					throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for var := exp\n");	
 			}
 		}
 		
@@ -99,9 +102,9 @@ public class AST_STMT_ASSIGN extends AST_STMT
 				if (t1.getClass() == TYPE_CLASS && !isExtends((TYPE_CLASS)t1, (TYPE_CLASS)t2))
 					throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for (type=class)var := NEW (type=class)newExp (not equal/extends)\n");
 				
-				else{/*t1.getclass()==t2.getclass()==TYPE_ARRAY*/
-					if ((TYPE_ARRAY)t1.arrayType == (TYPE_ARRAY)t2.arrayType)
-					/*לבדוק אם הם מאותו הסוג*/
+				else{/*t1.getclass()==t2.getclass()==TYPE_ARRAY*/					
+					if (!((TYPE_ARRAY)t1).arrayTypeString.equals(((TYPE_ARRAY)t2).name))
+						throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for (type=TYPE_ARRAY)var := NEW (type=TYPE_ARRAY)newExp (the type is differrent from what was declare)\n");
 				}
 			}
 			else throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for var := NEW newExp\n");
@@ -112,7 +115,7 @@ public class AST_STMT_ASSIGN extends AST_STMT
 	
 	private boolean isExtends(TYPE_CLASS t1, TYPE_CLASS t2){
 		if (t2 == null) return false;
-		if (t1.name == t2.name) return true;
+		if (t1.name.equals(t2.name)) return true;
 		TYPE_CLASS tmp = t2.father;
 		return isExtends(t1, tmp);
 		

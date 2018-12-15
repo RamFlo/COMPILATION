@@ -121,6 +121,8 @@ public class AST_CFIELDLIST extends AST_Node {
 			
 		}
 		
+		
+		//copied till here
 		/************************************************/
 		/* [1] Semant functions' param names and bodies */
 		/************************************************/

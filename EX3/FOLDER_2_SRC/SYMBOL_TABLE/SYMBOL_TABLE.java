@@ -102,6 +102,19 @@ public class SYMBOL_TABLE
 		}
 		return null;
 	}
+	
+	/***********************************************/
+	/* Delete symbol table entry */
+	/***********************************************/
+	public void findAndUpdateEntryTypeForDataType(String name)
+	{
+		SYMBOL_TABLE_ENTRY searchRes = null;
+		if (symbol_table_hash.containsKey(name)) {
+			searchRes = ((LinkedList<SYMBOL_TABLE_ENTRY>)(symbol_table_hash.get(name))).getLast();
+			if (searchRes.entryCat == Category.dataType)
+				searchRes.updateType(t);
+		}
+	}
 
 	/***************************************************************************/
 	/* begin scope = Enter the <SCOPE-BOUNDARY> element to the data structure */

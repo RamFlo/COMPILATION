@@ -2,7 +2,7 @@ package AST;
 import TYPES.TYPE;
 import TYPES.TYPE_ARRAY;
 import TYPES.TYPE_CLASS;
-import TYPES.TYPE_NIL
+import TYPES.TYPE_NIL;
 import MyExceptions.SemanticRuntimeException;
 
 public class AST_STMT_ASSIGN extends AST_STMT
@@ -81,16 +81,16 @@ public class AST_STMT_ASSIGN extends AST_STMT
 			t2 = exp.SemantMe();
 			
 			if (t1.getClass() == t2.getClass()){
-				if (t1.getClass() == TYPE_CLASS && !isExtends((TYPE_CLASS)t1, (TYPE_CLASS)t2))
+				if (t1 instanceof TYPE_CLASS && !isExtends((TYPE_CLASS)t1, (TYPE_CLASS)t2))
 					throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for (type=class)var := (type=class)exp (not equal/extends)\n");
 				
-				if (t1.getClass() == TYPE_ARRAY)
+				if (t1 instanceof TYPE_ARRAY)
 					throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for (type=array)var := (type=array)exp (assign without NEW)\n");					
 			}
 			
 			else{ /*t1.getClass() != t2.getClass()*/
 				if (t2 == TYPE_NIL.getInstance() &&
-						(t1.getClass() != TYPE_CLASS && t1.getClass() != TYPE_ARRAY))
+						((!(t1 instanceof TYPE_CLASS)) && (!(t1 instanceof TYPE_ARRAY))))
 					throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for (type=int/string)var := (type=nil)exp\n");
 				
 				if (t2 != TYPE_NIL.getInstance())
@@ -102,7 +102,7 @@ public class AST_STMT_ASSIGN extends AST_STMT
 			t2 = newExp.SemantMe();
 			
 			if (t1.getClass() == t2.getClass()){
-				if (t1.getClass() == TYPE_CLASS && !isExtends((TYPE_CLASS)t1, (TYPE_CLASS)t2))
+				if (t1 instanceof TYPE_CLASS && !isExtends((TYPE_CLASS)t1, (TYPE_CLASS)t2))
 					throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for (type=class)var := NEW (type=class)newExp (not equal/extends)\n");
 				
 				else{/*t1.getclass()==t2.getclass()==TYPE_ARRAY*/					

@@ -62,4 +62,9 @@ public class SYMBOL_TABLE_ENTRY
 		this.prevtop_index = prevtop_index;
 		this.scope_level = scope_level;
 	}
+	
+	public void updateType(TYPE t)
+	{
+		this.type = t;
+	}
 }

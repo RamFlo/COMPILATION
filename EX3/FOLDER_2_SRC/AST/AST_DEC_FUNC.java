@@ -89,7 +89,7 @@ public class AST_DEC_FUNC extends AST_DEC
 		/*********************/
 		/* [1] function name */
 		/*********************/
-		if (SYMBOL_TABLE.getInstance().find(name) != null)
+		if (SYMBOL_TABLE.getInstance().findInCurrentScope(name) != null)
 		{
 			throw new SemanticRuntimeException(lineNum, colNum, String.format("declared function's name (%s) is already in use\n", name));
 		}
@@ -110,14 +110,18 @@ public class AST_DEC_FUNC extends AST_DEC
 			type_list = new TYPE_LIST(t,type_list);
 		}
 		
+		TYPE_FUNCTION curFunc = new TYPE_FUNCTION(returnType,name,type_list);
+
+		return curFunc;
+	}
+	
+	public void EnterFuncIntoSymbolTable(TYPE_FUNCTION func)
+	{
 		/***************************************************/
 		/* [3] Enter the Function Type to the Symbol Table */
 		/***************************************************/
 		//must enter function into symbol table BEFORE beginning the function's scope in order to allow recursive calls
-		TYPE_FUNCTION curFunc = new TYPE_FUNCTION(returnType,name,type_list);
-		SYMBOL_TABLE.getInstance().enterObject(name,curFunc);
-		
-		return curFunc;
+		SYMBOL_TABLE.getInstance().enterObject(name,func);
 	}
 	
 	public void SemantFuncParamNamesAndBody()
@@ -145,8 +149,8 @@ public class AST_DEC_FUNC extends AST_DEC
 	
 	public TYPE SemantMe() //used only for global functions
 	{
-		SemantFuncSignatureAndParamTypes();
-		
+		TYPE_FUNCTION func = (TYPE_FUNCTION)SemantFuncSignatureAndParamTypes();
+		EnterFuncIntoSymbolTable(func);
 		SemantFuncParamNamesAndBody();
 
 		/*********************************************************/

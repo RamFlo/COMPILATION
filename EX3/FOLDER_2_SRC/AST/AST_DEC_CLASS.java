@@ -1,6 +1,14 @@
 package AST;
 
-import javax.swing.event.RowSorterEvent.Type;
+import MyExceptions.SemanticRuntimeException;
+import SYMBOL_TABLE.SYMBOL_TABLE;
+import TYPES.TYPE;
+import TYPES.TYPE_ARRAY;
+import TYPES.TYPE_CLASS;
+import TYPES.TYPE_CLASS_DATA_MEMBER;
+import TYPES.TYPE_CLASS_DATA_MEMBERS_LIST;
+import TYPES.TYPE_FUNCTION;
+import TYPES.TYPE_LIST;
 
 public class AST_DEC_CLASS extends AST_DEC
 {
@@ -60,39 +68,182 @@ public class AST_DEC_CLASS extends AST_DEC
 		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,class_fields.SerialNumber);		
 	}
 	
+	private void compareFunctionsArgsTypes(TYPE_LIST funcArgsOne,TYPE_LIST funcArgsTwo)
+	{
+		TYPE_LIST itOne = null,itTwo = null;
+		for (itOne = funcArgsOne,itTwo = funcArgsTwo; itOne != null && itTwo != null; itOne = itOne.tail,itTwo = itTwo.tail)
+		{
+			if (itOne.head.getClass() != itTwo.head.getClass())
+				throw new SemanticRuntimeException(lineNum, colNum,
+						"Class method is overloading a superclass's method with different argument's type\n");
+
+			if (itOne.head instanceof TYPE_CLASS) // arg is TYPE_CLASS for both
+			{
+				if (!((TYPE_CLASS) itOne.head).name.equals(((TYPE_CLASS) itTwo.head).name))
+					throw new SemanticRuntimeException(lineNum, colNum,
+							"Class method is overloading a superclass's method with different argument's type (TYPE_CLASS)\n");
+			}
+
+			if (itOne.head instanceof TYPE_ARRAY) // arg is TYPE_ARRAY for both
+			{
+				if (!((TYPE_ARRAY) itOne.head).name.equals(((TYPE_ARRAY) itTwo.head).name))
+					throw new SemanticRuntimeException(lineNum, colNum,
+							"Class method is overloading a superclass's method with different argument's type (TYPE_ARRAY)\n");
+			}
+		}
+		
+		if (itOne != null || itTwo !=null)
+			throw new SemanticRuntimeException(lineNum, colNum,
+					"Class method is overloading a superclass's method with different number of arguments\n");
+	}
+	
+	
+	private void doesFunctionOverloadProperly(TYPE_FUNCTION curFunction, TYPE_CLASS superType)
+	{
+		if (superType == null)
+			return;
+		
+		for (TYPE_CLASS_DATA_MEMBERS_LIST it = superType.data_members; it  != null; it = it.tail)
+		{
+			if (!it.head.name.equals(curFunction.name))
+				continue;
+			//Assumption: declaring a function with the same name as declared variable in father is illegal
+			
+			if (!(it.head.type instanceof TYPE_FUNCTION))
+				throw new SemanticRuntimeException(lineNum, colNum,
+						"Class method is shadowing a superclass's variable\n");
+
+			TYPE_FUNCTION superFunc = (TYPE_FUNCTION) it.head.type;
+			if (superFunc.returnType.getClass() != curFunction.returnType.getClass())
+				throw new SemanticRuntimeException(lineNum, colNum,
+						"Class method overloading a superclass's method with different return type\n");
+
+			if (superFunc.returnType instanceof TYPE_CLASS) // return type is
+															// TYPE_CLASS for
+															// both
+			{
+				if (!((TYPE_CLASS) superFunc.returnType).name.equals(((TYPE_CLASS) curFunction.returnType).name))
+					throw new SemanticRuntimeException(lineNum, colNum,
+							"Class method overloading a superclass's method with different return type (TYPE_CLASS)\n");
+			}
+
+			if (superFunc.returnType instanceof TYPE_ARRAY) // return type is
+															// TYPE_ARRAY for
+															// both
+			{
+				if (!((TYPE_ARRAY) superFunc.returnType).name.equals(((TYPE_ARRAY) curFunction.returnType).name))
+					throw new SemanticRuntimeException(lineNum, colNum,
+							"Class method overloading a superclass's method with different return type (TYPE_ARRAY)\n");
+			}
+			
+			//compare functions' args list
+			compareFunctionsArgsTypes(superFunc.params,curFunction.params);
+			
+			return; //found overloaded super class's method, no need to continue
+		}
+		doesFunctionOverloadProperly(curFunction,superType.father);
+	}
+	
+	
+	private void doesVariableShadow(String varName, TYPE_CLASS superType)
+	{
+		if (superType == null)
+			return;
+		
+		for (TYPE_CLASS_DATA_MEMBERS_LIST it = superType.data_members; it  != null; it = it.tail)
+		{
+			if (it.head.name.equals(varName))
+				throw new SemanticRuntimeException(lineNum, colNum,
+						"Class variable is shadowing a superclass variable or method\n");
+		}
+		
+		doesVariableShadow(varName,superType.father);
+	}
+	
+	
 	public TYPE SemantMe()
 	{	
 		TYPE_CLASS t = null;
-		
+		TYPE superType = null;
 		/*the class name is used already*/
-		if (SYMBOL_TABLE.getInstance().find(name))
+		if (SYMBOL_TABLE.getInstance().find(name) != null)
 			throw new SemanticRuntimeException(lineNum, colNum, String.format
 					("name class: %s is already exists in SYMBOL_TABLE\n", name));
 			
-		/*************************/
-		/* [1] Begin Class Scope */
-		/*************************/
-		SYMBOL_TABLE.getInstance().beginScope("CLASS");
-				
+
 		/*There is no extends*/
-		if (supername == null) t = new TYPE_CLASS(null,name,class_fields.SemantMe());
+		//if (supername == null) t = new TYPE_CLASS(null,name,class_fields.SemantMe());
 		
-		else{
+		if (supername != null){
 			/*Searching for supername in SYMBOL_TABLE*/
-			Type superType = SYMBOL_TABLE.getInstance().find(supername);
+			superType = SYMBOL_TABLE.getInstance().findDataType(supername);
 			/*Supername is not in SYMBOL_TABLE -> error*/
 			if (superType == null)
 				throw new SemanticRuntimeException(lineNum, colNum, String.format
-						("class %s extends undefine class %s\n", name, supername));
+						("class %s extends undefined class %s\n", name, supername));
 			
 			/*Supername is not a class*/
 			if (!(superType instanceof TYPE_CLASS))
 				throw new SemanticRuntimeException(lineNum, colNum, String.format
-						("class %s extends %s of type %s\n", name, supername, superType.getClass()));	
+						("class %s extends %s of type %s\n", name, supername, superType.getClass()));
 			
-			/*Supername is legal*/
-			t = new TYPE_CLASS(TYPE_CLASS,name,class_fields.SemantMe());
 		}
+		
+		
+		/**********************************************************************/
+		/* [1] Semant data members (type only) and populate data members list */
+		/**********************************************************************/
+		
+		
+		AST_DEC_FUNC curHeadFunc;
+		AST_DEC_VAR curHeadVar;
+		
+		TYPE_FUNCTION curFunction = null;
+		TYPE curVariant = null;
+		TYPE_CLASS_DATA_MEMBERS_LIST dataMembersList = null;
+		/*************************************************************************************/
+		/* [0] Semant data members and functions (without the functions' bodies\param names) */
+		/*************************************************************************************/
+		for (AST_CFIELDLIST it = class_fields; it  != null; it = it.tail)
+		{
+			curHeadFunc = it.headFunc;
+			curHeadVar = it.headVar;
+			
+			if (curHeadFunc != null)
+				{
+					curFunction = (TYPE_FUNCTION) curHeadFunc.SemantFuncSignatureAndParamTypes();
+					dataMembersList = new TYPE_CLASS_DATA_MEMBERS_LIST(new TYPE_CLASS_DATA_MEMBER(curFunction,curFunction.name),dataMembersList);
+					doesFunctionOverloadProperly(curFunction,((TYPE_CLASS)superType));
+				}
+			if (curHeadVar != null)
+				{
+					//MAKE SURE DEC_VAR returns its type! and doesn't enter variant into symbol table
+					curVariant = curHeadVar.SemantMe();
+					dataMembersList = new TYPE_CLASS_DATA_MEMBERS_LIST(new TYPE_CLASS_DATA_MEMBER(curVariant,curHeadVar.name),dataMembersList);
+					doesVariableShadow(curHeadVar.name,((TYPE_CLASS)superType));
+				}
+			
+			//TO-DO
+			//use curFunction and curVariant to populate data_members, which is a TYPE_LIST of TYPE_CLASS (use it later
+			// to compare with superclasses' data_members, in order to allow overloading and prevent shadowing)
+			
+			//TO-DO
+			//if curHeadVar !=null, compare its name with superclasses' data_members and throw exception in case of equal names
+			//if curHeadFunc != null, comapre curFunction with superclasses' data_members and throw exception in case of same name & non-overloading function
+			
+			
+		}
+		
+		
+		
+		t = new TYPE_CLASS((TYPE_CLASS)superType,name,dataMembersList);
+		
+		/*************************/
+		/* [2] Begin Class Scope */
+		/*************************/
+		SYMBOL_TABLE.getInstance().beginScope("CLASS");
+		
+		//add semantme to data members
 
 		/*****************/
 		/* [3] End Scope */

@@ -62,13 +62,18 @@ public class AST_DEC_CLASS extends AST_DEC
 	
 	public TYPE SemantMe()
 	{	
+		TYPE_CLASS t = null;
+		
+		/*the class name is used already*/
+		if (SYMBOL_TABLE.getInstance().find(name))
+			throw new SemanticRuntimeException(lineNum, colNum, String.format
+					("name class: %s is already exists in SYMBOL_TABLE\n", name));
+			
 		/*************************/
 		/* [1] Begin Class Scope */
 		/*************************/
 		SYMBOL_TABLE.getInstance().beginScope("CLASS");
-		
-		TYPE_CLASS t = null;
-		
+				
 		/*There is no extends*/
 		if (supername == null) t = new TYPE_CLASS(null,name,class_fields.SemantMe());
 		

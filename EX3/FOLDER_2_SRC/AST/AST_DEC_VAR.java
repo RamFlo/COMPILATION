@@ -88,11 +88,11 @@ public class AST_DEC_VAR extends AST_DEC
 		/***************************************************/
 		/* [3] Enter the Function Type to the Symbol Table */
 		/***************************************************/
-		SYMBOL_TABLE.getInstance().enter(name,t);
+		SYMBOL_TABLE.getInstance().enterObject(name,t);
 
 		/*********************************************************/
 		/* [4] Return value is irrelevant for class declarations */
 		/*********************************************************/
-		return null;		
+		return t;		
 	}
 }

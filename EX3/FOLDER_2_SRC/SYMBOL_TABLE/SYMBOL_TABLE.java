@@ -41,7 +41,7 @@ public class SYMBOL_TABLE
 		while (cur != null && !(cur.type instanceof TYPE_FUNCTION)) {
 			cur = cur.prevtop;
 		}
-		if (cur != null) return cur.type;
+		if (cur != null) return ((TYPE_FUNCTION)cur.type).returnType;
 		return null;
 	}
 	

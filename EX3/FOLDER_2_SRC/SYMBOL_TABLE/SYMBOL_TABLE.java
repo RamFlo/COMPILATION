@@ -342,14 +342,7 @@ public class SYMBOL_TABLE
 							TYPE_STRING.getInstance(),
 							null)));
 			
-			instance.enterObject(
-					"PrintTrace",
-					new TYPE_FUNCTION(
-						TYPE_VOID.getInstance(),
-						"PrintTrace",
-						new TYPE_LIST(
-							TYPE_VOID.getInstance(),
-							null)));
+			instance.enterObject("PrintTrace",new TYPE_FUNCTION(TYPE_VOID.getInstance(),"PrintTrace",null));
 		}
 		return instance;
 	}

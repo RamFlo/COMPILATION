@@ -3,6 +3,7 @@ package AST;
 import MyExceptions.SemanticRuntimeException;
 import TYPES.TYPE;
 import TYPES.TYPE_CLASS;
+import TYPES.TYPE_CLASS_DATA_MEMBERS_LIST;
 import TYPES.TYPE_LIST;
 
 public class AST_VAR_FIELD extends AST_VAR
@@ -79,32 +80,19 @@ public class AST_VAR_FIELD extends AST_VAR
 		else
 			tc = (TYPE_CLASS) t;
 		
-		/*************************************/
-		/* [3] Look for fieldlName inside tc */
-		/*************************************/
-		for (TYPE_LIST it=tc.data_members;it != null;it=it.tail)
-		{
-			if (it.head.name == fieldName)
-				return it.head;
-		}
-		
-		/**************************************************/
-		/* [4] Look for fieldlName inside tc's superclass */
-		/**************************************************/
-		TYPE_CLASS tc_father = tc.father;
-		
-		while (tc_father != null)
-		{
-			for (TYPE_LIST it=tc_father.data_members; it != null; it=it.tail)
-			{
-				if (it.head.name == fieldName)
-					return it.head;
+		/**********************************************************/
+		/* [3] Look for fieldlName inside tc and its superclasses */
+		/**********************************************************/
+		while (tc != null) {
+			for (TYPE_CLASS_DATA_MEMBERS_LIST it = tc.data_members; it != null; it = it.tail) {
+				if (it.head.name.equals(fieldName))
+					return it.head.type;
 			}
-			tc_father = tc_father.father;
+			tc = tc.father;
 		}
 		
 		/*********************************************/
-		/* [5] fieldName does not exist in class var */
+		/* [4] fieldName does not exist in class var */
 		/*********************************************/
 		throw new SemanticRuntimeException(lineNum, colNum, String.format("field (%s) does not exist in class (%s)\n",fieldName,tc.name));
 	}

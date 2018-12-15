@@ -116,7 +116,7 @@ public class SYMBOL_TABLE
 	/***********************************************/
 	/* Delete symbol table entry */
 	/***********************************************/
-	public void findAndUpdateEntryTypeForDataType(String name)
+	public void findAndUpdateEntryTypeForDataType(String name, TYPE t)
 	{
 		SYMBOL_TABLE_ENTRY searchRes = null;
 		if (symbol_table_hash.containsKey(name)) {

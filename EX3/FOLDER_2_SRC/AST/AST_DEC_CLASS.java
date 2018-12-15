@@ -194,13 +194,20 @@ public class AST_DEC_CLASS extends AST_DEC
 		/* [1] Semant data members (type only) and populate data members list */
 		/**********************************************************************/
 		
-		
 		AST_DEC_FUNC curHeadFunc;
 		AST_DEC_VAR curHeadVar;
 		
 		TYPE_FUNCTION curFunction = null;
 		TYPE curVariant = null;
 		TYPE_CLASS_DATA_MEMBERS_LIST dataMembersList = null;
+		
+		/**********************************************************************/
+		/* [1.1] Create TYPE_CLASS with dataMembersList=null
+		 * 		 and insert the class to the symbol table */
+		/**********************************************************************/		
+		
+		t = new TYPE_CLASS((TYPE_CLASS)superType,name,dataMembersList);
+		SYMBOL_TABLE.getInstance().enter(name,t);
 		/*************************************************************************************/
 		/* [0] Semant data members and functions (without the functions' bodies\param names) */
 		/*************************************************************************************/
@@ -222,38 +229,42 @@ public class AST_DEC_CLASS extends AST_DEC
 					dataMembersList = new TYPE_CLASS_DATA_MEMBERS_LIST(new TYPE_CLASS_DATA_MEMBER(curVariant,curHeadVar.name),dataMembersList);
 					doesVariableShadow(curHeadVar.name,((TYPE_CLASS)superType));
 				}
-			
-			//TO-DO
-			//use curFunction and curVariant to populate data_members, which is a TYPE_LIST of TYPE_CLASS (use it later
-			// to compare with superclasses' data_members, in order to allow overloading and prevent shadowing)
-			
-			//TO-DO
-			//if curHeadVar !=null, compare its name with superclasses' data_members and throw exception in case of equal names
-			//if curHeadFunc != null, comapre curFunction with superclasses' data_members and throw exception in case of same name & non-overloading function
-			
-			
 		}
 		
-		
-		
-		t = new TYPE_CLASS((TYPE_CLASS)superType,name,dataMembersList);
+		findAndUpdateEntryTypeForDataType(name, new TYPE_CLASS((TYPE_CLASS)superType,name,dataMembersList));
 		
 		/*************************/
 		/* [2] Begin Class Scope */
 		/*************************/
 		SYMBOL_TABLE.getInstance().beginScope("CLASS");
 		
-		//add semantme to data members
-
+		/*************************/
+		/* [2] Insert data members' signature to the symbol table */
+		/*************************/
+		for (AST_CFIELDLIST it = class_fields; it  != null; it = it.tail)
+		{
+			curHeadFunc = it.headFunc;
+			curHeadVar = it.headVar;
+			
+			if (curHeadFunc != null)
+				{
+					
+					curFunction = (TYPE_FUNCTION) curHeadFunc.SemantFuncSignatureAndParamTypes();
+					dataMembersList = new TYPE_CLASS_DATA_MEMBERS_LIST(new TYPE_CLASS_DATA_MEMBER(curFunction,curFunction.name),dataMembersList);
+					doesFunctionOverloadProperly(curFunction,((TYPE_CLASS)superType));
+				}
+			if (curHeadVar != null)
+				{
+					//MAKE SURE DEC_VAR returns its type! and doesn't enter variant into symbol table
+					curVariant = curHeadVar.SemantMe();
+					dataMembersList = new TYPE_CLASS_DATA_MEMBERS_LIST(new TYPE_CLASS_DATA_MEMBER(curVariant,curHeadVar.name),dataMembersList);
+					doesVariableShadow(curHeadVar.name,((TYPE_CLASS)superType));
+				}
+		}
 		/*****************/
 		/* [3] End Scope */
 		/*****************/
 		SYMBOL_TABLE.getInstance().endScope();
-
-		/************************************************/
-		/* [4] Enter the Class Type to the Symbol Table */
-		/************************************************/
-		SYMBOL_TABLE.getInstance().enter(name,t);
 
 		/*********************************************************/
 		/* [5] Return value is irrelevant for class declarations */

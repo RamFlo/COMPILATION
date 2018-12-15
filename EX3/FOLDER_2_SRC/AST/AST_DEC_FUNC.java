@@ -18,6 +18,7 @@ public class AST_DEC_FUNC extends AST_DEC
 	public String name;
 	public AST_TYPE_NAME_LIST params;
 	public AST_STMT_LIST body;
+	private TYPE funcReturnType = null;
 	
 	/******************/
 	/* CONSTRUCTOR(S) */
@@ -86,6 +87,8 @@ public class AST_DEC_FUNC extends AST_DEC
 		}
 		//should function be able to return an array type?
 		
+		this.funcReturnType = returnType;
+		
 		/*********************/
 		/* [1] function name */
 		/*********************/
@@ -112,16 +115,13 @@ public class AST_DEC_FUNC extends AST_DEC
 		
 		TYPE_FUNCTION curFunc = new TYPE_FUNCTION(returnType,name,type_list);
 
-		return curFunc;
-	}
-	
-	public void EnterFuncIntoSymbolTable(TYPE_FUNCTION func)
-	{
 		/***************************************************/
 		/* [3] Enter the Function Type to the Symbol Table */
 		/***************************************************/
 		//must enter function into symbol table BEFORE beginning the function's scope in order to allow recursive calls
-		SYMBOL_TABLE.getInstance().enterObject(name,func);
+		SYMBOL_TABLE.getInstance().enterObject(name,curFunc);
+		
+		return curFunc;
 	}
 	
 	public void SemantFuncParamNamesAndBody()
@@ -129,7 +129,7 @@ public class AST_DEC_FUNC extends AST_DEC
 		/****************************/
 		/* [4] Begin Function Scope */
 		/****************************/
-		SYMBOL_TABLE.getInstance().beginScope("FUNCTION");
+		SYMBOL_TABLE.getInstance().beginFunctionScope("FUNCTION",this.funcReturnType);
 		
 		/****************************************/
 		/* [5] Semant Input Params (names only) */
@@ -144,13 +144,12 @@ public class AST_DEC_FUNC extends AST_DEC
 		/*****************/
 		/* [7] End Scope */
 		/*****************/
-		SYMBOL_TABLE.getInstance().endScope();
+		SYMBOL_TABLE.getInstance().endFunctionScope();
 	}
 	
 	public TYPE SemantMe() //used only for global functions
 	{
-		TYPE_FUNCTION func = (TYPE_FUNCTION)SemantFuncSignatureAndParamTypes();
-		EnterFuncIntoSymbolTable(func);
+		SemantFuncSignatureAndParamTypes();
 		SemantFuncParamNamesAndBody();
 
 		/*********************************************************/

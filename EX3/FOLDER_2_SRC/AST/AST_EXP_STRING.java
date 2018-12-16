@@ -36,7 +36,7 @@ public class AST_EXP_STRING extends AST_EXP {
 		/***************************************/
 		AST_GRAPHVIZ.getInstance().logNode(
 			SerialNumber,
-			String.format("STRING\n%s",value)); // String.format("STRING\n%s",value.replace('"','\'')
+			String.format("STRING\n%s",value.replace('"','\''))); // String.format("STRING\n%s",value.replace('"','\'')
 	}
 	
 	public TYPE SemantMe() {

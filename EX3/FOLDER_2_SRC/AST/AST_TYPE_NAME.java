@@ -64,15 +64,16 @@ public class AST_TYPE_NAME extends AST_Node
 		/**************/
 		/* name check */
 		/**************/
-		if ( SYMBOL_TABLE.getInstance().findDataType(name) != null)
+		if (SYMBOL_TABLE.getInstance().findDataType(name) != null)
 			throw new SemanticRuntimeException(lineNum, colNum, String.format("parameter's (%s) name is an existing data type\n",name));
 		
-		if ((t = SYMBOL_TABLE.getInstance().findInCurrentScope(name)) != null)
+		if (SYMBOL_TABLE.getInstance().findInCurrentScope(name) != null)
 			throw new SemanticRuntimeException(lineNum, colNum, String.format("parameter's (%s) name is already used in function's scope\n",name));
 		
 		/*******************************************************/
 		/* Enter var with name=name and type=t to symbol table */
 		/*******************************************************/
+		t = SYMBOL_TABLE.getInstance().findDataType(type);
 		SYMBOL_TABLE.getInstance().enterObject(name,t);
 
 		/****************************/

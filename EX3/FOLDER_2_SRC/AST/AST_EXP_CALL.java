@@ -110,6 +110,7 @@ public class AST_EXP_CALL extends AST_EXP
 			}
 		}
 		compareFunctionsArgsTypes(listOfGivenParams, listOfCalledFunctionParams);
+		return funcReturnType;
 	}
 	
 	

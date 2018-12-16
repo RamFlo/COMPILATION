@@ -86,7 +86,7 @@ public class AST_DEC_VAR extends AST_DEC
 		/**************************************/
 		/* [2] Check That Name does NOT exist */
 		/**************************************/
-		if (SYMBOL_TABLE.getInstance().find(name) != null)
+		if (SYMBOL_TABLE.getInstance().findInCurrentScope(name) != null) //changed to findInCurrentScope
 		{
 			throw new SemanticRuntimeException(lineNum,colNum,String.format("variable %s already exists in scope\n",name));
 		}

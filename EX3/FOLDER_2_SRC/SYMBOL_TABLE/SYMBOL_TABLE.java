@@ -48,6 +48,8 @@ public class SYMBOL_TABLE
 	
 	public void enter(String name,TYPE t, Category entryCat)
 	{
+		if (t == null)
+			System.out.println(String.format("%s type is null!",name));
 		SYMBOL_TABLE_ENTRY new_entry = new SYMBOL_TABLE_ENTRY(name,t,entryCat,top,top_index++,cur_scope_level);
 		top = new_entry;
 		

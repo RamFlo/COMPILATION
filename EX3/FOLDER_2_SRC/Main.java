@@ -14,7 +14,7 @@ public class Main
 		Symbol s;
 		AST_DEC_LIST AST;
 		FileReader file_reader;
-		PrintWriter file_writer;
+		PrintWriter file_writer = null;
 		String inputFilename = argv[0];
 		String outputFilename = argv[1];
 		

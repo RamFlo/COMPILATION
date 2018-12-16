@@ -81,6 +81,7 @@ public class AST_EXP_CALL extends AST_EXP
 				throw new SemanticRuntimeException(lineNum,colNum,String.format("%s is not a valid function name in this scope\n",funcName));
 			}
 			listOfCalledFunctionParams = ((TYPE_FUNCTION)t).params;
+			funcReturnType = ((TYPE_FUNCTION)t).returnType;
 		}
 		else {
 			//if SemantMe didn't throw an error, the type is in the table

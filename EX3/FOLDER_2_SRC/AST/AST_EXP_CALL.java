@@ -1,9 +1,12 @@
 package AST;
 
 import MyExceptions.SemanticRuntimeException;
+import SYMBOL_TABLE.SYMBOL_TABLE;
 import TYPES.TYPE;
 import TYPES.TYPE_ARRAY;
 import TYPES.TYPE_CLASS;
+import TYPES.TYPE_CLASS_DATA_MEMBERS_LIST;
+import TYPES.TYPE_FUNCTION;
 import TYPES.TYPE_LIST;
 
 public class AST_EXP_CALL extends AST_EXP
@@ -65,7 +68,48 @@ public class AST_EXP_CALL extends AST_EXP
 	}
 	
 	public TYPE SemantMe() {
-		
+		TYPE_LIST listOfGivenParams = (this.params == null) ? null : params.semantMe();
+		TYPE_LIST listOfCalledFunctionParams = null;
+		TYPE callingObjectType = null;
+		TYPE funcReturnType = null;
+		if (callingObject == null) {
+			TYPE t = SYMBOL_TABLE.getInstance().find(funcName);
+			if (t == null) {
+				throw new SemanticRuntimeException(lineNum,colNum,String.format("function %s does not exist in scope\n",funcName));
+			}
+			if (!(t instanceof TYPE_FUNCTION)) {
+				throw new SemanticRuntimeException(lineNum,colNum,String.format("%s is not a valid function name in this scope\n",funcName));
+			}
+			listOfCalledFunctionParams = ((TYPE_FUNCTION)t).params;
+		}
+		else {
+			//if SemantMe didn't throw an error, the type is in the table
+			callingObjectType = callingObject.SemantMe();
+			//if it's not a class - it's an error
+			if (!(callingObjectType instanceof TYPE_CLASS)) {
+				throw new SemanticRuntimeException(lineNum,colNum,String.format("%s is not a class\n",callingObjectType.name));
+			}
+			TYPE_CLASS callingObjectTypeClass = (TYPE_CLASS) callingObjectType;
+			//check that the function is a field of the calling object's class
+			while (callingObjectTypeClass != null && funcReturnType == null) {
+				for (TYPE_CLASS_DATA_MEMBERS_LIST it = callingObjectTypeClass.data_members; it != null; it = it.tail) {
+					if (it.head.name.equals(funcName) && funcReturnType == null) {
+						TYPE fieldWithFuncNameType = it.head.type;
+						//if I found a field with the function's name, it has to be a function - else error
+						if (!(fieldWithFuncNameType instanceof TYPE_FUNCTION)) {
+							throw new SemanticRuntimeException(lineNum,colNum,String.format("%s is a non-function field in class %s\n",funcName,callingObjectType.name));
+						}
+						funcReturnType =  ((TYPE_FUNCTION)it.head.type).returnType;
+						listOfCalledFunctionParams = ((TYPE_FUNCTION)it.head.type).params;
+					}	
+				}
+				callingObjectTypeClass = callingObjectTypeClass.father;
+			}
+			if (funcReturnType == null) {
+				throw new SemanticRuntimeException(lineNum,colNum,String.format("%s does not have a function %s, nor inherits one\n",callingObjectType.name, funcName));
+			}
+		}
+		compareFunctionsArgsTypes(listOfGivenParams, listOfCalledFunctionParams);
 	}
 	
 	

@@ -50,13 +50,6 @@ scan with
 	System.out.print("\n");
 	return s; 
 :};
-after reduce {:
-	if (AST_Node.class.isInstance(RESULT))
-	{
-		AST_Node curAst = AST_Node.class.cast(RESULT);
-		ast.setLineAndColNum(lexer.getLine(),lexer.getCharPos());
-	}
-:};
 
 /*************/
 /* TERMINALS */

@@ -135,7 +135,6 @@ public class AST_DEC_FUNC extends AST_DEC
 		/* [5] Semant Input Params (names only) */
 		/****************************************/
 		if (params != null) params.SemantMe();
-		else System.out.println("function params == null");
 
 		/*******************/
 		/* [6] Semant Body */

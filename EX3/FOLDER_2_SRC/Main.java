@@ -83,6 +83,7 @@ public class Main
 				file_writer.close();
 			}
 			System.out.format(">> ERROR [%d:%d] %s", e.getLineNum(),e.getColNum(),e.getMessage());
+			e.printStackTrace();
 			return;
 		}	     
 		catch (Exception e)

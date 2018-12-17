@@ -29,7 +29,7 @@ parser code
 	}
 	private void updateResultLocation(AST_Node RESULT)
 	{
-		RESULT.setLineAndColNum(lexer.getRine(),lexer.getCharPos());
+		RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos());
 	}
 	
 :}

@@ -138,7 +138,8 @@ public class AST_EXP_CALL extends AST_EXP
 						throw new SemanticRuntimeException(lineNum, colNum,
 								"Function call args are different from function's expected args\n");
 				}
-				throw new SemanticRuntimeException(lineNum, colNum,
+				else 
+					throw new SemanticRuntimeException(lineNum, colNum,
 						"Function call args are different from function's expected args\n");
 			}
 			if (itOne.head instanceof TYPE_CLASS) // arg is TYPE_CLASS for both

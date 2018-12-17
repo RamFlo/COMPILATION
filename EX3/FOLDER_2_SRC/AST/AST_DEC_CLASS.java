@@ -204,7 +204,7 @@ public class AST_DEC_CLASS extends AST_DEC
 		/*************************/
 		/* [1] Begin Class Scope */
 		/*************************/
-		SYMBOL_TABLE.getInstance().beginScope("CLASS");
+		SYMBOL_TABLE.getInstance().beginClassScope("CLASS", (TYPE_CLASS)superType);
 		
 		
 		/**********************************************************************/
@@ -257,7 +257,7 @@ public class AST_DEC_CLASS extends AST_DEC
 		/*****************/
 		/* [3] End Scope */
 		/*****************/
-		SYMBOL_TABLE.getInstance().endScope();
+		SYMBOL_TABLE.getInstance().endClassScope();
 
 		/*********************************************************/
 		/* [5] Return value is irrelevant for class declarations */

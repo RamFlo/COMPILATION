@@ -117,6 +117,11 @@ public class AST_DEC_VAR extends AST_DEC
 					throw new SemanticRuntimeException(lineNum,colNum,"non constant string initialValue for TYPE_STRING class variable\n");
 			}
 		}
+		
+		/***************************************************/
+		/* [4] Enter the Function Type to the Symbol Table */
+		/***************************************************/
+		SYMBOL_TABLE.getInstance().enterObject(name,t1);
 		return t1;
 	}
 	

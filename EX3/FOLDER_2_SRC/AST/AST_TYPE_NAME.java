@@ -70,6 +70,9 @@ public class AST_TYPE_NAME extends AST_Node
 		if (SYMBOL_TABLE.getInstance().findInCurrentScope(name) != null)
 			throw new SemanticRuntimeException(lineNum, colNum, String.format("parameter's (%s) name is already used in function's scope\n",name));
 		
+		if (name.equals("void"))
+			throw new SemanticRuntimeException(lineNum, colNum, String.format("parameter's (%s) name cannot be (void)\n",name));
+		
 		/*******************************************************/
 		/* Enter var with name=name and type=t to symbol table */
 		/*******************************************************/

@@ -92,7 +92,7 @@ public class AST_DEC_FUNC extends AST_DEC
 		/*********************/
 		/* [1] function name */
 		/*********************/
-		if (SYMBOL_TABLE.getInstance().findInCurrentScope(name) != null)
+		if (SYMBOL_TABLE.getInstance().findInCurrentScope(name) != null || name.equals("void"))
 		{
 			throw new SemanticRuntimeException(lineNum, colNum, String.format("declared function's name (%s) is already in use\n", name));
 		}

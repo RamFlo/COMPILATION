@@ -169,6 +169,10 @@ public class AST_DEC_CLASS extends AST_DEC
 		if (SYMBOL_TABLE.getInstance().find(name) != null)
 			throw new SemanticRuntimeException(lineNum, colNum, String.format
 					("name class: %s is already exists in SYMBOL_TABLE\n", name));
+		
+		if (name.equals("void"))
+			throw new SemanticRuntimeException(lineNum, colNum, String.format
+					("class name cannot be (void)\n", name));
 			
 
 		/*There is no extends*/

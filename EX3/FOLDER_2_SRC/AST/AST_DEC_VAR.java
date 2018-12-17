@@ -93,8 +93,8 @@ public class AST_DEC_VAR extends AST_DEC
 		/***************************************************/
 		/* [3] Check That Name is not an existing dataType */
 		/***************************************************/
-		if (SYMBOL_TABLE.getInstance().findDataType(name) != null) //changed to findInCurrentScope
-			throw new SemanticRuntimeException(lineNum,colNum,String.format("variable %s is an existing dataType\n",name));
+		if (SYMBOL_TABLE.getInstance().findDataType(name) != null  || name.equals("void")) //changed to findInCurrentScope
+			throw new SemanticRuntimeException(lineNum,colNum,String.format("variable %s is an existing dataType or void\n",name));
 		
 		if (initialValueNew != null)
 			throw new SemanticRuntimeException(lineNum,colNum,"attempt to use NEW exp for class member decleration\n");
@@ -146,8 +146,8 @@ public class AST_DEC_VAR extends AST_DEC
 		/***************************************************/
 		/* [3] Check That Name is not an existing dataType */
 		/***************************************************/
-		if (SYMBOL_TABLE.getInstance().findDataType(name) != null) //changed to findInCurrentScope
-			throw new SemanticRuntimeException(lineNum,colNum,String.format("variable %s is an existing dataType\n",name));
+		if (SYMBOL_TABLE.getInstance().findDataType(name) != null  || name.equals("void")) //changed to findInCurrentScope
+			throw new SemanticRuntimeException(lineNum,colNum,String.format("variable %s is an existing dataType or void\n",name));
 		
 		
 		if (this.initialValue != null) t2 =  initialValue.SemantMe();

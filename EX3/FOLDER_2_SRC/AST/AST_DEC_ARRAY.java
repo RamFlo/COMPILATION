@@ -65,7 +65,7 @@ public class AST_DEC_ARRAY extends AST_DEC
 		/*********************/
 		/* [1] array name */
 		/*********************/
-		if (SYMBOL_TABLE.getInstance().find(name) != null)
+		if (SYMBOL_TABLE.getInstance().find(name) != null || name.equals("void"))
 		{
 			throw new SemanticRuntimeException(lineNum, colNum, String.format("declared array type name (%s) is already in use\n", name));
 		}

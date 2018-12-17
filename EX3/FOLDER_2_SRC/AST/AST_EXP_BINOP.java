@@ -148,9 +148,9 @@ public class AST_EXP_BINOP extends AST_EXP
 			//t1 and t2 are arrays
 			if (t1 instanceof TYPE_ARRAY)
 			{
-				String t1ArrayTypeString = ((TYPE_ARRAY)t1).arrayTypeString;
-				String t2ArrayTypeString = ((TYPE_ARRAY)t2).arrayTypeString;
-				if (t1ArrayTypeString.equals(t2ArrayTypeString))
+				String t1ArrayTypeName = ((TYPE_ARRAY)t1).name;
+				String t2ArrayTypeName = ((TYPE_ARRAY)t2).name;
+				if (t1ArrayTypeName.equals(t2ArrayTypeName))
 					return TYPE_INT.getInstance();;
 					
 				//what about two arrays of different classes that have inheritance relation? should this case be handled differently?

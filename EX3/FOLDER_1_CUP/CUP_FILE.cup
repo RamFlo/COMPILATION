@@ -10,6 +10,8 @@ parser code
 	
 	private int curLine = 1, curCol = 0;
 	
+	private int lastDecLine = 1, lastDecCol = 0;
+	
 	public Parser(Lexer lexer)
 	{
 		super(lexer);
@@ -35,6 +37,16 @@ parser code
 		RESULT.setLineAndColNum(curLine,curCol);
 		curLine = lexer.getLine();
 		curCol = lexer.getCharPos();
+	}
+	
+	private void updateResultLocationLastDec(AST_Node RESULT)
+	{
+		RESULT.setLineAndColNum(lastDecLine,lastDecCol);
+		curLine = lexer.getLine();
+		curCol = lexer.getCharPos();
+		
+		lastDecLine = lexer.getLine();
+		lastDecCol = lexer.getCharPos();
 	}
 	
 	private void updateLocation()

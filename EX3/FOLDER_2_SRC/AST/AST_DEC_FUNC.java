@@ -76,6 +76,7 @@ public class AST_DEC_FUNC extends AST_DEC
 		TYPE t = null;
 		TYPE returnType = null;
 		TYPE_LIST type_list = null;
+		TYPE existingNamesType = null;
 
 		/*******************/
 		/* [0] return type */
@@ -92,10 +93,9 @@ public class AST_DEC_FUNC extends AST_DEC
 		/*********************/
 		/* [1] function name */
 		/*********************/
-		if (SYMBOL_TABLE.getInstance().findInCurrentScope(name) != null || name.equals("void"))
-		{
-			throw new SemanticRuntimeException(lineNum, colNum, String.format("declared function's name (%s) is already in use\n", name));
-		}
+		if (name.equals("void"))
+			throw new SemanticRuntimeException(lineNum, colNum, String.format("declared function's name cannot be (void)\n", name));
+		
 		/***************************************************/
 		/* [1.1] function name is not an existing dataType */
 		/***************************************************/
@@ -104,7 +104,15 @@ public class AST_DEC_FUNC extends AST_DEC
 			throw new SemanticRuntimeException(lineNum, colNum, String.format("declared function's name (%s) is already in use as dataType\n", name));
 		}
 		
+		/***************************************************/
+		/* [1.2] function name cannot be another function's name  */
+		/***************************************************/
 		
+		if ((existingNamesType = SYMBOL_TABLE.getInstance().findInCurrentScope(name)) != null)
+		{
+			if (existingNamesType instanceof TYPE_FUNCTION)
+				throw new SemanticRuntimeException(lineNum, colNum, String.format("declared function's name (%s) is already in use by another function\n", name));
+		}
 		
 		/********************************************************/
 		/* [2] Semant type of input params & populate type_list */

@@ -6,6 +6,7 @@ import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.SYMBOL_TABLE;
 import TYPES.TYPE;
 import TYPES.TYPE_CLASS;
+import TYPES.TYPE_FUNCTION;
 import TYPES.TYPE_INT;
 import TYPES.TYPE_NIL;
 import TYPES.TYPE_STRING;
@@ -74,7 +75,7 @@ public class AST_DEC_VAR extends AST_DEC
 	{
 		TYPE t1 = null;
 		//TYPE t2 = null;
-
+		TYPE existingNamesType = null;
 		/****************************/
 		/* [1] Check If Type exists */
 		/****************************/
@@ -84,17 +85,20 @@ public class AST_DEC_VAR extends AST_DEC
 			throw new SemanticRuntimeException(lineNum,colNum,String.format("non existing type %s\n",type));
 		}
 		
-		/**************************************/
-		/* [2] Check That Name does NOT exist */
-		/**************************************/
-		if (SYMBOL_TABLE.getInstance().findInCurrentScope(name) != null) //changed to findInCurrentScope
-			throw new SemanticRuntimeException(lineNum,colNum,String.format("variable %s already exists in scope\n",name));
-		
 		/***************************************************/
-		/* [3] Check That Name is not an existing dataType */
+		/* [2] Check That Name is not an existing dataType */
 		/***************************************************/
 		if (SYMBOL_TABLE.getInstance().findDataType(name) != null  || name.equals("void")) //changed to findInCurrentScope
 			throw new SemanticRuntimeException(lineNum,colNum,String.format("variable %s is an existing dataType or void\n",name));
+		
+		/**************************************/
+		/* [3] Check That Name does NOT exist */
+		/**************************************/
+		if ((existingNamesType = SYMBOL_TABLE.getInstance().findInCurrentScope(name)) != null) //changed to findInCurrentScope
+		{
+			if (!(existingNamesType instanceof TYPE_FUNCTION))
+				throw new SemanticRuntimeException(lineNum,colNum,String.format("variable %s already exists in scope\n",name));
+		}
 		
 		if (initialValueNew != null)
 			throw new SemanticRuntimeException(lineNum,colNum,"attempt to use NEW exp for class member decleration\n");
@@ -130,6 +134,7 @@ public class AST_DEC_VAR extends AST_DEC
 	{
 		TYPE t1 = null;
 		TYPE t2 = null;
+		TYPE existingNamesType = null;
 		
 	
 		/****************************/
@@ -141,18 +146,23 @@ public class AST_DEC_VAR extends AST_DEC
 			throw new SemanticRuntimeException(lineNum,colNum,String.format("non existing type %s\n",type));
 		}
 		
-		
-		/**************************************/
-		/* [2] Check That Name does NOT exist */
-		/**************************************/
-		if (SYMBOL_TABLE.getInstance().findInCurrentScope(name) != null) //changed to findInCurrentScope
-			throw new SemanticRuntimeException(lineNum,colNum,String.format("variable %s already exists in scope\n",name));
-		
 		/***************************************************/
-		/* [3] Check That Name is not an existing dataType */
+		/* [2] Check That Name is not an existing dataType */
 		/***************************************************/
 		if (SYMBOL_TABLE.getInstance().findDataType(name) != null  || name.equals("void")) //changed to findInCurrentScope
 			throw new SemanticRuntimeException(lineNum,colNum,String.format("variable %s is an existing dataType or void\n",name));
+		
+		/**************************************/
+		/* [3] Check That Name does NOT exist */
+		/**************************************/
+		if ((existingNamesType = SYMBOL_TABLE.getInstance().findInCurrentScope(name)) != null) //changed to findInCurrentScope
+		{
+			if (!(existingNamesType instanceof TYPE_FUNCTION))
+				throw new SemanticRuntimeException(lineNum,colNum,String.format("variable %s already exists in scope\n",name));
+		}
+			
+		
+		
 		
 		
 		if (this.initialValue != null) t2 =  initialValue.SemantMe();

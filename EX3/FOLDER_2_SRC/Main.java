@@ -7,6 +7,7 @@ import MyExceptions.SemanticRuntimeException;
 
 public class Main
 {
+	
 	static public void main(String argv[])
 	{
 		Lexer l;

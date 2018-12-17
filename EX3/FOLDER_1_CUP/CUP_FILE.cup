@@ -8,7 +8,7 @@ parser code
 {:
 	public Lexer lexer;
 	
-	private int curLine = 1, curCol = 1;
+	private int curLine = 1, curCol = 0;
 	
 	public Parser(Lexer lexer)
 	{
@@ -19,12 +19,15 @@ parser code
 	{
 		System.out.print("ERROR >> ");		
 		System.out.print("[");
-		System.out.print(lexer.getLine());
+		//System.out.print(lexer.getLine());
+		System.out.print(curLine);
 		System.out.print(":");
-		System.out.print(lexer.getCharPos());
+		//System.out.print(lexer.getCharPos());
+		System.out.print(curCol);
 		System.out.print("] \n");
 		System.out.print(message);
-		throw new ParserRuntimeException(String.format("ERROR(%d)\n",lexer.getLine()));
+		//throw new ParserRuntimeException(String.format("ERROR(%d)\n",lexer.getLine()));
+		throw new ParserRuntimeException(String.format("ERROR(%d)\n",curLine));
 		//System.exit(0);
 	}
 	private void updateResultLocation(AST_Node RESULT)

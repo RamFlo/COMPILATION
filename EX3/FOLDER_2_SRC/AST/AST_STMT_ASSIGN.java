@@ -87,8 +87,12 @@ public class AST_STMT_ASSIGN extends AST_STMT
 				if (t1 instanceof TYPE_CLASS && !isExtends((TYPE_CLASS)t1, (TYPE_CLASS)t2))
 					throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for (type=class)var := (type=class)exp (not equal/extends)\n");
 				
-				if (t1 instanceof TYPE_ARRAY)
-					throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for (type=array)var := (type=array)exp (assign without NEW)\n");					
+				if (t1 instanceof TYPE_ARRAY) {
+					if (!((TYPE_ARRAY) t1).name.equals(((TYPE_ARRAY) t2).name))
+						throw new SemanticRuntimeException(lineNum, colNum,
+								"type mismatch for (type=array)var := (type=array_other)exp\n");
+				}
+					
 			}
 			
 			else{ /*t1.getClass() != t2.getClass()*/

@@ -251,7 +251,7 @@ public class AST_DEC_CLASS extends AST_DEC
 		if (((TYPE_CLASS)SYMBOL_TABLE.getInstance().findDataType(name)).data_members == null)
 			System.out.println("in DEC_CLASS: data_members is null after update");
 		else
-			System.out.println(String.format("data_members list head: %s", ((TYPE_CLASS)SYMBOL_TABLE.getInstance().findDataType(name)).data_members.head.name));
+			System.out.println(String.format("in DEC_CLASS: data_members list head: %s", ((TYPE_CLASS)SYMBOL_TABLE.getInstance().findDataType(name)).data_members.head.name));
 		//delete later-debug
 		
 		

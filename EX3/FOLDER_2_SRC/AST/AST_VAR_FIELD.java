@@ -85,6 +85,7 @@ public class AST_VAR_FIELD extends AST_VAR
 		/**********************************************************/
 		if (tc.data_members == null)
 			System.out.println("tc.data_members is null");
+		
 		while (tc != null) {
 			for (TYPE_CLASS_DATA_MEMBERS_LIST it = tc.data_members; it != null; it = it.tail) {
 				if (it.head.name.equals(fieldName))

@@ -95,10 +95,10 @@ public class AST_EXP_CALL extends AST_EXP
 		TYPE funcReturnType = null;
 		if (callingObject == null) {
 			TYPE t = SYMBOL_TABLE.getInstance().find(funcName);
-			if (t == null)
-			{
-				
-			}
+//			if (t == null)
+//			{
+//				
+//			}
 			
 			if (t == null) {
 				throw new SemanticRuntimeException(lineNum,colNum,String.format("function %s does not exist in scope\n",funcName));

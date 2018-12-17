@@ -83,6 +83,8 @@ public class AST_VAR_FIELD extends AST_VAR
 		/**********************************************************/
 		/* [3] Look for fieldlName inside tc and its superclasses */
 		/**********************************************************/
+		if (tc.data_members == null)
+			System.out.println("tc.data_members is null");
 		while (tc != null) {
 			for (TYPE_CLASS_DATA_MEMBERS_LIST it = tc.data_members; it != null; it = it.tail) {
 				if (it.head.name.equals(fieldName))

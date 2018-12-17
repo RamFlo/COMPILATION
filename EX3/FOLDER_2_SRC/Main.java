@@ -79,10 +79,11 @@ public class Main
 		catch (SemanticRuntimeException e)
 		{
 			if (file_writer != null) {
-				file_writer.print(String.format("ERROR(%d)",e.getLineNum()));
+				file_writer.println(String.format("ERROR(%d)",e.getLineNum()));
 				file_writer.close();
 			}
 			System.out.format(">> ERROR [%d:%d] %s", e.getLineNum(),e.getColNum(),e.getMessage());
+			e.printStackTrace();
 			return;
 		}	     
 		catch (Exception e)

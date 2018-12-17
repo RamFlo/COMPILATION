@@ -77,11 +77,12 @@ public class AST_DEC_VAR extends AST_DEC
 		/****************************/
 		/* [1] Check If Type exists */
 		/****************************/
-		t1 = SYMBOL_TABLE.getInstance().find(type);
+		t1 = SYMBOL_TABLE.getInstance().findDataType(type);
 		if (t1 == null)
 		{
 			throw new SemanticRuntimeException(lineNum,colNum,String.format("non existing type %s\n",type));
 		}
+		
 		
 		/**************************************/
 		/* [2] Check That Name does NOT exist */
@@ -94,7 +95,9 @@ public class AST_DEC_VAR extends AST_DEC
 		if (this.initialValue != null) t2 =  initialValue.SemantMe();
 		if (this.initialValueNew != null) t2 =  initialValueNew.SemantMe();
 		
-		if (this.initialValueNew != null || this.initialValue != null) {
+		if (initialValue != null){
+			t2 = initialValue.SemantMe();
+			
 			if (t1.getClass() == t2.getClass()){
 				if (t1 instanceof TYPE_CLASS && !isExtends((TYPE_CLASS)t1, (TYPE_CLASS)t2))
 					throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for (type=class)var := (type=class)exp (not equal/extends)\n");
@@ -111,6 +114,21 @@ public class AST_DEC_VAR extends AST_DEC
 				if (t2 != TYPE_NIL.getInstance())
 					throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for var := exp\n");	
 			}
+		}
+		
+		else if (initialValueNew != null){ /*newExp != null*/
+			t2 = initialValueNew.SemantMe();
+			
+			if (t1.getClass() == t2.getClass()){
+				if (t1 instanceof TYPE_CLASS && !isExtends((TYPE_CLASS)t1, (TYPE_CLASS)t2))
+					throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for (type=class)var := NEW (type=class)newExp (not equal/extends)\n");
+				
+				else{/*t1.getclass()==t2.getclass()==TYPE_ARRAY*/					
+					if (!((TYPE_ARRAY)t1).arrayTypeString.equals(((TYPE_ARRAY)t2).name))
+						throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for (type=TYPE_ARRAY)var := NEW (type=TYPE_ARRAY)newExp (the type is differrent from what was declare)\n");
+				}
+			}
+			else throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for var := NEW newExp\n");
 		}
 
 		/***************************************************/

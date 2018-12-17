@@ -224,51 +224,6 @@ public class SYMBOL_TABLE
 		this.endScope();
 	}
 	
-	public TYPE_FUNCTION doesFunctionExistInSuperclass(String)
-	{
-		if (superType == null)
-			return;
-		
-		for (TYPE_CLASS_DATA_MEMBERS_LIST it = superType.data_members; it  != null; it = it.tail)
-		{
-			if (!it.head.name.equals(curFunction.name))
-				continue;
-			//Assumption: declaring a function with the same name as declared variable in father is illegal
-			
-			if (!(it.head.type instanceof TYPE_FUNCTION))
-				throw new SemanticRuntimeException(lineNum, colNum,
-						"Class method is shadowing a superclass's variable\n");
-
-			TYPE_FUNCTION superFunc = (TYPE_FUNCTION) it.head.type;
-			if (superFunc.returnType.getClass() != curFunction.returnType.getClass())
-				throw new SemanticRuntimeException(lineNum, colNum,
-						"Class method overloading a superclass's method with different return type\n");
-
-			if (superFunc.returnType instanceof TYPE_CLASS) // return type is
-															// TYPE_CLASS for
-															// both
-			{
-				if (!((TYPE_CLASS) superFunc.returnType).name.equals(((TYPE_CLASS) curFunction.returnType).name))
-					throw new SemanticRuntimeException(lineNum, colNum,
-							"Class method overloading a superclass's method with different return type (TYPE_CLASS)\n");
-			}
-
-			if (superFunc.returnType instanceof TYPE_ARRAY) // return type is
-															// TYPE_ARRAY for
-															// both
-			{
-				if (!((TYPE_ARRAY) superFunc.returnType).name.equals(((TYPE_ARRAY) curFunction.returnType).name))
-					throw new SemanticRuntimeException(lineNum, colNum,
-							"Class method overloading a superclass's method with different return type (TYPE_ARRAY)\n");
-			}
-			
-			//compare functions' args list
-			compareFunctionsArgsTypes(superFunc.params,curFunction.params);
-			
-			return; //found overloaded super class's method, no need to continue
-		}
-		doesFunctionOverloadProperly(curFunction,superType.father);
-	}
 	
 	public static int n=0;
 	

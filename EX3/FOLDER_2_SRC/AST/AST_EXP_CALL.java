@@ -77,7 +77,7 @@ public class AST_EXP_CALL extends AST_EXP
 					TYPE fieldWithFuncNameType = it.head.type;
 					//if I found a field with the function's name, it has to be a function - else error
 					if (!(fieldWithFuncNameType instanceof TYPE_FUNCTION)) {
-						throw new SemanticRuntimeException(lineNum,colNum,String.format("%s is a non-function field in class %s\n",funcName,callingObjectType.name));
+						throw new SemanticRuntimeException(lineNum,colNum,String.format("%s is a non-function field in class %s\n",funcName,callingObjectTypeClass.name));
 					}
 					funcReturnType =  ((TYPE_FUNCTION)it.head.type).returnType;
 					return ((TYPE_FUNCTION)it.head.type).params;

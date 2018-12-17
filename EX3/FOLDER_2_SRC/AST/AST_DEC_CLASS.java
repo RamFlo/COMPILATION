@@ -229,19 +229,21 @@ public class AST_DEC_CLASS extends AST_DEC
 			if (curHeadFunc != null)
 				{
 					curFunction = (TYPE_FUNCTION) curHeadFunc.SemantFuncSignatureAndParamTypes();
-					dataMembersList = new TYPE_CLASS_DATA_MEMBERS_LIST(new TYPE_CLASS_DATA_MEMBER(curFunction,curFunction.name),dataMembersList);
+					//dataMembersList = new TYPE_CLASS_DATA_MEMBERS_LIST(new TYPE_CLASS_DATA_MEMBER(curFunction,curFunction.name),dataMembersList);
+					t.data_members = new TYPE_CLASS_DATA_MEMBERS_LIST(new TYPE_CLASS_DATA_MEMBER(curFunction,curFunction.name),t.data_members);
 					doesFunctionOverloadProperly(curFunction,((TYPE_CLASS)superType));
 				}
 			if (curHeadVar != null)
 				{
 					curVariant = curHeadVar.SemantMeFromClass();
-					dataMembersList = new TYPE_CLASS_DATA_MEMBERS_LIST(new TYPE_CLASS_DATA_MEMBER(curVariant,curHeadVar.name),dataMembersList);
+					//dataMembersList = new TYPE_CLASS_DATA_MEMBERS_LIST(new TYPE_CLASS_DATA_MEMBER(curVariant,curHeadVar.name),dataMembersList);
+					t.data_members = new TYPE_CLASS_DATA_MEMBERS_LIST(new TYPE_CLASS_DATA_MEMBER(curVariant,curHeadVar.name),t.data_members);
 					doesVariableShadow(curHeadVar.name,((TYPE_CLASS)superType));
 				}
 		}
 		
 		//update data_members_list in symbol table entry
-		SYMBOL_TABLE.getInstance().findAndUpdateEntryTypeForDataType(name, new TYPE_CLASS((TYPE_CLASS)superType,name,dataMembersList));
+		//SYMBOL_TABLE.getInstance().findAndUpdateEntryTypeForDataType(name, new TYPE_CLASS((TYPE_CLASS)superType,name,dataMembersList));
 		
 		//delete later-debug
 		if (dataMembersList != null && dataMembersList.head !=null)

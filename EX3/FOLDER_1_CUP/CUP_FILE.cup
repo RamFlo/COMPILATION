@@ -8,7 +8,7 @@ parser code
 {:
 	public Lexer lexer;
 	
-	private int curLine = 0, curCol = 0;
+	private int curLine = 1, curCol = 1;
 	
 	public Parser(Lexer lexer)
 	{
@@ -29,7 +29,15 @@ parser code
 	}
 	private void updateResultLocation(AST_Node RESULT)
 	{
-		RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos());
+		RESULT.setLineAndColNum(curLine,curCol);
+		curLine = lexer.getLine();
+		curCol = lexer.getCharPos();
+	}
+	
+	private void updateLocation()
+	{
+		curLine = lexer.getLine();
+		curCol = lexer.getCharPos();
 	}
 	
 :}
@@ -147,10 +155,10 @@ start with decList;
 decList		::=		dec:d decList:l	{: RESULT = new AST_DEC_LIST(d,l); updateResultLocation(RESULT); :}
 					| dec:d			{: RESULT = new AST_DEC_LIST(d,null); updateResultLocation(RESULT); :};
 
-dec			::=		varDec:d		{: RESULT = d; :}
-					| funcDec:d		{: RESULT = d; :}
-					| classDec:d	{: RESULT = d; :}
-					| arrayDec:d 	{: RESULT = d; :};
+dec			::=		varDec:d		{: RESULT = d; updateLocation(); :}
+					| funcDec:d		{: RESULT = d; updateLocation(); :}
+					| classDec:d	{: RESULT = d; updateLocation(); :}
+					| arrayDec:d 	{: RESULT = d; updateLocation(); :};
 										
 varDec		::=		ID:type ID:var SEMICOLON	            {: RESULT = new AST_DEC_VAR(type,var,null, null); updateResultLocation(RESULT);:}
 					| ID:type ID:var ASSIGN exp:e SEMICOLON {: RESULT = new AST_DEC_VAR(type,var,e, null); updateResultLocation(RESULT); :}
@@ -169,10 +177,10 @@ arrayDec	::=		ARRAY ID:name EQ ID:type LBRACK RBRACK {: RESULT = new AST_DEC_ARR
 exp			::=		INT:i			{: RESULT = new AST_EXP_INT(i);  updateResultLocation(RESULT); :}
 					| MINUS INT:i	{: RESULT = new AST_EXP_INT(-i); updateResultLocation(RESULT); :}
 					| STRING:s		{: RESULT = new AST_EXP_STRING(s); updateResultLocation(RESULT); :}
-					| LPAREN exp:e RPAREN {:RESULT = e; :}
+					| LPAREN exp:e RPAREN {:RESULT = e; updateLocation(); :}
 					| NIL		    {: RESULT = new AST_EXP_NIL(); updateResultLocation(RESULT); :}
-					| var:v			{: RESULT = v; :}
-					| callExp:e		{: RESULT = e; :}
+					| var:v			{: RESULT = v; updateLocation(); :}
+					| callExp:e		{: RESULT = e; updateLocation(); :}
 					| exp:e1 binop:b exp:e2	{: RESULT = new AST_EXP_BINOP(e1,e2,b); updateResultLocation(RESULT); :};
 					
 
@@ -199,13 +207,13 @@ var		::=			ID:name							{: RESULT = new AST_VAR_SIMPLE(name); updateResultLocat
 					| var:v LBRACK exp:e RBRACK		{: RESULT = new AST_VAR_SUBSCRIPT(v,e);updateResultLocation(RESULT);     :};
 					
 
-binop		::=		PLUS					{: RESULT = 0; :}
-					| MINUS					{: RESULT = 1; :}
-					| TIMES					{: RESULT = 2; :}
-					| DIVIDE				{: RESULT = 3; :}
-					| LT					{: RESULT = 4; :}
-					| GT					{: RESULT = 5; :}
-					| EQ					{: RESULT = 6; :};
+binop		::=		PLUS					{: RESULT = 0; updateLocation(); :}
+					| MINUS					{: RESULT = 1; updateLocation(); :}
+					| TIMES					{: RESULT = 2; updateLocation(); :}
+					| DIVIDE				{: RESULT = 3; updateLocation(); :}
+					| LT					{: RESULT = 4; updateLocation(); :}
+					| GT					{: RESULT = 5; updateLocation(); :}
+					| EQ					{: RESULT = 6; updateLocation(); :};
 					 
 					
 callExp		::=		ID:funcName LPAREN expListComma:el RPAREN				{: RESULT = new AST_EXP_CALL(null,funcName,el);updateResultLocation(RESULT);   :}

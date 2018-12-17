@@ -109,7 +109,7 @@ public class AST_STMT_ASSIGN extends AST_STMT
 					throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for (type=class)var := NEW (type=class)newExp (not equal/extends)\n");
 				
 				else{/*t1.getclass()==t2.getclass()==TYPE_ARRAY*/					
-					if (!((TYPE_ARRAY)t1).arrayTypeString.equals(((TYPE_ARRAY)t2).name))
+					if (!((TYPE_ARRAY)t1).arrayTypeString.equals(((TYPE_ARRAY)t2).arrayTypeString))
 						throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for (type=TYPE_ARRAY)var := NEW (type=TYPE_ARRAY)newExp (the type is differrent from what was declare)\n");
 				}
 			}

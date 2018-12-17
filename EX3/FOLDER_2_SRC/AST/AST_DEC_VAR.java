@@ -124,8 +124,12 @@ public class AST_DEC_VAR extends AST_DEC
 					throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for (type=class)var := NEW (type=class)newExp (not equal/extends)\n");
 				
 				else{/*t1.getclass()==t2.getclass()==TYPE_ARRAY*/					
-					if (!((TYPE_ARRAY)t1).arrayTypeString.equals(((TYPE_ARRAY)t2).name))
+					if (!((TYPE_ARRAY)t1).arrayTypeString.equals(((TYPE_ARRAY)t2).arrayTypeString))
+					{
+						//System.out.println(String.format("t1 arrayTypeName: %s, t2 arrayTypeName: %s", ((TYPE_ARRAY)t1).name),((TYPE_ARRAY)t2).name)));
 						throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for (type=TYPE_ARRAY)var := NEW (type=TYPE_ARRAY)newExp (the type is differrent from what was declare)\n");
+						
+					}
 				}
 			}
 			else throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for var := NEW newExp\n");

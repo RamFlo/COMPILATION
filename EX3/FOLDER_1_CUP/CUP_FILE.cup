@@ -7,7 +7,9 @@ import AST.*;
 parser code 
 {:
 	public Lexer lexer;
-
+	
+	private int curLine = 0, curCol = 0;
+	
 	public Parser(Lexer lexer)
 	{
 		super(lexer);
@@ -25,6 +27,11 @@ parser code
 		throw new ParserRuntimeException(String.format("ERROR(%d)\n",lexer.getLine()));
 		//System.exit(0);
 	}
+	private void updateResultLocation(AST_Node RESULT)
+	{
+		RESULT.setLineAndColNum(lexer.getRine(),lexer.getCharPos());
+	}
+	
 :}
 
 /************************/
@@ -137,59 +144,59 @@ start with decList;
 /********************/
 
 
-decList		::=		dec:d decList:l	{: RESULT = new AST_DEC_LIST(d,l); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos()); :}
-					| dec:d			{: RESULT = new AST_DEC_LIST(d,null); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos()); :};
+decList		::=		dec:d decList:l	{: RESULT = new AST_DEC_LIST(d,l); updateResultLocation(RESULT); :}
+					| dec:d			{: RESULT = new AST_DEC_LIST(d,null); updateResultLocation(RESULT); :};
 
 dec			::=		varDec:d		{: RESULT = d; :}
 					| funcDec:d		{: RESULT = d; :}
 					| classDec:d	{: RESULT = d; :}
 					| arrayDec:d 	{: RESULT = d; :};
 										
-varDec		::=		ID:type ID:var SEMICOLON	            {: RESULT = new AST_DEC_VAR(type,var,null, null); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos());:}
-					| ID:type ID:var ASSIGN exp:e SEMICOLON {: RESULT = new AST_DEC_VAR(type,var,e, null); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos()); :}
-					| ID:type ID:var ASSIGN newExp:e SEMICOLON {: RESULT = new AST_DEC_VAR(type,var,null,e); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos()); :};				
+varDec		::=		ID:type ID:var SEMICOLON	            {: RESULT = new AST_DEC_VAR(type,var,null, null); updateResultLocation(RESULT);:}
+					| ID:type ID:var ASSIGN exp:e SEMICOLON {: RESULT = new AST_DEC_VAR(type,var,e, null); updateResultLocation(RESULT); :}
+					| ID:type ID:var ASSIGN newExp:e SEMICOLON {: RESULT = new AST_DEC_VAR(type,var,null,e); updateResultLocation(RESULT); :};				
 
 funcDec		::=		ID:ret ID:name LPAREN typeNameListComma:tnl RPAREN LBRACE stmtList:body RBRACE
-					{: RESULT = new AST_DEC_FUNC(ret,name,tnl,body); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos()); :}
+					{: RESULT = new AST_DEC_FUNC(ret,name,tnl,body); updateResultLocation(RESULT); :}
 					| ID:ret ID:name LPAREN RPAREN LBRACE stmtList:body RBRACE
-					{: RESULT = new AST_DEC_FUNC(ret,name,null,body); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos()); :};
+					{: RESULT = new AST_DEC_FUNC(ret,name,null,body); updateResultLocation(RESULT); :};
 
-classDec	::=		CLASS ID:name LBRACE cFieldList:l RBRACE {: RESULT = new AST_DEC_CLASS(name, null, l); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos()); :}
-					| CLASS ID:name EXTENDS ID:superName LBRACE cFieldList:l RBRACE {: RESULT = new AST_DEC_CLASS(name, superName, l); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos()); :};
+classDec	::=		CLASS ID:name LBRACE cFieldList:l RBRACE {: RESULT = new AST_DEC_CLASS(name, null, l); updateResultLocation(RESULT); :}
+					| CLASS ID:name EXTENDS ID:superName LBRACE cFieldList:l RBRACE {: RESULT = new AST_DEC_CLASS(name, superName, l); updateResultLocation(RESULT); :};
 
-arrayDec	::=		ARRAY ID:name EQ ID:type LBRACK RBRACK {: RESULT = new AST_DEC_ARRAY(name, type); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos()); :};
+arrayDec	::=		ARRAY ID:name EQ ID:type LBRACK RBRACK {: RESULT = new AST_DEC_ARRAY(name, type); updateResultLocation(RESULT); :};
 				
-exp			::=		INT:i			{: RESULT = new AST_EXP_INT(i);  RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos()); :}
-					| MINUS INT:i	{: RESULT = new AST_EXP_INT(-i); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos()); :}
-					| STRING:s		{: RESULT = new AST_EXP_STRING(s); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos()); :}
+exp			::=		INT:i			{: RESULT = new AST_EXP_INT(i);  updateResultLocation(RESULT); :}
+					| MINUS INT:i	{: RESULT = new AST_EXP_INT(-i); updateResultLocation(RESULT); :}
+					| STRING:s		{: RESULT = new AST_EXP_STRING(s); updateResultLocation(RESULT); :}
 					| LPAREN exp:e RPAREN {:RESULT = e; :}
-					| NIL		    {: RESULT = new AST_EXP_NIL(); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos()); :}
+					| NIL		    {: RESULT = new AST_EXP_NIL(); updateResultLocation(RESULT); :}
 					| var:v			{: RESULT = v; :}
 					| callExp:e		{: RESULT = e; :}
-					| exp:e1 binop:b exp:e2	{: RESULT = new AST_EXP_BINOP(e1,e2,b); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos()); :};
+					| exp:e1 binop:b exp:e2	{: RESULT = new AST_EXP_BINOP(e1,e2,b); updateResultLocation(RESULT); :};
 					
 
 				
-stmtList	::=		stmt:s stmtList:l	{: RESULT = new AST_STMT_LIST(s,l); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos()); :}
-					| stmt:s			{: RESULT = new AST_STMT_LIST(s,null); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos()); :};
+stmtList	::=		stmt:s stmtList:l	{: RESULT = new AST_STMT_LIST(s,l); updateResultLocation(RESULT); :}
+					| stmt:s			{: RESULT = new AST_STMT_LIST(s,null); updateResultLocation(RESULT); :};
 					
-stmt		::=		varDec:v                                                    {: RESULT = new AST_STMT_DEC_VAR(v); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos()); :}
-					| callExp:callExp SEMICOLON									{: RESULT = new AST_STMT_CALL(callExp); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos()); :}
-					| RETURN exp:e SEMICOLON									{: RESULT = new AST_STMT_RETURN(e); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos()); :}
-					| RETURN SEMICOLON											{: RESULT = new AST_STMT_RETURN(null); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos());     :}
-					| var:v ASSIGN exp:e SEMICOLON								{: RESULT = new AST_STMT_ASSIGN(v,e,null); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos()); :}
-					| var:v ASSIGN newExp:e SEMICOLON							{: RESULT = new AST_STMT_ASSIGN(v,null,e); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos()); :}
-					| IF    LPAREN exp:cond RPAREN LBRACE stmtList:body RBRACE	{: RESULT = new AST_STMT_IF(cond,body); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos());   :}
-					| WHILE LPAREN exp:cond RPAREN LBRACE stmtList:body RBRACE	{: RESULT = new AST_STMT_WHILE(cond,body); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos());:};
+stmt		::=		varDec:v                                                    {: RESULT = new AST_STMT_DEC_VAR(v); updateResultLocation(RESULT); :}
+					| callExp:callExp SEMICOLON									{: RESULT = new AST_STMT_CALL(callExp); updateResultLocation(RESULT); :}
+					| RETURN exp:e SEMICOLON									{: RESULT = new AST_STMT_RETURN(e); updateResultLocation(RESULT); :}
+					| RETURN SEMICOLON											{: RESULT = new AST_STMT_RETURN(null); updateResultLocation(RESULT);     :}
+					| var:v ASSIGN exp:e SEMICOLON								{: RESULT = new AST_STMT_ASSIGN(v,e,null); updateResultLocation(RESULT); :}
+					| var:v ASSIGN newExp:e SEMICOLON							{: RESULT = new AST_STMT_ASSIGN(v,null,e); updateResultLocation(RESULT); :}
+					| IF    LPAREN exp:cond RPAREN LBRACE stmtList:body RBRACE	{: RESULT = new AST_STMT_IF(cond,body); updateResultLocation(RESULT);   :}
+					| WHILE LPAREN exp:cond RPAREN LBRACE stmtList:body RBRACE	{: RESULT = new AST_STMT_WHILE(cond,body); updateResultLocation(RESULT);:};
 
 
 
-newExp		::= 	NEW ID:type 						{: RESULT = new AST_NEWEXP(type,null); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos());:}
-					| NEW ID:type LBRACK exp:e RBRACK 	{: RESULT = new AST_NEWEXP(type,e);   RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos()); :};
+newExp		::= 	NEW ID:type 						{: RESULT = new AST_NEWEXP(type,null); updateResultLocation(RESULT);:}
+					| NEW ID:type LBRACK exp:e RBRACK 	{: RESULT = new AST_NEWEXP(type,e);   updateResultLocation(RESULT); :};
 					
-var		::=			ID:name							{: RESULT = new AST_VAR_SIMPLE(name); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos());      :}
-					| var:v DOT ID:fieldName		{: RESULT = new AST_VAR_FIELD(v,fieldName);RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos()); :} 
-					| var:v LBRACK exp:e RBRACK		{: RESULT = new AST_VAR_SUBSCRIPT(v,e);RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos());     :};
+var		::=			ID:name							{: RESULT = new AST_VAR_SIMPLE(name); updateResultLocation(RESULT);      :}
+					| var:v DOT ID:fieldName		{: RESULT = new AST_VAR_FIELD(v,fieldName);updateResultLocation(RESULT); :} 
+					| var:v LBRACK exp:e RBRACK		{: RESULT = new AST_VAR_SUBSCRIPT(v,e);updateResultLocation(RESULT);     :};
 					
 
 binop		::=		PLUS					{: RESULT = 0; :}
@@ -201,23 +208,23 @@ binop		::=		PLUS					{: RESULT = 0; :}
 					| EQ					{: RESULT = 6; :};
 					 
 					
-callExp		::=		ID:funcName LPAREN expListComma:el RPAREN				{: RESULT = new AST_EXP_CALL(null,funcName,el);RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos());   :}
-					| ID:funcName LPAREN RPAREN								{: RESULT = new AST_EXP_CALL(null,funcName,null);RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos()); :}
-					| var:v DOT ID:funcName LPAREN expListComma:el RPAREN	{: RESULT = new AST_EXP_CALL(v,funcName,el);RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos());      :}
-					| var:v DOT ID:funcName LPAREN RPAREN					{: RESULT = new AST_EXP_CALL(v,funcName,null);RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos());    :};
+callExp		::=		ID:funcName LPAREN expListComma:el RPAREN				{: RESULT = new AST_EXP_CALL(null,funcName,el);updateResultLocation(RESULT);   :}
+					| ID:funcName LPAREN RPAREN								{: RESULT = new AST_EXP_CALL(null,funcName,null);updateResultLocation(RESULT); :}
+					| var:v DOT ID:funcName LPAREN expListComma:el RPAREN	{: RESULT = new AST_EXP_CALL(v,funcName,el);updateResultLocation(RESULT);      :}
+					| var:v DOT ID:funcName LPAREN RPAREN					{: RESULT = new AST_EXP_CALL(v,funcName,null);updateResultLocation(RESULT);    :};
 
-expListComma	::=		exp:e COMMA expListComma:el	{: RESULT = new AST_EXP_LIST(e,el);RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos());   :}
-						| exp:e						{: RESULT = new AST_EXP_LIST(e,null);RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos()); :};
+expListComma	::=		exp:e COMMA expListComma:el	{: RESULT = new AST_EXP_LIST(e,el);updateResultLocation(RESULT);   :}
+						| exp:e						{: RESULT = new AST_EXP_LIST(e,null);updateResultLocation(RESULT); :};
 
-typeName				::=		ID:type ID:name									{: RESULT = new AST_TYPE_NAME(type,name);RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos());    :};
+typeName				::=		ID:type ID:name									{: RESULT = new AST_TYPE_NAME(type,name);updateResultLocation(RESULT);    :};
 
-typeNameListComma		::=		typeName:tn COMMA typeNameListComma:tnl			{: RESULT = new AST_TYPE_NAME_LIST(tn,tnl);RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos());  :}
-								| typeName:tn									{: RESULT = new AST_TYPE_NAME_LIST(tn,null);RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos()); :};
+typeNameListComma		::=		typeName:tn COMMA typeNameListComma:tnl			{: RESULT = new AST_TYPE_NAME_LIST(tn,tnl);updateResultLocation(RESULT);  :}
+								| typeName:tn									{: RESULT = new AST_TYPE_NAME_LIST(tn,null);updateResultLocation(RESULT); :};
 
 /*cField					::=		varDec:v										{: RESULT = v; :}
 								| funcDec:f										{: RESULT = f; :};*/
 
-cFieldList				::=		varDec:v cFieldList:l 							{: RESULT = new AST_CFIELDLIST(v,l);RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos()); :}
-								| varDec:v										{: RESULT = new AST_CFIELDLIST(v,null); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos());:}
-								| funcDec:f cFieldList:l 						{: RESULT = new AST_CFIELDLIST(f,l); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos());:}
-								| funcDec:f										{: RESULT = new AST_CFIELDLIST(f,null); RESULT.setLineAndColNum(lexer.getLine(),lexer.getCharPos());:};
+cFieldList				::=		varDec:v cFieldList:l 							{: RESULT = new AST_CFIELDLIST(v,l);updateResultLocation(RESULT); :}
+								| varDec:v										{: RESULT = new AST_CFIELDLIST(v,null); updateResultLocation(RESULT);:}
+								| funcDec:f cFieldList:l 						{: RESULT = new AST_CFIELDLIST(f,l); updateResultLocation(RESULT);:}
+								| funcDec:f										{: RESULT = new AST_CFIELDLIST(f,null); updateResultLocation(RESULT);:};

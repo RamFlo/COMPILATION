@@ -8,6 +8,7 @@ import TYPES.TYPE_CLASS;
 import TYPES.TYPE_CLASS_DATA_MEMBERS_LIST;
 import TYPES.TYPE_FUNCTION;
 import TYPES.TYPE_LIST;
+import TYPES.TYPE_NIL;
 
 public class AST_EXP_CALL extends AST_EXP
 {
@@ -114,34 +115,49 @@ public class AST_EXP_CALL extends AST_EXP
 		return funcReturnType;
 	}
 	
+	//t1 is father for t2?
+	private boolean isExtends(TYPE_CLASS t1, TYPE_CLASS t2) {
+		if (t2 == null) return false;
+		if (t1.name.equals(t2.name)) return true;
+		TYPE_CLASS tmp = t2.father;
+		return isExtends(t1, tmp);
+	}
 	
-	
+	//funcArgsTwo is original function's args list
+	//funcArgsOne is the current call
 	private void compareFunctionsArgsTypes(TYPE_LIST funcArgsOne,TYPE_LIST funcArgsTwo)
 	{
 		TYPE_LIST itOne = null,itTwo = null;
 		for (itOne = funcArgsOne,itTwo = funcArgsTwo; itOne != null && itTwo != null; itOne = itOne.tail,itTwo = itTwo.tail)
 		{
 			if (itOne.head.getClass() != itTwo.head.getClass())
+			{
+				if (itTwo.head instanceof TYPE_ARRAY || itTwo.head instanceof TYPE_CLASS)
+				{
+					if (itOne.head != TYPE_NIL.getInstance())
+						throw new SemanticRuntimeException(lineNum, colNum,
+								"Function call args are different from function's expected args\n");
+				}
 				throw new SemanticRuntimeException(lineNum, colNum,
-						"Class method is overloading a superclass's method with different argument's type\n");
-
+						"Function call args are different from function's expected args\n");
+			}
 			if (itOne.head instanceof TYPE_CLASS) // arg is TYPE_CLASS for both
 			{
-				if (!((TYPE_CLASS) itOne.head).name.equals(((TYPE_CLASS) itTwo.head).name))
+				if(!isExtends((TYPE_CLASS)itTwo.head,(TYPE_CLASS)itOne.head))
 					throw new SemanticRuntimeException(lineNum, colNum,
-							"Class method is overloading a superclass's method with different argument's type (TYPE_CLASS)\n");
+							"Function call expected specific class and got another class without inheritance relation\n");
 			}
 
 			if (itOne.head instanceof TYPE_ARRAY) // arg is TYPE_ARRAY for both
 			{
 				if (!((TYPE_ARRAY) itOne.head).name.equals(((TYPE_ARRAY) itTwo.head).name))
 					throw new SemanticRuntimeException(lineNum, colNum,
-							"Class method is overloading a superclass's method with different argument's type (TYPE_ARRAY)\n");
+							"Function call expected specific arrayType and got another arrayType\n");
 			}
 		}
 		
 		if (itOne != null || itTwo !=null)
 			throw new SemanticRuntimeException(lineNum, colNum,
-					"Class method is overloading a superclass's method with different number of arguments\n");
+					"Function call with different number of args than original function\n");
 	}
 }

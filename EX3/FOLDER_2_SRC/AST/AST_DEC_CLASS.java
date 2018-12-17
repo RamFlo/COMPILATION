@@ -242,9 +242,17 @@ public class AST_DEC_CLASS extends AST_DEC
 		
 		//update data_members_list in symbol table entry
 		SYMBOL_TABLE.getInstance().findAndUpdateEntryTypeForDataType(name, new TYPE_CLASS((TYPE_CLASS)superType,name,dataMembersList));
+		
+		//delete later-debug
 		if (dataMembersList != null && dataMembersList.head !=null)
 			System.out.println(String.format("data_members list head: %s", dataMembersList.head.name));
 		
+		
+		if (((TYPE_CLASS)SYMBOL_TABLE.getInstance().findDataType(name)).data_members == null)
+			System.out.println("in DEC_CLASS: data_members is null after update");
+		else
+			System.out.println(String.format("data_members list head: %s", ((TYPE_CLASS)SYMBOL_TABLE.getInstance().findDataType(name)).data_members.head.name));
+		//delete later-debug
 		
 		
 		/*************************/

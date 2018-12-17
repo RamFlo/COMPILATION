@@ -124,10 +124,19 @@ public class SYMBOL_TABLE
 	public void findAndUpdateEntryTypeForDataType(String name, TYPE t)
 	{
 		SYMBOL_TABLE_ENTRY searchRes = null;
+		SYMBOL_TABLE_ENTRY searchRes2 = null;
 		if (symbol_table_hash.containsKey(name)) {
 			searchRes = ((LinkedList<SYMBOL_TABLE_ENTRY>)(symbol_table_hash.get(name))).getLast();
 			if (searchRes.entryCat == Category.dataType)
-				((LinkedList<SYMBOL_TABLE_ENTRY>)(symbol_table_hash.get(name))).getLast().updateType(t);
+			{
+				searchRes.updateType(t);
+				searchRes2 = ((LinkedList<SYMBOL_TABLE_ENTRY>)(symbol_table_hash.get(name))).getLast();
+				if (searchRes2.type instanceof TYPE_CLASS && ((TYPE_CLASS)searchRes2.type).data_members != null){
+					if (((TYPE_CLASS)searchRes2.type).data_members.head !=null)
+						System.out.println(String.format("in findAndUpdateEntryTypeForDataType: data_members list head: %s", ((TYPE_CLASS)t).data_members.head.name));
+				}
+			}
+				
 		}
 	}
 

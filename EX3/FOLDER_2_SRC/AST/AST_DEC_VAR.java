@@ -6,7 +6,9 @@ import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.SYMBOL_TABLE;
 import TYPES.TYPE;
 import TYPES.TYPE_CLASS;
+import TYPES.TYPE_INT;
 import TYPES.TYPE_NIL;
+import TYPES.TYPE_STRING;
 
 public class AST_DEC_VAR extends AST_DEC
 {
@@ -67,6 +69,51 @@ public class AST_DEC_VAR extends AST_DEC
 		if (initialValueNew != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,initialValueNew.SerialNumber);
 			
 	}
+	
+	public TYPE SemantMeFromClass()
+	{
+		TYPE t1 = null;
+		//TYPE t2 = null;
+
+		/****************************/
+		/* [1] Check If Type exists */
+		/****************************/
+		t1 = SYMBOL_TABLE.getInstance().findDataType(type);
+		if (t1 == null)
+		{
+			throw new SemanticRuntimeException(lineNum,colNum,String.format("non existing type %s\n",type));
+		}
+		
+		/**************************************/
+		/* [2] Check That Name does NOT exist */
+		/**************************************/
+		if (SYMBOL_TABLE.getInstance().findInCurrentScope(name) != null) //changed to findInCurrentScope
+			throw new SemanticRuntimeException(lineNum,colNum,String.format("variable %s already exists in scope\n",name));
+		
+		if (initialValueNew != null)
+			throw new SemanticRuntimeException(lineNum,colNum,"attempt to use NEW exp for class member decleration\n");
+		
+		if (initialValue != null)
+		{
+			if (t1 instanceof TYPE_ARRAY || t1 instanceof TYPE_CLASS)
+			{
+				if (!(initialValue instanceof AST_EXP_NIL))
+					throw new SemanticRuntimeException(lineNum,colNum,"non-nil initialValue for TYPE_ARRAY or TYPE_CLASS class variable\n");
+			}
+			if (t1 == TYPE_INT.getInstance())
+			{
+				if (!(initialValue instanceof AST_EXP_INT))
+					throw new SemanticRuntimeException(lineNum,colNum,"non constant int initialValue for TYPE_INT class variable\n");
+			}
+			if (t1 == TYPE_STRING.getInstance())
+			{
+				if (!(initialValue instanceof AST_EXP_STRING))
+					throw new SemanticRuntimeException(lineNum,colNum,"non constant string initialValue for TYPE_STRING class variable\n");
+			}
+		}
+		return t1;
+	}
+	
 	//Copied from next exercise
 	public TYPE SemantMe()
 	{
@@ -88,9 +135,7 @@ public class AST_DEC_VAR extends AST_DEC
 		/* [2] Check That Name does NOT exist */
 		/**************************************/
 		if (SYMBOL_TABLE.getInstance().findInCurrentScope(name) != null) //changed to findInCurrentScope
-		{
 			throw new SemanticRuntimeException(lineNum,colNum,String.format("variable %s already exists in scope\n",name));
-		}
 		
 		if (this.initialValue != null) t2 =  initialValue.SemantMe();
 		if (this.initialValueNew != null) t2 =  initialValueNew.SemantMe();

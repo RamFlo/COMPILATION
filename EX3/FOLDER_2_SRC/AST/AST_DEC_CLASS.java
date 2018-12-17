@@ -230,7 +230,7 @@ public class AST_DEC_CLASS extends AST_DEC
 				}
 			if (curHeadVar != null)
 				{
-					curVariant = curHeadVar.SemantMe();
+					curVariant = curHeadVar.SemantMeFromClass();
 					dataMembersList = new TYPE_CLASS_DATA_MEMBERS_LIST(new TYPE_CLASS_DATA_MEMBER(curVariant,curHeadVar.name),dataMembersList);
 					doesVariableShadow(curHeadVar.name,((TYPE_CLASS)superType));
 				}

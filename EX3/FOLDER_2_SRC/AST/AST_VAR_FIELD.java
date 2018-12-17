@@ -94,6 +94,6 @@ public class AST_VAR_FIELD extends AST_VAR
 		/*********************************************/
 		/* [4] fieldName does not exist in class var */
 		/*********************************************/
-		throw new SemanticRuntimeException(lineNum, colNum, String.format("field (%s) does not exist in class (%s)\n",fieldName,tc.name));
+		throw new SemanticRuntimeException(lineNum, colNum, String.format("field (%s) does not exist in class (%s)\n",fieldName,t.name));
 	}
 }

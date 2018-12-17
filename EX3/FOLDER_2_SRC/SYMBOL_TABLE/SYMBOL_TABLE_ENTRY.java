@@ -67,5 +67,9 @@ public class SYMBOL_TABLE_ENTRY
 	{
 		this.type = t;
 		System.out.println("updated TYPE for class");
+		if (t instanceof TYPE_CLASS && ((TYPE_CLASS)t).data_members != null){
+			if (((TYPE_CLASS)t).data_members.head !=null)
+				System.out.println(String.format("in update: data_members list head: %s", ((TYPE_CLASS)t).data_members.head.name));
+		}
 	}
 }

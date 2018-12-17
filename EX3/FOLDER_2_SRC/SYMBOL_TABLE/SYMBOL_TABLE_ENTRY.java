@@ -66,5 +66,6 @@ public class SYMBOL_TABLE_ENTRY
 	public void updateType(TYPE t)
 	{
 		this.type = t;
+		System.out.println("updated TYPE for class");
 	}
 }

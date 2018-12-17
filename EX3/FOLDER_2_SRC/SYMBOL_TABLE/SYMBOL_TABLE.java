@@ -127,7 +127,7 @@ public class SYMBOL_TABLE
 		if (symbol_table_hash.containsKey(name)) {
 			searchRes = ((LinkedList<SYMBOL_TABLE_ENTRY>)(symbol_table_hash.get(name))).getLast();
 			if (searchRes.entryCat == Category.dataType)
-				searchRes.updateType(t);
+				((LinkedList<SYMBOL_TABLE_ENTRY>)(symbol_table_hash.get(name))).getLast().updateType(t);
 		}
 	}
 

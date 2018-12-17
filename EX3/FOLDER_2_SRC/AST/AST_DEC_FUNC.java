@@ -96,6 +96,15 @@ public class AST_DEC_FUNC extends AST_DEC
 		{
 			throw new SemanticRuntimeException(lineNum, colNum, String.format("declared function's name (%s) is already in use\n", name));
 		}
+		/***************************************************/
+		/* [1.1] function name is not an existing dataType */
+		/***************************************************/
+		if (SYMBOL_TABLE.getInstance().findDataType(name) != null)
+		{
+			throw new SemanticRuntimeException(lineNum, colNum, String.format("declared function's name (%s) is already in use as dataType\n", name));
+		}
+		
+		
 		
 		/********************************************************/
 		/* [2] Semant type of input params & populate type_list */

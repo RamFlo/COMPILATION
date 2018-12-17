@@ -83,7 +83,7 @@ public class AST_STMT_RETURN extends AST_STMT
 
 				if (curFunctionReturnType instanceof TYPE_ARRAY)
 				{
-					if (!((TYPE_ARRAY)curFunctionReturnType).arrayTypeString.equals(((TYPE_ARRAY)expType).name))
+					if (!((TYPE_ARRAY)curFunctionReturnType).name.equals(((TYPE_ARRAY)expType).name))
 						throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for function's return type and return statement (different array types)\n");
 				}
 					

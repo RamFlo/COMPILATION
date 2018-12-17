@@ -120,6 +120,10 @@ public class AST_DEC_VAR extends AST_DEC
 			t2 = initialValueNew.SemantMe();
 			
 			if (t1.getClass() == t2.getClass()){
+				System.out.println(String.format("t1.getClass()=%s,t2.getClass()=%s",t1.getClass().getName(),t2.getClass().getName() ));
+				if (t1 instanceof TYPE_CLASS)
+					System.out.println("t1 instanceof TYPE_CLASS");
+
 				if (t1 instanceof TYPE_CLASS && !isExtends((TYPE_CLASS)t1, (TYPE_CLASS)t2))
 					throw new SemanticRuntimeException(lineNum, colNum, "type mismatch for (type=class)var := NEW (type=class)newExp (not equal/extends)\n");
 				

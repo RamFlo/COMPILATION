@@ -217,7 +217,7 @@ stmt		::=		varDec:v                                                    {: RESULT
 newExp		::= 	NEW ID:type 						{: RESULT = new AST_NEWEXP(type,null);  RESULT.setLineAndColNum(typeleft+1, typeright); :}
 					| NEW ID:type LBRACK exp:e RBRACK 	{: RESULT = new AST_NEWEXP(type,e); RESULT.setLineAndColNum(typeleft+1, typeright); :};
 					
-var		::=			ID:name							{: RESULT = new AST_VAR_SIMPLE(name);  RESULT.setLineAndColNum(typeleft+1, typeright); :}
+var		::=			ID:name							{: RESULT = new AST_VAR_SIMPLE(name);  RESULT.setLineAndColNum(nameleft+1, nameright); :}
 					| var:v DOT ID:fieldName		{: RESULT = new AST_VAR_FIELD(v,fieldName); RESULT.setLineAndColNum(vleft+1, vright); :} 
 					| var:v LBRACK exp:e RBRACK		{: RESULT = new AST_VAR_SUBSCRIPT(v,e); RESULT.setLineAndColNum(vleft+1, vright); :};
 					

@@ -17,12 +17,12 @@ parser code
 	{
 		System.out.print("ERROR >> ");		
 		System.out.print("[");
-		System.out.print((lexer.getLine()+1));
+		System.out.print(lexer.getLine());
 		System.out.print(":");
 		System.out.print(lexer.getCharPos());
 		System.out.print("] \n");
 		System.out.print(message);
-		throw new ParserRuntimeException(String.format("ERROR(%d)\n",lexer.getLine()+1));
+		throw new ParserRuntimeException(String.format("ERROR(%d)\n",lexer.getLine()));
 	}
 	
 :}

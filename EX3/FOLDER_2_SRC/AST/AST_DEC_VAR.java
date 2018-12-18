@@ -96,7 +96,7 @@ public class AST_DEC_VAR extends AST_DEC
 		/**************************************/
 		if ((existingNamesType = SYMBOL_TABLE.getInstance().findInCurrentScope(name)) != null) //changed to findInCurrentScope
 		{
-			if (!(existingNamesType instanceof TYPE_FUNCTION))
+			//if (!(existingNamesType instanceof TYPE_FUNCTION))
 				throw new SemanticRuntimeException(lineNum,colNum,String.format("variable %s already exists in scope\n",name));
 		}
 		
@@ -157,7 +157,7 @@ public class AST_DEC_VAR extends AST_DEC
 		/**************************************/
 		if ((existingNamesType = SYMBOL_TABLE.getInstance().findInCurrentScope(name)) != null) //changed to findInCurrentScope
 		{
-			if (!(existingNamesType instanceof TYPE_FUNCTION))
+			//if (!(existingNamesType instanceof TYPE_FUNCTION))
 				throw new SemanticRuntimeException(lineNum,colNum,String.format("variable %s already exists in scope\n",name));
 		}
 			

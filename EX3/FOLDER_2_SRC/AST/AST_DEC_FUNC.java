@@ -109,10 +109,8 @@ public class AST_DEC_FUNC extends AST_DEC
 		/***************************************************/
 		
 		if ((existingNamesType = SYMBOL_TABLE.getInstance().findInCurrentScope(name)) != null)
-		{
-			if (existingNamesType instanceof TYPE_FUNCTION)
-				throw new SemanticRuntimeException(lineNum, colNum, String.format("declared function's name (%s) is already in use by another function\n", name));
-		}
+			throw new SemanticRuntimeException(lineNum, colNum,
+					String.format("declared function's name (%s) is already in use\n", name));
 		
 		/********************************************************/
 		/* [2] Semant type of input params & populate type_list */

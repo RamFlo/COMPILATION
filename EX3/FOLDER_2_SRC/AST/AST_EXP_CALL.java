@@ -68,19 +68,19 @@ public class AST_EXP_CALL extends AST_EXP
 		if (params != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,params.SerialNumber);		
 	}
 	
-	private TYPE_LIST findFunctionNameInClassAndItsSuper(String funcName,TYPE funcReturnType,TYPE_CLASS callingObjectTypeClass)
+	//returns found function's TYPE_FUNCTION
+	private TYPE_FUNCTION findFunctionNameInClassAndItsSupers(String funcName,TYPE_CLASS callingObjectTypeClass)
 	{
 		//check that the function is a field of the calling object's class
-		while (callingObjectTypeClass != null && funcReturnType == null) {
+		while (callingObjectTypeClass != null) {
 			for (TYPE_CLASS_DATA_MEMBERS_LIST it = callingObjectTypeClass.data_members; it != null; it = it.tail) {
-				if (it.head.name.equals(funcName) && funcReturnType == null) {
+				if (it.head.name.equals(funcName)) {
 					TYPE fieldWithFuncNameType = it.head.type;
 					//if I found a field with the function's name, it has to be a function - else error
 					if (!(fieldWithFuncNameType instanceof TYPE_FUNCTION)) {
 						throw new SemanticRuntimeException(lineNum,colNum,String.format("%s is a non-function field in class %s\n",funcName,callingObjectTypeClass.name));
 					}
-					funcReturnType =  ((TYPE_FUNCTION)it.head.type).returnType;
-					return ((TYPE_FUNCTION)it.head.type).params;
+					return ((TYPE_FUNCTION)it.head.type);
 				}	
 			}
 			callingObjectTypeClass = callingObjectTypeClass.father;
@@ -93,12 +93,14 @@ public class AST_EXP_CALL extends AST_EXP
 		TYPE_LIST listOfCalledFunctionParams = null;
 		TYPE callingObjectType = null;
 		TYPE funcReturnType = null;
+		TYPE_FUNCTION foundFunctionType = null;
 		if (callingObject == null) {
 			TYPE t = SYMBOL_TABLE.getInstance().find(funcName);
-//			if (t == null)
-//			{
-//				
-//			}
+			
+			//if (t == null) //search funcName in superclasses, if exists
+			//{
+				
+			//}
 			
 			if (t == null) {
 				throw new SemanticRuntimeException(lineNum,colNum,String.format("function %s does not exist in scope\n",funcName));
@@ -138,8 +140,12 @@ public class AST_EXP_CALL extends AST_EXP
 			}
 			*/
 			
-			listOfCalledFunctionParams = findFunctionNameInClassAndItsSuper(funcName,funcReturnType,callingObjectTypeClass);
+			foundFunctionType = findFunctionNameInClassAndItsSupers(funcName,callingObjectTypeClass);
 			
+			if (foundFunctionType != null) {
+				listOfCalledFunctionParams = foundFunctionType.params;
+				funcReturnType = foundFunctionType.returnType;
+			}
 			
 			if (funcReturnType == null) {
 				throw new SemanticRuntimeException(lineNum,colNum,String.format("%s does not have a function %s, nor inherits one\n",callingObjectType.name, funcName));

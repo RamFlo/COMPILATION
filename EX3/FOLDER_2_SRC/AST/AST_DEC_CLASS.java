@@ -98,7 +98,7 @@ public class AST_DEC_CLASS extends AST_DEC
 	}
 	
 	
-	private void doesFunctionOverloadProperly(TYPE_FUNCTION curFunction, TYPE_CLASS superType)
+	private void doesFunctionOverloadProperly(TYPE_FUNCTION curFunction, TYPE_CLASS superType, int funcLineNum, int funcColNum)
 	{
 		if (superType == null)
 			return;
@@ -110,12 +110,12 @@ public class AST_DEC_CLASS extends AST_DEC
 			//Assumption: declaring a function with the same name as declared variable in father is illegal
 			
 			if (!(it.head.type instanceof TYPE_FUNCTION))
-				throw new SemanticRuntimeException(lineNum, colNum,
+				throw new SemanticRuntimeException(funcLineNum, funcColNum,
 						"Class method is shadowing a superclass's variable\n");
 
 			TYPE_FUNCTION superFunc = (TYPE_FUNCTION) it.head.type;
 			if (superFunc.returnType.getClass() != curFunction.returnType.getClass())
-				throw new SemanticRuntimeException(lineNum, colNum,
+				throw new SemanticRuntimeException(funcLineNum, funcColNum,
 						"Class method overloading a superclass's method with different return type\n");
 
 			if (superFunc.returnType instanceof TYPE_CLASS) // return type is
@@ -123,7 +123,7 @@ public class AST_DEC_CLASS extends AST_DEC
 															// both
 			{
 				if (!((TYPE_CLASS) superFunc.returnType).name.equals(((TYPE_CLASS) curFunction.returnType).name))
-					throw new SemanticRuntimeException(lineNum, colNum,
+					throw new SemanticRuntimeException(funcLineNum, funcColNum,
 							"Class method overloading a superclass's method with different return type (TYPE_CLASS)\n");
 			}
 
@@ -132,7 +132,7 @@ public class AST_DEC_CLASS extends AST_DEC
 															// both
 			{
 				if (!((TYPE_ARRAY) superFunc.returnType).name.equals(((TYPE_ARRAY) curFunction.returnType).name))
-					throw new SemanticRuntimeException(lineNum, colNum,
+					throw new SemanticRuntimeException(funcLineNum, funcColNum,
 							"Class method overloading a superclass's method with different return type (TYPE_ARRAY)\n");
 			}
 			
@@ -141,7 +141,7 @@ public class AST_DEC_CLASS extends AST_DEC
 			
 			return; //found overloaded super class's method, no need to continue
 		}
-		doesFunctionOverloadProperly(curFunction,superType.father);
+		doesFunctionOverloadProperly(curFunction,superType.father,funcLineNum, funcColNum);
 	}
 	
 	
@@ -231,7 +231,7 @@ public class AST_DEC_CLASS extends AST_DEC
 					curFunction = (TYPE_FUNCTION) curHeadFunc.SemantFuncSignatureAndParamTypes();
 					//dataMembersList = new TYPE_CLASS_DATA_MEMBERS_LIST(new TYPE_CLASS_DATA_MEMBER(curFunction,curFunction.name),dataMembersList);
 					t.data_members = new TYPE_CLASS_DATA_MEMBERS_LIST(new TYPE_CLASS_DATA_MEMBER(curFunction,curFunction.name),t.data_members);
-					doesFunctionOverloadProperly(curFunction,((TYPE_CLASS)superType));
+					doesFunctionOverloadProperly(curFunction,((TYPE_CLASS)superType),curHeadFunc.lineNum,curHeadFunc.colNum);
 				}
 			if (curHeadVar != null)
 				{

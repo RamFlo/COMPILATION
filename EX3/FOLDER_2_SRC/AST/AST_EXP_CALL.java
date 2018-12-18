@@ -93,23 +93,21 @@ public class AST_EXP_CALL extends AST_EXP
 		TYPE_LIST listOfCalledFunctionParams = null;
 		TYPE callingObjectType = null;
 		TYPE funcReturnType = null;
-		TYPE_FUNCTION foundFunctionType = null;
+		TYPE foundFunctionType = null;
 		if (callingObject == null) {
-			TYPE t = SYMBOL_TABLE.getInstance().find(funcName);
+			foundFunctionType = SYMBOL_TABLE.getInstance().find(funcName);
 			
-			//if (t == null) //search funcName in superclasses, if exists
-			//{
-				
-			//}
+			if (foundFunctionType == null) //search funcName in superclasses, if exists
+				foundFunctionType = findFunctionNameInClassAndItsSupers(funcName,SYMBOL_TABLE.getInstance().curClassExtends);
 			
-			if (t == null) {
+			if (foundFunctionType == null) {
 				throw new SemanticRuntimeException(lineNum,colNum,String.format("function %s does not exist in scope\n",funcName));
 			}
-			if (!(t instanceof TYPE_FUNCTION)) {
+			if (!(foundFunctionType instanceof TYPE_FUNCTION)) {
 				throw new SemanticRuntimeException(lineNum,colNum,String.format("%s is not a valid function name in this scope\n",funcName));
 			}
-			listOfCalledFunctionParams = ((TYPE_FUNCTION)t).params;
-			funcReturnType = ((TYPE_FUNCTION)t).returnType;
+			listOfCalledFunctionParams = ((TYPE_FUNCTION)foundFunctionType).params;
+			funcReturnType = ((TYPE_FUNCTION)foundFunctionType).returnType;
 		}
 		else {
 			//if SemantMe didn't throw an error, the type is in the table
@@ -143,8 +141,8 @@ public class AST_EXP_CALL extends AST_EXP
 			foundFunctionType = findFunctionNameInClassAndItsSupers(funcName,callingObjectTypeClass);
 			
 			if (foundFunctionType != null) {
-				listOfCalledFunctionParams = foundFunctionType.params;
-				funcReturnType = foundFunctionType.returnType;
+				listOfCalledFunctionParams = ((TYPE_FUNCTION)foundFunctionType).params;
+				funcReturnType = ((TYPE_FUNCTION)foundFunctionType).returnType;
 			}
 			
 			if (funcReturnType == null) {

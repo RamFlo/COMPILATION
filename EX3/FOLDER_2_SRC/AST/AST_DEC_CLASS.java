@@ -145,7 +145,7 @@ public class AST_DEC_CLASS extends AST_DEC
 	}
 	
 	
-	private void doesVariableShadow(String varName, TYPE_CLASS superType)
+	private void doesVariableShadow(String varName, TYPE_CLASS superType, int varLineNum, int varColNum)
 	{
 		if (superType == null)
 			return;
@@ -153,11 +153,11 @@ public class AST_DEC_CLASS extends AST_DEC
 		for (TYPE_CLASS_DATA_MEMBERS_LIST it = superType.data_members; it  != null; it = it.tail)
 		{
 			if (it.head.name.equals(varName))
-				throw new SemanticRuntimeException(lineNum, colNum,
+				throw new SemanticRuntimeException(varLineNum, varColNum,
 						"Class variable is shadowing a superclass variable or method\n");
 		}
 		
-		doesVariableShadow(varName,superType.father);
+		doesVariableShadow(varName,superType.father,varLineNum, varColNum);
 	}
 	
 	
@@ -238,7 +238,7 @@ public class AST_DEC_CLASS extends AST_DEC
 					curVariant = curHeadVar.SemantMeFromClass();
 					//dataMembersList = new TYPE_CLASS_DATA_MEMBERS_LIST(new TYPE_CLASS_DATA_MEMBER(curVariant,curHeadVar.name),dataMembersList);
 					t.data_members = new TYPE_CLASS_DATA_MEMBERS_LIST(new TYPE_CLASS_DATA_MEMBER(curVariant,curHeadVar.name),t.data_members);
-					doesVariableShadow(curHeadVar.name,((TYPE_CLASS)superType));
+					doesVariableShadow(curHeadVar.name,((TYPE_CLASS)superType),curHeadVar.lineNum,curHeadVar.colNum);
 				}
 		}
 		

@@ -209,7 +209,7 @@ stmt		::=		varDec:v                                                    {: RESULT
 					| RETURN SEMICOLON											{: RESULT = new AST_STMT_RETURN(null); updateResultLocation(RESULT);     :}
 					| var:v ASSIGN exp:e SEMICOLON								{: RESULT = new AST_STMT_ASSIGN(v,e,null); updateResultLocation(RESULT); :}
 					| var:v ASSIGN newExp:e SEMICOLON							{: RESULT = new AST_STMT_ASSIGN(v,null,e); updateResultLocation(RESULT); :}
-					| IF    LPAREN exp:cond RPAREN LBRACE stmtList:body RBRACE	{: RESULT = new AST_STMT_IF(cond,body); updateResultLocation(RESULT);   :}
+					| IF    LPAREN exp:cond RPAREN LBRACE stmtList:body RBRACE	{: RESULT = new AST_STMT_IF(cond,body); updateResultLocation(RESULT); RESULT.setLineAndColNum(condleft+1, condright);   :}
 					| WHILE LPAREN exp:cond RPAREN LBRACE stmtList:body RBRACE	{: RESULT = new AST_STMT_WHILE(cond,body); updateResultLocation(RESULT);:};
 
 

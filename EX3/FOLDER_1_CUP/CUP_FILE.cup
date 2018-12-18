@@ -8,10 +8,6 @@ parser code
 {:
 	public Lexer lexer;
 	
-	private int curLine = 1, curCol = 0;
-	
-	private int lastDecLine = 1, lastDecCol = 0;
-	
 	public Parser(Lexer lexer)
 	{
 		super(lexer);
@@ -21,38 +17,12 @@ parser code
 	{
 		System.out.print("ERROR >> ");		
 		System.out.print("[");
-		//System.out.print(lexer.getLine());
-		System.out.print(curLine);
+		System.out.print((lexer.getLine()+1));
 		System.out.print(":");
-		//System.out.print(lexer.getCharPos());
-		System.out.print(curCol);
+		System.out.print(lexer.getCharPos());
 		System.out.print("] \n");
 		System.out.print(message);
-		//throw new ParserRuntimeException(String.format("ERROR(%d)\n",lexer.getLine()));
-		throw new ParserRuntimeException(String.format("ERROR(%d)\n",curLine));
-		//System.exit(0);
-	}
-	private void updateResultLocation(AST_Node RESULT)
-	{
-		RESULT.setLineAndColNum(curLine,curCol);
-		curLine = lexer.getLine();
-		curCol = lexer.getCharPos();
-	}
-	
-	private void updateResultLocationLastDec(AST_Node RESULT)
-	{
-		RESULT.setLineAndColNum(lastDecLine,lastDecCol);
-		curLine = lexer.getLine();
-		curCol = lexer.getCharPos();
-		
-		lastDecLine = lexer.getLine();
-		lastDecCol = lexer.getCharPos();
-	}
-	
-	private void updateLocation()
-	{
-		curLine = lexer.getLine();
-		curCol = lexer.getCharPos();
+		throw new ParserRuntimeException(String.format("ERROR(%d)\n",lexer.getLine()+1));
 	}
 	
 :}

@@ -3,6 +3,8 @@ package AST;
 import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.SYMBOL_TABLE;
 import TYPES.TYPE;
+import TYPES.TYPE_CLASS;
+import TYPES.TYPE_CLASS_DATA_MEMBERS_LIST;
 import TYPES.TYPE_FUNCTION;
 
 public class AST_VAR_SIMPLE extends AST_VAR
@@ -51,9 +53,31 @@ public class AST_VAR_SIMPLE extends AST_VAR
 			String.format("SIMPLE\nVAR\n(%s)",name));
 	}
 	
+	//returns found variable's TYPE
+	private TYPE findVarNameInClassAndItsSupers(String varName, TYPE_CLASS curClassSuper) {
+		// check that the variable is a field of the calling object's class
+		while (curClassSuper != null) {
+			for (TYPE_CLASS_DATA_MEMBERS_LIST it = curClassSuper.data_members; it != null; it = it.tail) {
+				if (it.head.name.equals(varName)) {
+					TYPE fieldWithVarNameType = it.head.type;
+					// if I found a field with the function's name, it has to not be a function - else error
+					if (fieldWithVarNameType instanceof TYPE_FUNCTION) {
+						throw new SemanticRuntimeException(lineNum, colNum, String.format(
+								"simple var %s is a function field in class %s\n", varName, curClassSuper.name));
+					}
+					return it.head.type;
+				}
+			}
+			curClassSuper = curClassSuper.father;
+		}
+		return null;
+	}
+	
 	public TYPE SemantMe()
 	{
 		TYPE t = SYMBOL_TABLE.getInstance().findObject(name);
+		if (t == null) //not found, search in superclass if exists
+			t = findVarNameInClassAndItsSupers(name,SYMBOL_TABLE.getInstance().curClassExtends);
 		if (t == null || t instanceof TYPE_FUNCTION)
 			throw new SemanticRuntimeException(lineNum, colNum, String.format("(%s) cannot be resolved to a variable\n",name));
 		return t;

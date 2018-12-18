@@ -162,10 +162,10 @@ arrayDec	::=		ARRAY ID:name EQ ID:type LBRACK RBRACK {: RESULT = new AST_DEC_ARR
 exp			::=		INT:i			{: RESULT = new AST_EXP_INT(i); RESULT.setLineAndColNum(ileft+1, iright); :}
 					| MINUS INT:i	{: RESULT = new AST_EXP_INT(-i); RESULT.setLineAndColNum(ileft+1, iright); :}
 					| STRING:s		{: RESULT = new AST_EXP_STRING(s); RESULT.setLineAndColNum(sleft+1, sright); :}
-					| LPAREN exp:e RPAREN {:RESULT = e; updateLocation(); RESULT.setLineAndColNum(eleft+1, eright); :}
+					| LPAREN exp:e RPAREN {:RESULT = e; RESULT.setLineAndColNum(eleft+1, eright); :}
 					| NIL		    {: RESULT = new AST_EXP_NIL(); RESULT.setLineAndColNum(lexer.getLine(), lexer.getCharPos()); :}
-					| var:v			{: RESULT = v; updateLocation(); RESULT.setLineAndColNum(vleft+1, vright); :}
-					| callExp:e		{: RESULT = e; updateLocation(); RESULT.setLineAndColNum(eleft+1, eright); :}
+					| var:v			{: RESULT = v; RESULT.setLineAndColNum(vleft+1, vright); :}
+					| callExp:e		{: RESULT = e; RESULT.setLineAndColNum(eleft+1, eright); :}
 					| exp:e1 binop:b exp:e2	{: RESULT = new AST_EXP_BINOP(e1,e2,b); RESULT.setLineAndColNum(bleft+1, bright); :};
 					
 

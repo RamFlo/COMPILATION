@@ -1,10 +1,13 @@
 package AST;
 
-import TYPES.*;
-import SYMBOL_TABLE.*;
-import TEMP.*;
-import IR.*;
-import MIPS.*;
+import MyExceptions.SemanticRuntimeException;
+import SYMBOL_TABLE.SYMBOL_TABLE;
+import TYPES.TYPE;
+import TYPES.TYPE_FUNCTION;
+import TYPES.TYPE_INT;
+import TYPES.TYPE_LIST;
+import TYPES.TYPE_STRING;
+import TYPES.TYPE_VOID;
 
 public class AST_DEC_FUNC extends AST_DEC
 {
@@ -15,6 +18,7 @@ public class AST_DEC_FUNC extends AST_DEC
 	public String name;
 	public AST_TYPE_NAME_LIST params;
 	public AST_STMT_LIST body;
+	private TYPE funcReturnType = null;
 	
 	/******************/
 	/* CONSTRUCTOR(S) */
@@ -36,16 +40,6 @@ public class AST_DEC_FUNC extends AST_DEC
 		this.body = body;
 	}
 
-	public TEMP IRme()
-	{
-		IR.
-		getInstance().
-		Add_IRcommand(new IRcommand_Label("main"));		
-		if (body != null) body.IRme();
-
-		return null;
-	}
-	
 	/************************************************************/
 	/* The printing message for a function declaration AST node */
 	/************************************************************/
@@ -75,63 +69,107 @@ public class AST_DEC_FUNC extends AST_DEC
 		if (params != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,params.SerialNumber);		
 		if (body   != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,body.SerialNumber);		
 	}
-
-	public TYPE SemantMe()
+	
+	
+	public TYPE SemantFuncSignatureAndParamTypes()
 	{
-		TYPE t;
+		TYPE t = null;
 		TYPE returnType = null;
 		TYPE_LIST type_list = null;
+		TYPE existingNamesType = null;
 
 		/*******************/
 		/* [0] return type */
 		/*******************/
-		returnType = SYMBOL_TABLE.getInstance().find(returnTypeName);
+		returnType = returnTypeName.equals("void") ? TYPE_VOID.getInstance() : SYMBOL_TABLE.getInstance().findDataType(returnTypeName);
 		if (returnType == null)
 		{
-			System.out.format(">> ERROR [%d:%d] non existing return type %s\n",6,6,returnType);				
+			throw new SemanticRuntimeException(lineNum, colNum, String.format("non existing return type (%s)\n", returnType));
 		}
-	
-		/****************************/
-		/* [1] Begin Function Scope */
-		/****************************/
-		SYMBOL_TABLE.getInstance().beginScope();
-
-		/***************************/
-		/* [2] Semant Input Params */
-		/***************************/
+		//should function be able to return an array type?
+		
+		this.funcReturnType = returnType;
+		
+		/*********************/
+		/* [1] function name */
+		/*********************/
+		if (name.equals("void"))
+			throw new SemanticRuntimeException(lineNum, colNum, String.format("declared function's name cannot be (void)\n", name));
+		
+		/***************************************************/
+		/* [1.1] function name is not an existing dataType */
+		/***************************************************/
+		if (SYMBOL_TABLE.getInstance().findDataType(name) != null)
+		{
+			throw new SemanticRuntimeException(lineNum, colNum, String.format("declared function's name (%s) is already in use as dataType\n", name));
+		}
+		
+		/***************************************************/
+		/* [1.2] function name cannot be another function's name  */
+		/***************************************************/
+		
+		if ((existingNamesType = SYMBOL_TABLE.getInstance().findInCurrentScope(name)) != null)
+			throw new SemanticRuntimeException(lineNum, colNum,
+					String.format("declared function's name (%s) is already in use\n", name));
+		
+		/********************************************************/
+		/* [2] Semant type of input params & populate type_list */
+		/********************************************************/
 		for (AST_TYPE_NAME_LIST it = params; it  != null; it = it.tail)
 		{
-			t = SYMBOL_TABLE.getInstance().find(it.head.type);
+			String curParamType = it.head.type;
+			
+			t = SYMBOL_TABLE.getInstance().findDataType(curParamType);
+			
 			if (t == null)
-			{
-				System.out.format(">> ERROR [%d:%d] non existing type %s\n",2,2,it.head.type);				
-			}
-			else
-			{
-				type_list = new TYPE_LIST(t,type_list);
-				SYMBOL_TABLE.getInstance().enter(it.head.name,t);
-			}
+				throw new SemanticRuntimeException(lineNum, colNum, String.format
+						("non existing type (%s) for parameter (%s) at function (%s) decleration\n", it.head.type,it.head.name,name));
+			
+			type_list = new TYPE_LIST(t,type_list);
 		}
+		
+		TYPE_FUNCTION curFunc = new TYPE_FUNCTION(returnType,name,type_list);
+
+		/***************************************************/
+		/* [3] Enter the Function Type to the Symbol Table */
+		/***************************************************/
+		//must enter function into symbol table BEFORE beginning the function's scope in order to allow recursive calls
+		SYMBOL_TABLE.getInstance().enterObject(name,curFunc);
+		
+		return curFunc;
+	}
+	
+	public void SemantFuncParamNamesAndBody()
+	{
+		/****************************/
+		/* [4] Begin Function Scope */
+		/****************************/
+		SYMBOL_TABLE.getInstance().beginFunctionScope("FUNCTION",this.funcReturnType);
+		
+		/****************************************/
+		/* [5] Semant Input Params (names only) */
+		/****************************************/
+		if (params != null) params.SemantMe();
 
 		/*******************/
-		/* [3] Semant Body */
+		/* [6] Semant Body */
 		/*******************/
 		body.SemantMe();
 
 		/*****************/
-		/* [4] End Scope */
+		/* [7] End Scope */
 		/*****************/
-		SYMBOL_TABLE.getInstance().endScope();
-
-		/***************************************************/
-		/* [5] Enter the Function Type to the Symbol Table */
-		/***************************************************/
-		SYMBOL_TABLE.getInstance().enter(name,new TYPE_FUNCTION(returnType,name,type_list));
+		SYMBOL_TABLE.getInstance().endFunctionScope();
+	}
+	
+	public TYPE SemantMe() //used only for global functions
+	{
+		SemantFuncSignatureAndParamTypes();
+		SemantFuncParamNamesAndBody();
 
 		/*********************************************************/
-		/* [6] Return value is irrelevant for class declarations */
+		/* [8] Return value is irrelevant for function declarations */
 		/*********************************************************/
 		return null;		
 	}
-	
 }

@@ -3,6 +3,7 @@
 /***********/
 package SYMBOL_TABLE;
 
+import SYMBOL_TABLE.ENTRY_CATEGORY.Category;
 /*******************/
 /* PROJECT IMPORTS */
 /*******************/
@@ -12,12 +13,7 @@ import TYPES.*;
 /* SYMBOL TABLE ENTRY */
 /**********************/
 public class SYMBOL_TABLE_ENTRY
-{
-	/*********/
-	/* index */
-	/*********/
-	int index;
-	
+{	
 	/********/
 	/* name */
 	/********/
@@ -32,12 +28,21 @@ public class SYMBOL_TABLE_ENTRY
 	/* prevtop and next symbol table entries ... */
 	/*********************************************/
 	public SYMBOL_TABLE_ENTRY prevtop;
-	public SYMBOL_TABLE_ENTRY next;
 
 	/****************************************************/
 	/* The prevtop_index is just for debug purposes ... */
 	/****************************************************/
 	public int prevtop_index;
+	
+	/***************************************/
+	/* scope level (0 is global scope) ... */
+	/***************************************/
+	public int scope_level;
+	
+	/******************************************/
+	/* entry category (object/dataType) ... */
+	/******************************************/
+	public Category entryCat;
 	
 	/******************/
 	/* CONSTRUCTOR(S) */
@@ -45,16 +50,26 @@ public class SYMBOL_TABLE_ENTRY
 	public SYMBOL_TABLE_ENTRY(
 		String name,
 		TYPE type,
-		int index,
-		SYMBOL_TABLE_ENTRY next,
+		Category entryCat,
 		SYMBOL_TABLE_ENTRY prevtop,
-		int prevtop_index)
+		int prevtop_index,
+		int scope_level)
 	{
-		this.index = index;
 		this.name = name;
 		this.type = type;
-		this.next = next;
+		this.entryCat = entryCat;
 		this.prevtop = prevtop;
 		this.prevtop_index = prevtop_index;
+		this.scope_level = scope_level;
+	}
+	
+	public void updateType(TYPE t)
+	{
+		this.type = t;
+		System.out.println("updated TYPE for class");
+		if (t instanceof TYPE_CLASS && ((TYPE_CLASS)t).data_members != null){
+			if (((TYPE_CLASS)t).data_members.head !=null)
+				System.out.println(String.format("in update: data_members list head: %s", ((TYPE_CLASS)t).data_members.head.name));
+		}
 	}
 }

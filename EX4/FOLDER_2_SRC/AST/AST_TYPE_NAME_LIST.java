@@ -1,6 +1,7 @@
 package AST;
 
-import TYPES.*;
+import TYPES.TYPE;
+import TYPES.TYPE_LIST;
 
 public class AST_TYPE_NAME_LIST extends AST_Node
 {
@@ -37,7 +38,7 @@ public class AST_TYPE_NAME_LIST extends AST_Node
 		/*************************************/
 		/* RECURSIVELY PRINT HEAD + TAIL ... */
 		/*************************************/
-		if (head != null) head.PrintMe();
+		head.PrintMe();
 		if (tail != null) tail.PrintMe();
 
 		/**********************************/
@@ -50,10 +51,10 @@ public class AST_TYPE_NAME_LIST extends AST_Node
 		/****************************************/
 		/* PRINT Edges to AST GRAPHVIZ DOT file */
 		/****************************************/
-		if (head != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,head.SerialNumber);
+		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,head.SerialNumber);
 		if (tail != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,tail.SerialNumber);
 	}
-
+	
 	public TYPE_LIST SemantMe()
 	{
 		if (tail == null)
@@ -69,4 +70,7 @@ public class AST_TYPE_NAME_LIST extends AST_Node
 				tail.SemantMe());
 		}
 	}
+	
+
 }
+

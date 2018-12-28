@@ -1,7 +1,9 @@
 package AST;
 
-import TYPES.*;
-import SYMBOL_TABLE.*;
+import MyExceptions.SemanticRuntimeException;
+import SYMBOL_TABLE.SYMBOL_TABLE;
+import TYPES.TYPE;
+import TYPES.TYPE_INT;
 
 public class AST_STMT_IF extends AST_STMT
 {
@@ -35,8 +37,8 @@ public class AST_STMT_IF extends AST_STMT
 		/**************************************/
 		/* RECURSIVELY PRINT left + right ... */
 		/**************************************/
-		if (cond != null) cond.PrintMe();
-		if (body != null) body.PrintMe();
+		cond.PrintMe();
+		body.PrintMe();
 
 		/***************************************/
 		/* PRINT Node to AST GRAPHVIZ DOT file */
@@ -48,10 +50,10 @@ public class AST_STMT_IF extends AST_STMT
 		/****************************************/
 		/* PRINT Edges to AST GRAPHVIZ DOT file */
 		/****************************************/
-		if (cond != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,cond.SerialNumber);
-		if (body != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,body.SerialNumber);
+		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,cond.SerialNumber);
+		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,body.SerialNumber);
 	}
-
+	
 	public TYPE SemantMe()
 	{
 		/****************************/
@@ -59,13 +61,14 @@ public class AST_STMT_IF extends AST_STMT
 		/****************************/
 		if (cond.SemantMe() != TYPE_INT.getInstance())
 		{
-			System.out.format(">> ERROR [%d:%d] condition inside IF is not integral\n",2,2);
+			throw new SemanticRuntimeException(lineNum, colNum, "condition inside IF is not integral\n");
+			//System.out.format(">> ERROR [%d:%d] condition inside IF is not integral\n",lineNum,colNum);
 		}
 		
 		/*************************/
 		/* [1] Begin Class Scope */
 		/*************************/
-		SYMBOL_TABLE.getInstance().beginScope();
+		SYMBOL_TABLE.getInstance().beginScope("IF");
 
 		/***************************/
 		/* [2] Semant Data Members */
@@ -82,4 +85,6 @@ public class AST_STMT_IF extends AST_STMT
 		/*********************************************************/
 		return null;		
 	}	
+
+	
 }

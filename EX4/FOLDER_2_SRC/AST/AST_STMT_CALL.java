@@ -1,6 +1,6 @@
 package AST;
 
-import TEMP.*;
+import TYPES.TYPE;
 
 public class AST_STMT_CALL extends AST_STMT
 {
@@ -22,12 +22,6 @@ public class AST_STMT_CALL extends AST_STMT
 		this.callExp = callExp;
 	}
 	
-	public TEMP IRme()
-	{
-		if (callExp != null) callExp.IRme();
-		
-		return null;
-	}
 	public void PrintMe()
 	{
 		callExp.PrintMe();
@@ -43,5 +37,9 @@ public class AST_STMT_CALL extends AST_STMT
 		/* PRINT Edges to AST GRAPHVIZ DOT file */
 		/****************************************/
 		AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,callExp.SerialNumber);		
+	}
+	
+	public TYPE SemantMe() {
+		return callExp.SemantMe();
 	}
 }

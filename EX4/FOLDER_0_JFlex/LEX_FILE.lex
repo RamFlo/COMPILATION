@@ -2,10 +2,6 @@
 /* FILE NAME: LEX_FILE.lex */
 /***************************/
 
-/***************************/
-/* AUTHOR: OREN ISH SHALOM */
-/***************************/
-
 /*************/
 /* USER CODE */
 /*************/
@@ -36,7 +32,7 @@ import java_cup.runtime.*;
 %column
     
 /*******************************************************************************/
-/* Note that this has to be the EXACT smae name of the class the CUP generates */
+/* Note that this has to be the EXACT same name of the class the CUP generates */
 /*******************************************************************************/
 %cupsym TokenNames
 
@@ -44,7 +40,9 @@ import java_cup.runtime.*;
 /* CUP compatibility mode interfaces with a CUP generated parser. */
 /******************************************************************/
 %cup
-   
+%eofval{
+return symbol(TokenNames.EOF);
+%eofval}
 /****************/
 /* DECLARATIONS */
 /****************/
@@ -64,7 +62,7 @@ import java_cup.runtime.*;
 	/*******************************************/
 	/* Enable line number extraction from main */
 	/*******************************************/
-	public int getLine()    { return yyline + 1; }
+	public int getLine()    { return yyline + 1; } 
 	public int getCharPos() { return yycolumn;   } 
 %}
 
@@ -72,11 +70,15 @@ import java_cup.runtime.*;
 /* MACRO DECALARATIONS */
 /***********************/
 LineTerminator	= \r|\n|\r\n
-WhiteSpace		= {LineTerminator} | [ \t\f]
-INTEGER			= 0 | [1-9][0-9]*
-ID				= [a-zA-Z]+
-STRING			= \"[a-z|A-Z]*\"
+WhiteSpace	= {LineTerminator} | [ \t\f]
+INTEGER		= 0 | [1-9][0-9]*
+ID		= [a-zA-Z][a-zA-Z0-9]*
+/*MINUS_INTEGER   = -[1-9][0-9]**/
+LEADING_ZEROES  = [0]+[0-9]+
+STRINGS		= \"([a-zA-Z]*)\"
    
+%state COMMENT_ONE_LINE
+%state COMMENT_MULTI_LINE
 /******************************/
 /* DOLAR DOLAR - DON'T TOUCH! */
 /******************************/
@@ -95,18 +97,10 @@ STRING			= \"[a-z|A-Z]*\"
 
 <YYINITIAL> {
 
-"if"				{ return symbol(TokenNames.IF);}
-"="					{ return symbol(TokenNames.EQ);}
-"<"					{ return symbol(TokenNames.LT);}
-"."					{ return symbol(TokenNames.DOT);}
 "+"					{ return symbol(TokenNames.PLUS);}
 "-"					{ return symbol(TokenNames.MINUS);}
-"class"				{ return symbol(TokenNames.CLASS);}
-"while"				{ return symbol(TokenNames.WHILE);}
-"return"			{ return symbol(TokenNames.RETURN);}
 "*"					{ return symbol(TokenNames.TIMES);}
 "/"					{ return symbol(TokenNames.DIVIDE);}
-":="				{ return symbol(TokenNames.ASSIGN);}
 "("					{ return symbol(TokenNames.LPAREN);}
 ")"					{ return symbol(TokenNames.RPAREN);}
 "["					{ return symbol(TokenNames.LBRACK);}
@@ -114,11 +108,53 @@ STRING			= \"[a-z|A-Z]*\"
 "{"					{ return symbol(TokenNames.LBRACE);}
 "}"					{ return symbol(TokenNames.RBRACE);}
 ","					{ return symbol(TokenNames.COMMA);}
+"."					{ return symbol(TokenNames.DOT);}
 ";"					{ return symbol(TokenNames.SEMICOLON);}
-{ID}				{ return symbol(TokenNames.ID, new String(yytext()));}
-{INTEGER}			{ return symbol(TokenNames.INT, new Integer(yytext()));}
-{STRING}			{ return symbol(TokenNames.STRING, new String(yytext()));}
+":="				{ return symbol(TokenNames.ASSIGN);}
+"="					{ return symbol(TokenNames.EQ);}
+"<"					{ return symbol(TokenNames.LT);}
+">"					{ return symbol(TokenNames.GT);}
+"class"				{ return symbol(TokenNames.CLASS);}
+"nil"				{ return symbol(TokenNames.NIL);}
+"array"				{ return symbol(TokenNames.ARRAY	);}
+"while"				{ return symbol(TokenNames.WHILE);}
+"extends"			{ return symbol(TokenNames.EXTENDS);}
+"return"			{ return symbol(TokenNames.RETURN);}
+"new"				{ return symbol(TokenNames.NEW);}
+"if"				{ return symbol(TokenNames.IF);}
+{STRINGS}			{ return symbol(TokenNames.STRING, yytext()); }
+"//"				{ yybegin(COMMENT_ONE_LINE); }
+"/*"				{ yybegin(COMMENT_MULTI_LINE); }
+{INTEGER}			{ 
+						if (yytext().length() > 5) {System.out.println("Lexer error 4"); return symbol(TokenNames.error);}
+						Integer x = new Integer(yytext());
+						if (x > 32767) {System.out.println("Lexer error 3"); return symbol(TokenNames.error);}
+						else return symbol(TokenNames.INT, x);
+					}
+/*{MINUS_INTEGER}		{
+						if (yytext().length() > 6) return symbol(TokenNames.error);
+						Integer x = new Integer(yytext());
+						if (x < -32768) return symbol(TokenNames.error);
+						else return symbol(TokenNames.INT, x);
+					}*/
+{LEADING_ZEROES} 	{ System.out.println("Lexer error 2"); return symbol(TokenNames.error); }				 
+/*"-0"				{ return symbol(TokenNames.error); }*/
+{ID}				{ return symbol(TokenNames.ID, new String( yytext()));}   
 {WhiteSpace}		{ /* just skip what was found, do nothing */ }
-{LineTerminator}	{ /* just skip what was found, do nothing */ }
 <<EOF>>				{ return symbol(TokenNames.EOF);}
 }
+
+<COMMENT_ONE_LINE> {
+{LineTerminator}    									{ yybegin(YYINITIAL); }
+<<EOF>>    												{ return symbol(TokenNames.EOF); }
+[-a-zA-Z0-9\. \t\f\(\)\{\}\[\]\?\!\+\*\/\;]+            { /* comment still ongoing, do nothing */ }
+}
+
+<COMMENT_MULTI_LINE> {
+"*/"    															{ yybegin(YYINITIAL); }
+<<EOF>>    															{ System.out.println("Lexer error 5"); return symbol(TokenNames.error); }
+[-a-zA-Z0-9\. \t\f\(\)\{\}\[\]\?\!\+\*\/\;(\r\n|\r|\n)]             { /* comment still ongoing, do nothing */ }
+}
+
+/* error fallback */
+[^]                              { System.out.println("Lexer error 1"); return symbol(TokenNames.error); }

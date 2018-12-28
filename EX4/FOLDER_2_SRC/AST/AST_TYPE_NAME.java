@@ -1,13 +1,11 @@
-/***********/
-/* PACKAGE */
-/***********/
 package AST;
 
-/*******************/
-/* PROJECT IMPORTS */
-/*******************/
-import TYPES.*;
-import SYMBOL_TABLE.*;
+import MyExceptions.SemanticRuntimeException;
+import SYMBOL_TABLE.SYMBOL_TABLE;
+import TYPES.TYPE;
+import TYPES.TYPE_ARRAY;
+import TYPES.TYPE_CLASS;
+import TYPES.TYPE_FUNCTION;
 
 public class AST_TYPE_NAME extends AST_Node
 {
@@ -48,32 +46,43 @@ public class AST_TYPE_NAME extends AST_Node
 			SerialNumber,
 			String.format("NAME:TYPE\n%s:%s",name,type));
 	}
-
+	
 	/*****************/
 	/* SEMANT ME ... */
 	/*****************/
 	public TYPE SemantMe()
 	{
-		TYPE t = SYMBOL_TABLE.getInstance().find(type);
-		if (t == null)
-		{
-			/**************************/
-			/* ERROR: undeclared type */
-			/**************************/
-			System.exit(0);
-			return null;
-		}
-		else
-		{
-			/*******************************************************/
-			/* Enter var with name=name and type=t to symbol table */
-			/*******************************************************/
-			SYMBOL_TABLE.getInstance().enter(name,t);
-		}
+		TYPE t = null;
+		
+		/**************/
+		/* type check */ //Done in AST_DEC_FUNC
+		/**************/
+//		TYPE t = SYMBOL_TABLE.getInstance().findDataType(type);
+//		if (t == null)
+//			throw new SemanticRuntimeException(lineNum, colNum, String.format("non existing type (%s) for parameter (%s)\n", type,name));
+		
+		/**************/
+		/* name check */
+		/**************/
+		if (SYMBOL_TABLE.getInstance().findDataType(name) != null)
+			throw new SemanticRuntimeException(lineNum, colNum, String.format("parameter's (%s) name is an existing data type\n",name));
+		
+		if (SYMBOL_TABLE.getInstance().findInCurrentScope(name) != null)
+			throw new SemanticRuntimeException(lineNum, colNum, String.format("parameter's (%s) name is already used in function's scope\n",name));
+		
+		if (name.equals("void"))
+			throw new SemanticRuntimeException(lineNum, colNum, String.format("parameter's (%s) name cannot be (void)\n",name));
+		
+		/*******************************************************/
+		/* Enter var with name=name and type=t to symbol table */
+		/*******************************************************/
+		t = SYMBOL_TABLE.getInstance().findDataType(type);
+		SYMBOL_TABLE.getInstance().enterObject(name,t);
 
 		/****************************/
 		/* return (existing) type t */
 		/****************************/
-		return t;
+		return t; //not used, since type_list is populated in AST_DEC_FUNC before semanting the input parameters
 	}	
 }
+

@@ -1,7 +1,6 @@
 package AST;
 
-import TYPES.*;
-import TEMP.*;
+import TYPES.TYPE;
 
 public class AST_STMT_LIST extends AST_Node
 {
@@ -64,14 +63,6 @@ public class AST_STMT_LIST extends AST_Node
 		if (tail != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,tail.SerialNumber);
 	}
 	
-	public TEMP IRme()
-	{
-		if (head != null) head.IRme();
-		if (tail != null) tail.IRme();
-		
-		return null;
-	}
-	
 	public TYPE SemantMe()
 	{
 		if (head != null) head.SemantMe();
@@ -79,4 +70,5 @@ public class AST_STMT_LIST extends AST_Node
 		
 		return null;
 	}
+	
 }

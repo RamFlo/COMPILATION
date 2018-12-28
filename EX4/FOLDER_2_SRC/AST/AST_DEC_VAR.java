@@ -20,6 +20,7 @@ public class AST_DEC_VAR extends AST_DEC
 	public String name;
 	public AST_EXP initialValue;
 	public AST_NEWEXP initialValueNew;
+	public int indexOfVarInFunction = -1;
 	
 	/******************/
 	/* CONSTRUCTOR(S) */
@@ -129,12 +130,24 @@ public class AST_DEC_VAR extends AST_DEC
 		return t1;
 	}
 	
+	
+	boolean varDecIsInFunction()
+	{
+		return (SYMBOL_TABLE.getInstance().curFunctionReturnType != null);
+	}
+	
 	//Copied from next exercise
 	public TYPE SemantMe()
 	{
 		TYPE t1 = null;
 		TYPE t2 = null;
 		TYPE existingNamesType = null;
+		
+		if (varDecIsInFunction())
+		{
+			SYMBOL_TABLE.getInstance().curIndexOfVarInFunction++;
+			this.indexOfVarInFunction = SYMBOL_TABLE.getInstance().curIndexOfVarInFunction;
+		}
 		
 	
 		/****************************/

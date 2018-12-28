@@ -32,6 +32,7 @@ public class SYMBOL_TABLE
 	public Map<String, List<SYMBOL_TABLE_ENTRY>> symbol_table_hash = new HashMap<String, List<SYMBOL_TABLE_ENTRY>>();
 	private SYMBOL_TABLE_ENTRY top;
 	private int top_index = 0, cur_scope_level = 0;
+	public int curIndexOfVarInFunction = 0;
 	public TYPE curFunctionReturnType = null;
 	public TYPE_CLASS curClassExtends = null;
 	
@@ -224,6 +225,7 @@ public class SYMBOL_TABLE
 	public void endFunctionScope()
 	{
 		this.curFunctionReturnType = null;
+		this.curIndexOfVarInFunction = 0;
 		this.endScope();
 	}
 	

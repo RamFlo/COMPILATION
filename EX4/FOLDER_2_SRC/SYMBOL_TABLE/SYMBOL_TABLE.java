@@ -15,6 +15,7 @@ import java.util.Map;
 
 import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.ENTRY_CATEGORY.Category;
+import SYMBOL_TABLE.ENUM_OBJECT_CONTEXT.ObjectContext;
 /*******************/
 /* PROJECT IMPORTS */
 /*******************/
@@ -49,11 +50,11 @@ public class SYMBOL_TABLE
 //		return null;
 //	}
 	
-	public void enter(String name,TYPE t, Category entryCat)
+	public void enter(String name,TYPE t, Category entryCat, ObjectContext objContext, int objectIndexInContext)
 	{
 		if (t == null)
 			System.out.println(String.format("%s type is null!",name));
-		SYMBOL_TABLE_ENTRY new_entry = new SYMBOL_TABLE_ENTRY(name,t,entryCat,top,top_index++,cur_scope_level);
+		SYMBOL_TABLE_ENTRY new_entry = new SYMBOL_TABLE_ENTRY(name,t,entryCat,objContext,objectIndexInContext,top,top_index++,cur_scope_level);
 		top = new_entry;
 		
 		if(!symbol_table_hash.containsKey(name)){
@@ -65,14 +66,14 @@ public class SYMBOL_TABLE
 		PrintMe();
 	}
 	
-	public void enterObject(String name,TYPE t)
+	public void enterObject(String name,TYPE t, ObjectContext objContext, int objectIndexInContext)
 	{
-		this.enter(name, t, Category.object);
+		this.enter(name, t, Category.object,objContext,objectIndexInContext);
 	}
 	
 	public void enterDataType(String name,TYPE t)
 	{
-		this.enter(name, t, Category.dataType);
+		this.enter(name, t, Category.dataType,ObjectContext.nonObject,-1);
 	}
 
 	/***********************************************/
@@ -152,7 +153,7 @@ public class SYMBOL_TABLE
 		/* a special TYPE_FOR_SCOPE_BOUNDARIES was developed for them. This     */
 		/* class only contain their type name which is the bottom sign: _|_     */
 		/************************************************************************/
-		enter("SCOPE-BOUNDARY",	new TYPE_FOR_SCOPE_BOUNDARIES(scope_name), Category.misc);
+		enter("SCOPE-BOUNDARY",	new TYPE_FOR_SCOPE_BOUNDARIES(scope_name), Category.misc,ObjectContext.nonObject,-1);
 		
 		/*******************************************************/
 		/* Increase scope level for future SYMBOL_TABLE_ENTRYs */
@@ -352,25 +353,14 @@ public class SYMBOL_TABLE
 			/***************************************/
 			/* [3] Enter library function PrintInt */
 			/***************************************/
-			instance.enterObject(
-				"PrintInt",
-				new TYPE_FUNCTION(
-					TYPE_VOID.getInstance(),
-					"PrintInt",
-					new TYPE_LIST(
-						TYPE_INT.getInstance(),
-						null)));
+			instance.enterObject("PrintInt", new TYPE_FUNCTION(TYPE_VOID.getInstance(), "PrintInt",
+					new TYPE_LIST(TYPE_INT.getInstance(), null)),ObjectContext.global,-1);
 			
-			instance.enterObject(
-					"PrintString",
-					new TYPE_FUNCTION(
-						TYPE_VOID.getInstance(),
-						"PrintString",
-						new TYPE_LIST(
-							TYPE_STRING.getInstance(),
-							null)));
+			instance.enterObject("PrintString", new TYPE_FUNCTION(TYPE_VOID.getInstance(), "PrintString",
+					new TYPE_LIST(TYPE_STRING.getInstance(), null)),ObjectContext.global,-1);
 			
-			instance.enterObject("PrintTrace",new TYPE_FUNCTION(TYPE_VOID.getInstance(),"PrintTrace",null));
+			instance.enterObject("PrintTrace", new TYPE_FUNCTION(TYPE_VOID.getInstance(), "PrintTrace", null),
+					ObjectContext.global, -1);
 		}
 		return instance;
 	}

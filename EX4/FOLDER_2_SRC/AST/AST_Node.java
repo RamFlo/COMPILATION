@@ -1,5 +1,7 @@
 package AST;
 
+import SYMBOL_TABLE.ENUM_OBJECT_CONTEXT.ObjectContext;
+
 public abstract class AST_Node
 {
 	/*******************************************/
@@ -9,6 +11,8 @@ public abstract class AST_Node
 	/*******************************************/
 	public int SerialNumber;
 	public int lineNum, colNum;
+	public ObjectContext objContext;
+	public int objectIndexInContext;
 	
 	/***********************************************/
 	/* The default message for an unknown AST node */

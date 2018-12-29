@@ -11,8 +11,8 @@ public abstract class AST_Node
 	/*******************************************/
 	public int SerialNumber;
 	public int lineNum, colNum;
-	public ObjectContext objContext;
-	public int objectIndexInContext;
+	public ObjectContext objContext = ObjectContext.nonObject;
+	public int objectIndexInContext = -1;
 	
 	/***********************************************/
 	/* The default message for an unknown AST node */

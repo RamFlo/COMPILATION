@@ -33,22 +33,15 @@ public class SYMBOL_TABLE
 	public Map<String, List<SYMBOL_TABLE_ENTRY>> symbol_table_hash = new HashMap<String, List<SYMBOL_TABLE_ENTRY>>();
 	private SYMBOL_TABLE_ENTRY top;
 	private int top_index = 0, cur_scope_level = 0;
-	public int curIndexOfVarInFunction = 0;
+	public int curIndexOfVarInFunction = 0; ///TO-DO: check if needed
 	public TYPE curFunctionReturnType = null;
 	public TYPE_CLASS curClassExtends = null;
+	
+	//public boolean isInClassScope = false;
 	
 	/****************************************************************************/
 	/* Enter a variable, function, class type or array type to the symbol table */
 	/****************************************************************************/
-	
-//	public TYPE getReturnTypeOfClosestFunction() {
-//		SYMBOL_TABLE_ENTRY cur = top;
-//		while (cur != null && !(cur.type instanceof TYPE_FUNCTION)) {
-//			cur = cur.prevtop;
-//		}
-//		if (cur != null) return ((TYPE_FUNCTION)cur.type).returnType;
-//		return null;
-//	}
 	
 	public void enter(String name,TYPE t, Category entryCat, ObjectContext objContext, int objectIndexInContext)
 	{
@@ -79,29 +72,29 @@ public class SYMBOL_TABLE
 	/***********************************************/
 	/* Find the inner-most scope element with name */
 	/***********************************************/
-	public TYPE find(String name)
+	public SYMBOL_TABLE_ENTRY find(String name)
 	{
-		if (symbol_table_hash.containsKey(name)) return ((LinkedList<SYMBOL_TABLE_ENTRY>)(symbol_table_hash.get(name))).getLast().type;
+		if (symbol_table_hash.containsKey(name)) return ((LinkedList<SYMBOL_TABLE_ENTRY>)(symbol_table_hash.get(name))).getLast();
 		return null;
 	}
 	
-	public TYPE findByCategory(String name,Category entryCat)
+	public SYMBOL_TABLE_ENTRY findByCategory(String name,Category entryCat)
 	{
 		SYMBOL_TABLE_ENTRY searchRes = null;
 		if (symbol_table_hash.containsKey(name)) {
 			searchRes = ((LinkedList<SYMBOL_TABLE_ENTRY>)(symbol_table_hash.get(name))).getLast();
 			if (searchRes.entryCat == entryCat)
-				return searchRes.type;
+				return searchRes;
 		}
 		return null;
 	}
 	
-	public TYPE findDataType(String name)
+	public SYMBOL_TABLE_ENTRY findDataType(String name)
 	{
 		return findByCategory(name, Category.dataType);
 	}
 	
-	public TYPE findObject(String name)
+	public SYMBOL_TABLE_ENTRY findObject(String name)
 	{
 		return findByCategory(name, Category.object);
 	}
@@ -175,6 +168,7 @@ public class SYMBOL_TABLE
 	public void beginClassScope(String scope_name,TYPE_CLASS curClassExtends)
 	{
 		this.curClassExtends = curClassExtends;
+		//this.isInClassScope = true;
 		this.beginScope(scope_name);
 	}
 
@@ -233,6 +227,7 @@ public class SYMBOL_TABLE
 	public void endClassScope()
 	{
 		this.curClassExtends = null;
+		//this.isInClassScope = false;
 		this.endScope();
 	}
 	

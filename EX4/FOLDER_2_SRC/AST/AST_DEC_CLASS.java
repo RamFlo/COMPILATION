@@ -1,5 +1,8 @@
 package AST;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.SYMBOL_TABLE;
 import TYPES.TYPE;
@@ -22,6 +25,8 @@ public class AST_DEC_CLASS extends AST_DEC
 	/* DATA MEMBERS */
 	/****************/
 	public AST_CFIELDLIST class_fields;
+	
+	private List<String[]> listOfFunctionsForClassVFTable;
 	
 	/******************/
 	/* CONSTRUCTOR(S) */
@@ -160,6 +165,34 @@ public class AST_DEC_CLASS extends AST_DEC
 		doesVariableShadow(varName,superType.father,varLineNum, varColNum);
 	}
 	
+	private void cloneFathersListOfFunctionsForVFTable(TYPE_CLASS curClass, TYPE_CLASS superClass) {
+		curClass.listOfFunctionsForClassVFTable = new LinkedList<String[]>();
+		if (superClass != null) {
+			for (String[] superClassEntry : superClass.listOfFunctionsForClassVFTable) {
+				String[] curClassEntry = new String[2];
+				curClassEntry[0] = superClassEntry[0];
+				curClassEntry[1] = superClassEntry[1];
+				curClass.listOfFunctionsForClassVFTable.add(curClassEntry);
+			}
+		}
+	}
+	
+	private int findAndUpdateOrInsertToVFTableList(String funcName, TYPE_CLASS curClass) {
+		int indexInVFTable = 1;
+		for (String[] VFTableFuncEntry : curClass.listOfFunctionsForClassVFTable) {
+			if (VFTableFuncEntry[1].equals(funcName)) {
+				VFTableFuncEntry[0] = curClass.name;
+				return indexInVFTable;
+			}
+			indexInVFTable++;
+		}
+		String[] newVFTableListEntry = new String[2];
+		newVFTableListEntry[0] = curClass.name;
+		newVFTableListEntry[1] = funcName;
+		curClass.listOfFunctionsForClassVFTable.add(newVFTableListEntry);
+		return curClass.listOfFunctionsForClassVFTable.size();
+	}
+	
 	
 	public TYPE SemantMe()
 	{	
@@ -180,7 +213,7 @@ public class AST_DEC_CLASS extends AST_DEC
 		
 		if (supername != null){
 			/*Searching for supername in SYMBOL_TABLE*/
-			superType = SYMBOL_TABLE.getInstance().findDataType(supername);
+			superType = SYMBOL_TABLE.getInstance().findDataType(supername).type;
 			/*Supername is not in SYMBOL_TABLE -> error*/
 			if (superType == null)
 				throw new SemanticRuntimeException(lineNum, colNum, String.format
@@ -214,6 +247,11 @@ public class AST_DEC_CLASS extends AST_DEC
 		AST_DEC_FUNC curHeadFunc;
 		AST_DEC_VAR curHeadVar;
 		
+		int funcIndexInCurClass;
+
+		cloneFathersListOfFunctionsForVFTable(t, (TYPE_CLASS) superType);
+		
+		
 		TYPE_FUNCTION curFunction = null;
 		TYPE curVariant = null;
 		TYPE_CLASS_DATA_MEMBERS_LIST dataMembersList = null;
@@ -228,34 +266,20 @@ public class AST_DEC_CLASS extends AST_DEC
 			
 			if (curHeadFunc != null)
 				{
-					curFunction = (TYPE_FUNCTION) curHeadFunc.SemantFuncSignatureAndParamTypes();
-					//dataMembersList = new TYPE_CLASS_DATA_MEMBERS_LIST(new TYPE_CLASS_DATA_MEMBER(curFunction,curFunction.name),dataMembersList);
+					funcIndexInCurClass = findAndUpdateOrInsertToVFTableList(curHeadFunc.name,t);
+					curFunction = (TYPE_FUNCTION) curHeadFunc.SemantFuncSignatureAndParamTypes(funcIndexInCurClass);
 					t.data_members = new TYPE_CLASS_DATA_MEMBERS_LIST(new TYPE_CLASS_DATA_MEMBER(curFunction,curFunction.name),t.data_members);
 					doesFunctionOverloadProperly(curFunction,((TYPE_CLASS)superType),curHeadFunc.lineNum,curHeadFunc.colNum);
 				}
 			if (curHeadVar != null)
 				{
 					curVariant = curHeadVar.SemantMeFromClass();
-					//dataMembersList = new TYPE_CLASS_DATA_MEMBERS_LIST(new TYPE_CLASS_DATA_MEMBER(curVariant,curHeadVar.name),dataMembersList);
 					t.data_members = new TYPE_CLASS_DATA_MEMBERS_LIST(new TYPE_CLASS_DATA_MEMBER(curVariant,curHeadVar.name),t.data_members);
 					doesVariableShadow(curHeadVar.name,((TYPE_CLASS)superType),curHeadVar.lineNum,curHeadVar.colNum);
 				}
 		}
 		
-		//update data_members_list in symbol table entry
-		//SYMBOL_TABLE.getInstance().findAndUpdateEntryTypeForDataType(name, new TYPE_CLASS((TYPE_CLASS)superType,name,dataMembersList));
-		
-		//delete later-debug
-		if (dataMembersList != null && dataMembersList.head !=null)
-			System.out.println(String.format("data_members list head: %s", dataMembersList.head.name));
-		
-		
-		if (((TYPE_CLASS)SYMBOL_TABLE.getInstance().findDataType(name)).data_members == null)
-			System.out.println("in DEC_CLASS: data_members is null after update");
-		else
-			System.out.println(String.format("in DEC_CLASS: data_members list head: %s", ((TYPE_CLASS)SYMBOL_TABLE.getInstance().findDataType(name)).data_members.head.name));
-		//delete later-debug
-		
+		this.listOfFunctionsForClassVFTable = t.listOfFunctionsForClassVFTable;
 		
 		/*************************/
 		/* [2] Semant functions' bodies */

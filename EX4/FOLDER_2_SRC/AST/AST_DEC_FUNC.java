@@ -1,6 +1,7 @@
 package AST;
 
 import MyExceptions.SemanticRuntimeException;
+import SYMBOL_TABLE.ENUM_OBJECT_CONTEXT.ObjectContext;
 import SYMBOL_TABLE.SYMBOL_TABLE;
 import TYPES.TYPE;
 import TYPES.TYPE_FUNCTION;
@@ -71,7 +72,7 @@ public class AST_DEC_FUNC extends AST_DEC
 	}
 	
 	
-	public TYPE SemantFuncSignatureAndParamTypes()
+	public TYPE SemantFuncSignatureAndParamTypes(int functionIndexInClass)
 	{
 		TYPE t = null;
 		TYPE returnType = null;
@@ -81,7 +82,7 @@ public class AST_DEC_FUNC extends AST_DEC
 		/*******************/
 		/* [0] return type */
 		/*******************/
-		returnType = returnTypeName.equals("void") ? TYPE_VOID.getInstance() : SYMBOL_TABLE.getInstance().findDataType(returnTypeName);
+		returnType = returnTypeName.equals("void") ? TYPE_VOID.getInstance() : SYMBOL_TABLE.getInstance().findDataType(returnTypeName).type;
 		if (returnType == null)
 		{
 			throw new SemanticRuntimeException(lineNum, colNum, String.format("non existing return type (%s)\n", returnType));
@@ -119,7 +120,7 @@ public class AST_DEC_FUNC extends AST_DEC
 		{
 			String curParamType = it.head.type;
 			
-			t = SYMBOL_TABLE.getInstance().findDataType(curParamType);
+			t = SYMBOL_TABLE.getInstance().findDataType(curParamType).type;
 			
 			if (t == null)
 				throw new SemanticRuntimeException(lineNum, colNum, String.format
@@ -134,8 +135,12 @@ public class AST_DEC_FUNC extends AST_DEC
 		/* [3] Enter the Function Type to the Symbol Table */
 		/***************************************************/
 		//must enter function into symbol table BEFORE beginning the function's scope in order to allow recursive calls
-		SYMBOL_TABLE.getInstance().enterObject(name,curFunc);
 		
+		if (functionIndexInClass == -1)
+			SYMBOL_TABLE.getInstance().enterObject(name,curFunc,ObjectContext.global,-1);
+		else{
+			SYMBOL_TABLE.getInstance().enterObject(name,curFunc,ObjectContext.method,functionIndexInClass);
+		}
 		return curFunc;
 	}
 	
@@ -164,7 +169,7 @@ public class AST_DEC_FUNC extends AST_DEC
 	
 	public TYPE SemantMe() //used only for global functions
 	{
-		SemantFuncSignatureAndParamTypes();
+		SemantFuncSignatureAndParamTypes(-1);
 		SemantFuncParamNamesAndBody();
 
 		/*********************************************************/

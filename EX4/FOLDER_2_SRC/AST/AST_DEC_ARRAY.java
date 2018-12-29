@@ -56,7 +56,7 @@ public class AST_DEC_ARRAY extends AST_DEC
 		/********************************************************/
 		/* [0] Semant type array decleration */
 		/********************************************************/
-		t = SYMBOL_TABLE.getInstance().findDataType(type);
+		t = SYMBOL_TABLE.getInstance().findDataType(type).type;
 		
 		if (t == null)
 			throw new SemanticRuntimeException(lineNum, colNum, String.format

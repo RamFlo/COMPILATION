@@ -50,6 +50,15 @@ public class sir_MIPS_a_lot
 	//	
 	//	return t;
 	//}
+	
+	public void initializeDataSegment()
+	{
+		fileWriter.format(".data\n");
+	}
+	public void initializeTextSegment()
+	{
+		fileWriter.format(".text\n");
+	}
 	public void allocate(String var_name)
 	{
 		fileWriter.format(".data\n");

@@ -95,10 +95,10 @@ public class AST_EXP_CALL extends AST_EXP
 		TYPE funcReturnType = null;
 		TYPE foundFunctionType = null;
 		if (callingObject == null) {
-			foundFunctionType = SYMBOL_TABLE.getInstance().find(funcName);
+			foundFunctionType = findFunctionNameInClassAndItsSupers(funcName,SYMBOL_TABLE.getInstance().curClassExtends);
 			
-			if (foundFunctionType == null) //search funcName in superclasses, if exists
-				foundFunctionType = findFunctionNameInClassAndItsSupers(funcName,SYMBOL_TABLE.getInstance().curClassExtends);
+			if (foundFunctionType == null) //search funcName in global scope when not found in class scope
+				foundFunctionType = SYMBOL_TABLE.getInstance().find(funcName);
 			
 			if (foundFunctionType == null) {
 				throw new SemanticRuntimeException(lineNum,colNum,String.format("function %s does not exist in scope\n",funcName));

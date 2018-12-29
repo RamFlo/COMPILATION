@@ -1,5 +1,8 @@
 package TYPES;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class TYPE_CLASS extends TYPE
 {
 	/*********************************************************************/
@@ -14,6 +17,8 @@ public class TYPE_CLASS extends TYPE
 	/**************************************************/
 	public TYPE_CLASS_DATA_MEMBERS_LIST data_members;
 	
+	public List<String[]> listOfFunctionsForClassVFTable = new LinkedList<String[]>();
+	
 	/****************/
 	/* CTROR(S) ... */
 	/****************/
@@ -23,4 +28,10 @@ public class TYPE_CLASS extends TYPE
 		this.father = father;
 		this.data_members = data_members;
 	}
+	
+	public int getSizeOfClassVFTable() {
+		return listOfFunctionsForClassVFTable.size();
+	}
+	
+	
 }

@@ -2,6 +2,8 @@ package AST;
 
 import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.ENUM_OBJECT_CONTEXT.ObjectContext;
+import SYMBOL_TABLE.ENUM_SCOPE_TYPES.ScopeTypes;
+import SYMBOL_TABLE.COUNTERS;
 import SYMBOL_TABLE.SYMBOL_TABLE;
 import TYPES.TYPE;
 import TYPES.TYPE_FUNCTION;
@@ -71,6 +73,15 @@ public class AST_DEC_FUNC extends AST_DEC
 		if (body   != null) AST_GRAPHVIZ.getInstance().logEdge(SerialNumber,body.SerialNumber);		
 	}
 	
+	//funcIndex is -1 if global
+	private void updateFuncContextAndIndex(int funcIndex){
+		this.objIndexInContext = funcIndex;
+		this.objScopeType = SYMBOL_TABLE.getInstance().curScopeType;
+		if (this.objScopeType == ScopeTypes.classScope)
+			this.objContext = ObjectContext.classMethod;
+		else //global scope
+			this.objContext = ObjectContext.global;
+	}
 	
 	public TYPE SemantFuncSignatureAndParamTypes(int functionIndexInClass)
 	{
@@ -78,6 +89,8 @@ public class AST_DEC_FUNC extends AST_DEC
 		TYPE returnType = null;
 		TYPE_LIST type_list = null;
 		TYPE existingNamesType = null;
+		
+		updateFuncContextAndIndex(functionIndexInClass);
 
 		/*******************/
 		/* [0] return type */
@@ -136,11 +149,7 @@ public class AST_DEC_FUNC extends AST_DEC
 		/***************************************************/
 		//must enter function into symbol table BEFORE beginning the function's scope in order to allow recursive calls
 		
-		if (functionIndexInClass == -1)
-			SYMBOL_TABLE.getInstance().enterObject(name,curFunc,ObjectContext.global,-1);
-		else{
-			SYMBOL_TABLE.getInstance().enterObject(name,curFunc,ObjectContext.method,functionIndexInClass);
-		}
+		SYMBOL_TABLE.getInstance().enterObject(name,curFunc,this);
 		return curFunc;
 	}
 	

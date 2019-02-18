@@ -1,8 +1,10 @@
 package AST;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import MyClasses.ClassMethodDetails;
 import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.SYMBOL_TABLE;
 import TYPES.TYPE;
@@ -26,7 +28,7 @@ public class AST_DEC_CLASS extends AST_DEC
 	/****************/
 	public AST_CFIELDLIST class_fields;
 	
-	private List<String[]> listOfFunctionsForClassVFTable;
+	//private List<String[]> listOfFunctionsForClassVFTable;
 	
 	/******************/
 	/* CONSTRUCTOR(S) */
@@ -165,32 +167,42 @@ public class AST_DEC_CLASS extends AST_DEC
 		doesVariableShadow(varName,superType.father,varLineNum, varColNum);
 	}
 	
-	private void cloneFathersListOfFunctionsForVFTable(TYPE_CLASS curClass, TYPE_CLASS superClass) {
-		curClass.listOfFunctionsForClassVFTable = new LinkedList<String[]>();
-		if (superClass != null) {
-			for (String[] superClassEntry : superClass.listOfFunctionsForClassVFTable) {
-				String[] curClassEntry = new String[2];
-				curClassEntry[0] = superClassEntry[0];
-				curClassEntry[1] = superClassEntry[1];
-				curClass.listOfFunctionsForClassVFTable.add(curClassEntry);
-			}
-		}
-	}
+//	private void cloneFathersListOfFunctionsForVFTable(TYPE_CLASS curClass, TYPE_CLASS superClass) {
+//		curClass.listOfFunctionsForClassVFTable = new LinkedList<String[]>();
+//		if (superClass != null) {
+//			for (String[] superClassEntry : superClass.listOfFunctionsForClassVFTable) {
+//				String[] curClassEntry = new String[2];
+//				curClassEntry[0] = superClassEntry[0];
+//				curClassEntry[1] = superClassEntry[1];
+//				curClass.listOfFunctionsForClassVFTable.add(curClassEntry);
+//			}
+//		}
+//	}
 	
-	private int findAndUpdateOrInsertToVFTableList(String funcName, TYPE_CLASS curClass) {
-		int indexInVFTable = 1;
-		for (String[] VFTableFuncEntry : curClass.listOfFunctionsForClassVFTable) {
-			if (VFTableFuncEntry[1].equals(funcName)) {
-				VFTableFuncEntry[0] = curClass.name;
-				return indexInVFTable;
-			}
-			indexInVFTable++;
-		}
-		String[] newVFTableListEntry = new String[2];
-		newVFTableListEntry[0] = curClass.name;
-		newVFTableListEntry[1] = funcName;
-		curClass.listOfFunctionsForClassVFTable.add(newVFTableListEntry);
-		return curClass.listOfFunctionsForClassVFTable.size();
+//	private int findAndUpdateOrInsertToVFTableList(String funcName, TYPE_CLASS curClass) {
+//		int indexInVFTable = 1;
+//		for (String[] VFTableFuncEntry : curClass.listOfFunctionsForClassVFTable) {
+//			if (VFTableFuncEntry[1].equals(funcName)) {
+//				VFTableFuncEntry[0] = curClass.name;
+//				return indexInVFTable;
+//			}
+//			indexInVFTable++;
+//		}
+//		String[] newVFTableListEntry = new String[2];
+//		newVFTableListEntry[0] = curClass.name;
+//		newVFTableListEntry[1] = funcName;
+//		curClass.listOfFunctionsForClassVFTable.add(newVFTableListEntry);
+//		return curClass.listOfFunctionsForClassVFTable.size();
+//	}
+	
+	private int findAndUpdateOrInsertToMethodMap(String methodName, TYPE_CLASS curClass) {
+		int methodIndex;
+		if (curClass.methodsMap.containsKey(methodName))
+			methodIndex = curClass.methodsMap.get(methodName).methodIndex;
+		else
+			methodIndex = curClass.methodsMap.size() + 1;
+		curClass.methodsMap.put(methodName, new ClassMethodDetails(methodIndex, curClass.name));
+		return methodIndex;
 	}
 	
 	
@@ -232,12 +244,18 @@ public class AST_DEC_CLASS extends AST_DEC
 		/**********************************************************************/		
 		
 		t = new TYPE_CLASS((TYPE_CLASS)superType,name,null);
-		SYMBOL_TABLE.getInstance().enterDataType(name,t);
+		if(superType != null) //copy entire super's dataMembersMap and methodMap!
+		{
+			t.dataMembersMap = new LinkedHashMap<String,Integer>(((TYPE_CLASS)superType).dataMembersMap);
+			t.methodsMap = new LinkedHashMap<String,ClassMethodDetails>(((TYPE_CLASS)superType).methodsMap);
+		}
+		SYMBOL_TABLE.getInstance().enterDataType(name,t,this);
 		
 		/*************************/
 		/* [1] Begin Class Scope */
 		/*************************/
 		SYMBOL_TABLE.getInstance().beginClassScope("CLASS", (TYPE_CLASS)superType);
+		
 		
 		
 		/**********************************************************************/
@@ -249,7 +267,7 @@ public class AST_DEC_CLASS extends AST_DEC
 		
 		int funcIndexInCurClass;
 
-		cloneFathersListOfFunctionsForVFTable(t, (TYPE_CLASS) superType);
+		//cloneFathersListOfFunctionsForVFTable(t, (TYPE_CLASS) superType);
 		
 		
 		TYPE_FUNCTION curFunction = null;
@@ -266,7 +284,7 @@ public class AST_DEC_CLASS extends AST_DEC
 			
 			if (curHeadFunc != null)
 				{
-					funcIndexInCurClass = findAndUpdateOrInsertToVFTableList(curHeadFunc.name,t);
+					funcIndexInCurClass = findAndUpdateOrInsertToMethodMap(curHeadFunc.name,t);
 					curFunction = (TYPE_FUNCTION) curHeadFunc.SemantFuncSignatureAndParamTypes(funcIndexInCurClass);
 					t.data_members = new TYPE_CLASS_DATA_MEMBERS_LIST(new TYPE_CLASS_DATA_MEMBER(curFunction,curFunction.name),t.data_members);
 					doesFunctionOverloadProperly(curFunction,((TYPE_CLASS)superType),curHeadFunc.lineNum,curHeadFunc.colNum);
@@ -279,7 +297,7 @@ public class AST_DEC_CLASS extends AST_DEC
 				}
 		}
 		
-		this.listOfFunctionsForClassVFTable = t.listOfFunctionsForClassVFTable;
+		//this.listOfFunctionsForClassVFTable = t.listOfFunctionsForClassVFTable;
 		
 		/*************************/
 		/* [2] Semant functions' bodies */

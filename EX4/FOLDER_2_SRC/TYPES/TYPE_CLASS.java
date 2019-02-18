@@ -1,7 +1,13 @@
 package TYPES;
 
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
+
+import MyClasses.ClassMethodDetails;
 
 public class TYPE_CLASS extends TYPE
 {
@@ -17,7 +23,11 @@ public class TYPE_CLASS extends TYPE
 	/**************************************************/
 	public TYPE_CLASS_DATA_MEMBERS_LIST data_members;
 	
-	public List<String[]> listOfFunctionsForClassVFTable = new LinkedList<String[]>();
+	public Map<String, Integer> dataMembersMap = new LinkedHashMap<String, Integer>();
+	
+	public Map<String, ClassMethodDetails> methodsMap = new LinkedHashMap<String, ClassMethodDetails>();
+	
+	//public List<String[]> listOfFunctionsForClassVFTable = new LinkedList<String[]>();
 	
 	/****************/
 	/* CTROR(S) ... */

@@ -1,6 +1,7 @@
 package AST;
 
 import SYMBOL_TABLE.ENUM_OBJECT_CONTEXT.ObjectContext;
+import SYMBOL_TABLE.ENUM_SCOPE_TYPES.ScopeTypes;
 
 public abstract class AST_Node
 {
@@ -11,8 +12,9 @@ public abstract class AST_Node
 	/*******************************************/
 	public int SerialNumber;
 	public int lineNum, colNum;
+	public ScopeTypes objScopeType = ScopeTypes.globalScope;
 	public ObjectContext objContext = ObjectContext.nonObject;
-	public int objectIndexInContext = -1;
+	public int objIndexInContext = -1;
 	
 	/***********************************************/
 	/* The default message for an unknown AST node */

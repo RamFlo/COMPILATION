@@ -1,5 +1,6 @@
 package AST;
 
+import TEMP.TEMP;
 import TYPES.TYPE;
 
 public abstract class AST_STMT extends AST_Node
@@ -12,6 +13,10 @@ public abstract class AST_STMT extends AST_Node
 		System.out.print("UNKNOWN AST STATEMENT NODE");
 	}
 	public TYPE SemantMe()
+	{
+		return null;
+	}
+	public TEMP IRme()
 	{
 		return null;
 	}

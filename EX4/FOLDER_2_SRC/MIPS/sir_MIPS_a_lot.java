@@ -69,6 +69,26 @@ public class sir_MIPS_a_lot
 		int idxdst=dst.getSerialNumber();
 		fileWriter.format("\tlw Temp_%d,global_%s\n",idxdst,var_name);
 	}
+	public void load_offset(TEMP dst,TEMP src, int offset)
+	{
+		int idxdst=dst.getSerialNumber(), idxsrc = src.getSerialNumber();
+		fileWriter.format("\tlw Temp_%d,%d(Temp_%d)\n",idxdst,offset,idxsrc);
+	}
+	public void stack_load(TEMP dst, int offset)
+	{
+		int idxdst=dst.getSerialNumber();
+		fileWriter.format("\tlw Temp_%d,%d($sp)\n",idxdst,offset);
+	}
+	public void frame_load(TEMP dst, int offset)
+	{
+		int idxdst=dst.getSerialNumber();
+		fileWriter.format("\tlw Temp_%d,%d($fp)\n",idxdst,offset);
+	}
+	public void sll(TEMP dst,TEMP src, int shiftAmount)
+	{
+		int idxdst=dst.getSerialNumber(), idxsrc = src.getSerialNumber();
+		fileWriter.format("\tsll Temp_%d,Temp_%d,%d\n",idxdst,idxsrc,shiftAmount);
+	}
 	public void store(String var_name,TEMP src)
 	{
 		int idxsrc=src.getSerialNumber();

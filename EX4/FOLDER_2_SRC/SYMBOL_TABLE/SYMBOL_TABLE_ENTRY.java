@@ -3,6 +3,7 @@
 /***********/
 package SYMBOL_TABLE;
 
+import AST.AST_Node;
 import SYMBOL_TABLE.ENTRY_CATEGORY.Category;
 import SYMBOL_TABLE.ENUM_OBJECT_CONTEXT.ObjectContext;
 /*******************/
@@ -46,36 +47,42 @@ public class SYMBOL_TABLE_ENTRY
 	public Category entryCat;
 	
 	/******************************************/
+	/* entry AST Node  ... */
+	/******************************************/
+	public AST_Node entryOriginASTNode;
+	
+	/******************************************/
 	/* entry object context  */
 	/******************************************/
-	public ObjectContext objContext;
+	//public ObjectContext objContext;
 	
 	/******************************************/
 	/* entry object index in context  */
 	/******************************************/
-	public int objectIndexInContext;
+	//public int objectIndexInContext;
 	
 	/******************/
 	/* CONSTRUCTOR(S) */
 	/******************/
 	public SYMBOL_TABLE_ENTRY(String name, TYPE type, Category entryCat, SYMBOL_TABLE_ENTRY prevtop, int prevtop_index,
-			int scope_level) {
+			int scope_level,AST_Node originASTNode) {
 		this.name = name;
 		this.type = type;
 		this.entryCat = entryCat;
-		this.objContext = ObjectContext.nonObject;
-		this.objectIndexInContext = -1;
+		//this.objContext = ObjectContext.nonObject;
+		//this.objectIndexInContext = -1;
 		this.prevtop = prevtop;
 		this.prevtop_index = prevtop_index;
 		this.scope_level = scope_level;
+		this.entryOriginASTNode = originASTNode;
 	}
 	
-	public SYMBOL_TABLE_ENTRY(String name, TYPE type, Category entryCat, ObjectContext objContext,
-			int objectIndexInContext, SYMBOL_TABLE_ENTRY prevtop, int prevtop_index, int scope_level) {
-		this(name, type, entryCat, prevtop, prevtop_index, scope_level);
-		this.objContext = objContext;
-		this.objectIndexInContext = objectIndexInContext;
-	}
+//	public SYMBOL_TABLE_ENTRY(String name, TYPE type, Category entryCat, ObjectContext objContext,
+//			int objectIndexInContext, SYMBOL_TABLE_ENTRY prevtop, int prevtop_index, int scope_level) {
+//		this(name, type, entryCat, prevtop, prevtop_index, scope_level);
+//		this.objContext = objContext;
+//		this.objectIndexInContext = objectIndexInContext;
+//	}
 	
 	public void updateType(TYPE t) {
 		this.type = t;

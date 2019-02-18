@@ -70,7 +70,7 @@ public class AST_NEWEXP extends AST_Node{
 	
 	public TYPE SemantMe()
 	{
-		TYPE t = SYMBOL_TABLE.getInstance().findDataType(type);
+		TYPE t = SYMBOL_TABLE.getInstance().findDataType(type).type;
 		if (t == null)
 			throw new SemanticRuntimeException(lineNum, colNum, String.format("non existing type (%s) for (NEWEXP)\n", type));
 		/*******************************************************/

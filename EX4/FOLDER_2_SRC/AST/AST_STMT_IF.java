@@ -1,7 +1,13 @@
 package AST;
 
+import IR.IR;
+import IR.IRcommand;
+import IR.IRcommand_Jump_If_Eq_To_Zero;
+import IR.IRcommand_Jump_Label;
+import IR.IRcommand_Label;
 import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.SYMBOL_TABLE;
+import TEMP.TEMP;
 import TYPES.TYPE;
 import TYPES.TYPE_INT;
 
@@ -85,6 +91,39 @@ public class AST_STMT_IF extends AST_STMT
 		/*********************************************************/
 		return null;		
 	}	
+	
+	public TEMP IRme()
+	{
+		/*******************************/
+		/* [1] Allocate fresh label */
+		/*******************************/
+		String label_end   = IRcommand.getFreshLabel("end");
+	
+		/********************/
+		/* [2] cond.IRme(); */
+		/********************/
+		TEMP cond_temp = cond.IRme();
+
+		/******************************************/
+		/* [3] Jump conditionally to the loop end */
+		/******************************************/
+		IR.getInstance().Add_codeSegmentIRcommand(new IRcommand_Jump_If_Eq_To_Zero(cond_temp,label_end));		
+
+		/*******************/
+		/* [4] body.IRme() */
+		/*******************/
+		body.IRme();
+
+		/**********************/
+		/* [5] Loop end label */
+		/**********************/
+		IR.getInstance().Add_codeSegmentIRcommand(new IRcommand_Label(label_end));
+
+		/*******************/
+		/* [6] return null */
+		/*******************/
+		return null;
+	}
 
 	
 }

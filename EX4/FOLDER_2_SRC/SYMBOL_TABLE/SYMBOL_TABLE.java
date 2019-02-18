@@ -13,7 +13,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import AST.AST_Node;
 import MyExceptions.SemanticRuntimeException;
+import SYMBOL_TABLE.ENUM_SCOPE_TYPES.ScopeTypes;
 import SYMBOL_TABLE.ENTRY_CATEGORY.Category;
 import SYMBOL_TABLE.ENUM_OBJECT_CONTEXT.ObjectContext;
 /*******************/
@@ -33,21 +35,20 @@ public class SYMBOL_TABLE
 	public Map<String, List<SYMBOL_TABLE_ENTRY>> symbol_table_hash = new HashMap<String, List<SYMBOL_TABLE_ENTRY>>();
 	private SYMBOL_TABLE_ENTRY top;
 	private int top_index = 0, cur_scope_level = 0;
-	public int curIndexOfVarInFunction = 0; ///TO-DO: check if needed
+	//public int curIndexOfVarInFunction = 0; ///TO-DO: check if needed
 	public TYPE curFunctionReturnType = null;
 	public TYPE_CLASS curClassExtends = null;
-	
-	//public boolean isInClassScope = false;
+	public ScopeTypes curScopeType = ScopeTypes.globalScope;
 	
 	/****************************************************************************/
 	/* Enter a variable, function, class type or array type to the symbol table */
 	/****************************************************************************/
 	
-	public void enter(String name,TYPE t, Category entryCat, ObjectContext objContext, int objectIndexInContext)
+	public void enter(String name,TYPE t, Category entryCat, AST_Node originASTNode)//, ObjectContext objContext, int objectIndexInContext)
 	{
 		if (t == null)
 			System.out.println(String.format("%s type is null!",name));
-		SYMBOL_TABLE_ENTRY new_entry = new SYMBOL_TABLE_ENTRY(name,t,entryCat,objContext,objectIndexInContext,top,top_index++,cur_scope_level);
+		SYMBOL_TABLE_ENTRY new_entry = new SYMBOL_TABLE_ENTRY(name,t,entryCat,top,top_index++,cur_scope_level,originASTNode);
 		top = new_entry;
 		
 		if(!symbol_table_hash.containsKey(name)){
@@ -59,14 +60,14 @@ public class SYMBOL_TABLE
 		PrintMe();
 	}
 	
-	public void enterObject(String name,TYPE t, ObjectContext objContext, int objectIndexInContext)
+	public void enterObject(String name,TYPE t, AST_Node originASTNode)//, ObjectContext objContext, int objectIndexInContext)
 	{
-		this.enter(name, t, Category.object,objContext,objectIndexInContext);
+		this.enter(name, t, Category.object, originASTNode);//,objContext,objectIndexInContext);
 	}
 	
-	public void enterDataType(String name,TYPE t)
+	public void enterDataType(String name,TYPE t, AST_Node originASTNode)
 	{
-		this.enter(name, t, Category.dataType,ObjectContext.nonObject,-1);
+		this.enter(name, t, Category.dataType, originASTNode);//,ObjectContext.nonObject,-1);
 	}
 
 	/***********************************************/
@@ -146,7 +147,7 @@ public class SYMBOL_TABLE
 		/* a special TYPE_FOR_SCOPE_BOUNDARIES was developed for them. This     */
 		/* class only contain their type name which is the bottom sign: _|_     */
 		/************************************************************************/
-		enter("SCOPE-BOUNDARY",	new TYPE_FOR_SCOPE_BOUNDARIES(scope_name), Category.misc,ObjectContext.nonObject,-1);
+		enter("SCOPE-BOUNDARY",	new TYPE_FOR_SCOPE_BOUNDARIES(scope_name), Category.misc, null);//,ObjectContext.nonObject,-1);
 		
 		/*******************************************************/
 		/* Increase scope level for future SYMBOL_TABLE_ENTRYs */
@@ -163,6 +164,12 @@ public class SYMBOL_TABLE
 	{
 		this.curFunctionReturnType = funcReturnType;
 		this.beginScope(scope_name);
+		COUNTERS.resetFunctionCounters();
+		this.curScopeType = (this.curScopeType == ScopeTypes.globalScope) ? ScopeTypes.globalFunctionScope : ScopeTypes.classMethodScope;
+		
+		if (this.curScopeType == ScopeTypes.classMethodScope) //start count from 2 for class methods!
+			COUNTERS.inputArgsRecieved++; //make place for hidden class object...
+		
 	}
 	
 	public void beginClassScope(String scope_name,TYPE_CLASS curClassExtends)
@@ -170,6 +177,8 @@ public class SYMBOL_TABLE
 		this.curClassExtends = curClassExtends;
 		//this.isInClassScope = true;
 		this.beginScope(scope_name);
+		COUNTERS.resetClassCounters(curClassExtends);
+		this.curScopeType = ScopeTypes.classScope;
 	}
 
 	/********************************************************************************/
@@ -220,8 +229,9 @@ public class SYMBOL_TABLE
 	public void endFunctionScope()
 	{
 		this.curFunctionReturnType = null;
-		this.curIndexOfVarInFunction = 0;
+		//this.curIndexOfVarInFunction = 0;
 		this.endScope();
+		this.curScopeType = (this.curScopeType == ScopeTypes.globalFunctionScope) ? ScopeTypes.globalScope : ScopeTypes.classScope;
 	}
 	
 	public void endClassScope()
@@ -229,6 +239,7 @@ public class SYMBOL_TABLE
 		this.curClassExtends = null;
 		//this.isInClassScope = false;
 		this.endScope();
+		this.curScopeType = ScopeTypes.globalScope;
 	}
 	
 	
@@ -338,8 +349,8 @@ public class SYMBOL_TABLE
 			/*****************************************/
 			/* [1] Enter primitive types int, string */
 			/*****************************************/
-			instance.enterDataType("int", TYPE_INT.getInstance());
-			instance.enterDataType("string",TYPE_STRING.getInstance());
+			instance.enterDataType("int", TYPE_INT.getInstance(), null);
+			instance.enterDataType("string",TYPE_STRING.getInstance(), null);
 
 			/*************************************/
 			/* [2] How should we handle void ??? */
@@ -349,13 +360,12 @@ public class SYMBOL_TABLE
 			/* [3] Enter library function PrintInt */
 			/***************************************/
 			instance.enterObject("PrintInt", new TYPE_FUNCTION(TYPE_VOID.getInstance(), "PrintInt",
-					new TYPE_LIST(TYPE_INT.getInstance(), null)),ObjectContext.global,-1);
+					new TYPE_LIST(TYPE_INT.getInstance(), null)), null);//,ObjectContext.global,-1);
 			
 			instance.enterObject("PrintString", new TYPE_FUNCTION(TYPE_VOID.getInstance(), "PrintString",
-					new TYPE_LIST(TYPE_STRING.getInstance(), null)),ObjectContext.global,-1);
+					new TYPE_LIST(TYPE_STRING.getInstance(), null)), null);//,ObjectContext.global,-1);
 			
-			instance.enterObject("PrintTrace", new TYPE_FUNCTION(TYPE_VOID.getInstance(), "PrintTrace", null),
-					ObjectContext.global, -1);
+			instance.enterObject("PrintTrace", new TYPE_FUNCTION(TYPE_VOID.getInstance(), "PrintTrace", null),null);//,ObjectContext.global, -1);
 		}
 		return instance;
 	}

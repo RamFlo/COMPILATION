@@ -18,26 +18,29 @@ import MIPS.sir_MIPS_a_lot;
 
 public class IR
 {
-	private List<IRcommand> fullIRCommandList = null;
+//	private List<IRcommand> fullIRCommandList = null;
 	
 	
 //	private IRcommand head=null;
 //	private IRcommandList tail=null;
 	
 	private List<IRcommand> dataSegmentIRCommandList = null;
-	private List<IRcommand> textSegmentIRCommandList = null;
+	
+	private List<IRcommand> globalsInitIRCommandList = null;
+	
+	private List<IRcommand> codeSegmentIRCommandList = null;
 	
 
 
 	/******************/
 	/* Add IR command */
 	/******************/
-	public void Add_IRcommand(IRcommand cmd)
-	{
-		if (fullIRCommandList == null)
-			fullIRCommandList = new LinkedList<IRcommand>();
-		fullIRCommandList.add(cmd);
-	}
+//	public void Add_IRcommand(IRcommand cmd)
+//	{
+//		if (fullIRCommandList == null)
+//			fullIRCommandList = new LinkedList<IRcommand>();
+//		fullIRCommandList.add(cmd);
+//	}
 	
 	/******************/
 	/* Add IR command for data segment */
@@ -48,16 +51,26 @@ public class IR
 			dataSegmentIRCommandList = new LinkedList<IRcommand>();
 		dataSegmentIRCommandList.add(cmd);
 	}
+	
+	/******************/
+	/* Add IR command for globals init segment */
+	/******************/
+	public void Add_globalsInitIRcommand(IRcommand cmd)
+	{
+		if (globalsInitIRCommandList == null)
+			globalsInitIRCommandList = new LinkedList<IRcommand>();
+		globalsInitIRCommandList.add(cmd);
+	}
 
 	
 	/******************/
-	/* Add IR command for text segment */
+	/* Add IR command for code segment */
 	/******************/
-	public void Add_textSegmentIRcommand(IRcommand cmd)
+	public void Add_codeSegmentIRcommand(IRcommand cmd)
 	{
-		if (textSegmentIRCommandList == null)
-			textSegmentIRCommandList = new LinkedList<IRcommand>();
-		textSegmentIRCommandList.add(cmd);
+		if (codeSegmentIRCommandList == null)
+			codeSegmentIRCommandList = new LinkedList<IRcommand>();
+		codeSegmentIRCommandList.add(cmd);
 	}
 	
 	/***************/
@@ -70,12 +83,14 @@ public class IR
 			dataSegmentIRCommand.MIPSme();
 		
 		sir_MIPS_a_lot.getInstance().initializeTextSegment();
-		for (IRcommand textSegmentIRCommand:textSegmentIRCommandList)
-			textSegmentIRCommand.MIPSme();
+		for (IRcommand globalsInitIRCommand:globalsInitIRCommandList)
+			globalsInitIRCommand.MIPSme();
 		
-		sir_MIPS_a_lot.getInstance().initializeDataSegment();
-		for (IRcommand dataSegmentIRCommand:dataSegmentIRCommandList)
-			dataSegmentIRCommand.MIPSme();
+		//TO-DO: jump to main, then exit()
+		
+		sir_MIPS_a_lot.getInstance().initializeTextSegment();
+		for (IRcommand codeSegmentIRCommand:codeSegmentIRCommandList)
+			codeSegmentIRCommand.MIPSme();
 		
 	}
 

@@ -1,6 +1,9 @@
 package AST;
 
 import MyExceptions.SemanticRuntimeException;
+import SYMBOL_TABLE.COUNTERS;
+import SYMBOL_TABLE.ENUM_OBJECT_CONTEXT.ObjectContext;
+import SYMBOL_TABLE.ENUM_SCOPE_TYPES.ScopeTypes;
 import SYMBOL_TABLE.SYMBOL_TABLE;
 import TYPES.TYPE;
 import TYPES.TYPE_ARRAY;
@@ -76,8 +79,12 @@ public class AST_TYPE_NAME extends AST_Node
 		/*******************************************************/
 		/* Enter var with name=name and type=t to symbol table */
 		/*******************************************************/
-		t = SYMBOL_TABLE.getInstance().findDataType(type);
-		SYMBOL_TABLE.getInstance().enterObject(name,t);
+		t = SYMBOL_TABLE.getInstance().findDataType(type).type;
+		SYMBOL_TABLE.getInstance().enterObject(name,t,this);//,ObjectContext.inputArgumentRecieved,COUNTERS.inputArgsRecieved);
+		this.objContext = ObjectContext.inputArgumentRecieved;
+		this.objScopeType = SYMBOL_TABLE.getInstance().curScopeType;
+		this.objIndexInContext = COUNTERS.inputArgsRecieved;
+		COUNTERS.inputArgsRecieved++;
 
 		/****************************/
 		/* return (existing) type t */

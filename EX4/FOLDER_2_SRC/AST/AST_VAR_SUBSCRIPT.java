@@ -1,6 +1,12 @@
 package AST;
 
+import IR.IR;
+import IR.IRcommand_Binop_Add_Integers;
+import IR.IRcommand_Load;
+import IR.IRcommand_Shiftleft;
 import MyExceptions.SemanticRuntimeException;
+import TEMP.TEMP;
+import TEMP.TEMP_FACTORY;
 import TYPES.TYPE;
 import TYPES.TYPE_ARRAY;
 import TYPES.TYPE_INT;
@@ -74,7 +80,7 @@ public class AST_VAR_SUBSCRIPT extends AST_VAR
 		if (var != null) t = var.SemantMe();
 		
 		/*********************************/
-		/* [2] Make sure type is a class */
+		/* [2] Make sure type is an array */
 		/*********************************/
 		if (!(t instanceof TYPE_ARRAY))
 			throw new SemanticRuntimeException(lineNum, colNum, "trying to access subscript of a variable that is not an ARRAY\n");
@@ -92,5 +98,33 @@ public class AST_VAR_SUBSCRIPT extends AST_VAR
 		/* [4] return the array's type */
 		/*******************************/
 		return ta.arrayType;
+	}
+	
+	public TEMP IRme() {
+		/*******************/
+		/* [1] IR array object */
+		/*******************/
+		TEMP srcAddress = var.IRme();
+		
+		/*******************/
+		/* [2] IR subscript and calculate load address */
+		/*******************/
+		TEMP offsetTemp = subscript.IRme();
+		
+		//multiply offset index by 4
+		//offsetTemp *= 4
+		IR.getInstance().Add_codeSegmentIRcommand(new IRcommand_Shiftleft(offsetTemp, offsetTemp, 2));
+		
+		//calculate exact address by adding offset value to original array's address
+		//srcAddress = srcAddress + offsetTemp
+		IR.getInstance().Add_codeSegmentIRcommand(new IRcommand_Binop_Add_Integers(srcAddress, srcAddress, offsetTemp));
+
+		/*************************************/
+		/* [3] load array cell value */
+		/*************************************/
+		TEMP t = TEMP_FACTORY.getInstance().getFreshTEMP();
+		IR.getInstance().Add_codeSegmentIRcommand(new IRcommand_Load(t, srcAddress, 0));
+
+		return t;
 	}
 }

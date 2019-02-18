@@ -2,6 +2,7 @@ package AST;
 
 import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.SYMBOL_TABLE;
+import SYMBOL_TABLE.ENUM_SCOPE_TYPES.ScopeTypes;
 import TYPES.TYPE;
 import TYPES.TYPE_ARRAY;
 import TYPES.TYPE_FUNCTION;
@@ -73,7 +74,7 @@ public class AST_DEC_ARRAY extends AST_DEC
 		/***************************************************/
 		/* [2] Enter the array type to the Symbol Table */
 		/***************************************************/
-		SYMBOL_TABLE.getInstance().enterDataType(name,new TYPE_ARRAY(name,t,type));
+		SYMBOL_TABLE.getInstance().enterDataType(name,new TYPE_ARRAY(name,t,type),this);
 		
 		/*********************************************************/
 		/* [3] Return value is irrelevant for array declarations */

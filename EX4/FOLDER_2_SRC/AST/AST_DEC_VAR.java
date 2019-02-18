@@ -3,7 +3,10 @@ package AST;
 import TYPES.TYPE;
 import TYPES.TYPE_ARRAY;
 import MyExceptions.SemanticRuntimeException;
+import SYMBOL_TABLE.COUNTERS;
 import SYMBOL_TABLE.SYMBOL_TABLE;
+import SYMBOL_TABLE.ENUM_OBJECT_CONTEXT.ObjectContext;
+import SYMBOL_TABLE.ENUM_SCOPE_TYPES.ScopeTypes;
 import TYPES.TYPE;
 import TYPES.TYPE_CLASS;
 import TYPES.TYPE_FUNCTION;
@@ -20,7 +23,7 @@ public class AST_DEC_VAR extends AST_DEC
 	public String name;
 	public AST_EXP initialValue;
 	public AST_NEWEXP initialValueNew;
-	public int indexOfVarInFunction = -1;
+	//public int indexOfVarInFunction = -1;
 	
 	/******************/
 	/* CONSTRUCTOR(S) */
@@ -72,15 +75,36 @@ public class AST_DEC_VAR extends AST_DEC
 			
 	}
 	
+	private void updateObjectContextAndIndex() {
+		this.objScopeType = SYMBOL_TABLE.getInstance().curScopeType;
+		if (this.objScopeType == ScopeTypes.classMethodScope || this.objScopeType == ScopeTypes.globalFunctionScope) {
+			this.objContext = ObjectContext.local;
+			this.objIndexInContext = COUNTERS.funcLocalVariables;
+			COUNTERS.funcLocalVariables++;
+		}
+
+		else if (this.objScopeType == ScopeTypes.classScope) {
+			this.objContext = ObjectContext.classDataMember;
+			this.objIndexInContext = COUNTERS.classDataMember;
+			COUNTERS.classDataMember++;
+		} else // global scope
+		{
+			this.objContext = ObjectContext.global;
+			this.objIndexInContext = -1;
+		}
+	}
+	
 	public TYPE SemantMeFromClass()
 	{
 		TYPE t1 = null;
 		//TYPE t2 = null;
 		TYPE existingNamesType = null;
+		
+		this.updateObjectContextAndIndex();
 		/****************************/
 		/* [1] Check If Type exists */
 		/****************************/
-		t1 = SYMBOL_TABLE.getInstance().findDataType(type);
+		t1 = SYMBOL_TABLE.getInstance().findDataType(type).type;
 		if (t1 == null)
 		{
 			throw new SemanticRuntimeException(lineNum,colNum,String.format("non existing type %s\n",type));
@@ -126,34 +150,37 @@ public class AST_DEC_VAR extends AST_DEC
 		/***************************************************/
 		/* [4] Enter the Function Type to the Symbol Table */
 		/***************************************************/
-		SYMBOL_TABLE.getInstance().enterObject(name,t1);
+		SYMBOL_TABLE.getInstance().enterObject(name,t1,this);
+		
+		
 		return t1;
 	}
 	
 	
-	boolean varDecIsInFunction()
-	{
-		return (SYMBOL_TABLE.getInstance().curFunctionReturnType != null);
-	}
-	
-	//Copied from next exercise
+//	boolean varDecIsInFunction()
+//	{
+//		return (SYMBOL_TABLE.getInstance().curFunctionReturnType != null);
+//	}
+
 	public TYPE SemantMe()
 	{
 		TYPE t1 = null;
 		TYPE t2 = null;
 		TYPE existingNamesType = null;
 		
-		if (varDecIsInFunction())
-		{
-			SYMBOL_TABLE.getInstance().curIndexOfVarInFunction++;
-			this.indexOfVarInFunction = SYMBOL_TABLE.getInstance().curIndexOfVarInFunction;
-		}
+		this.updateObjectContextAndIndex();
+		
+//		if (varDecIsInFunction())
+//		{
+//			SYMBOL_TABLE.getInstance().curIndexOfVarInFunction++;
+//			this.indexOfVarInFunction = SYMBOL_TABLE.getInstance().curIndexOfVarInFunction;
+//		}
 		
 	
 		/****************************/
 		/* [1] Check If Type exists */
 		/****************************/
-		t1 = SYMBOL_TABLE.getInstance().findDataType(type);
+		t1 = SYMBOL_TABLE.getInstance().findDataType(type).type;
 		if (t1 == null)
 		{
 			throw new SemanticRuntimeException(lineNum,colNum,String.format("non existing type %s\n",type));
@@ -231,7 +258,7 @@ public class AST_DEC_VAR extends AST_DEC
 		/***************************************************/
 		/* [3] Enter the Function Type to the Symbol Table */
 		/***************************************************/
-		SYMBOL_TABLE.getInstance().enterObject(name,t1);
+		SYMBOL_TABLE.getInstance().enterObject(name,t1,this);
 
 		/*********************************************************/
 		/* [4] Return value is irrelevant for class declarations */

@@ -1,5 +1,9 @@
 package AST;
 
+import IR.IR;
+import IR.IRcommand_NIL;
+import TEMP.TEMP;
+import TEMP.TEMP_FACTORY;
 import TYPES.TYPE;
 import TYPES.TYPE_NIL;
 
@@ -22,8 +26,16 @@ public class AST_EXP_NIL extends AST_EXP{
 			"NIL");
 			
 	}
+	
 	public TYPE SemantMe()
 	{
 		return TYPE_NIL.getInstance();
+	}
+	
+	public TEMP IRme()
+	{
+		TEMP t = TEMP_FACTORY.getInstance().getFreshTEMP();
+		IR.getInstance().Add_codeSegmentIRcommand(new IRcommand_NIL(t));
+		return t;
 	}
 }

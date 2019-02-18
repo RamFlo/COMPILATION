@@ -1,7 +1,12 @@
 package AST;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import IR.IRcommand;
 import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.SYMBOL_TABLE;
+import TEMP.TEMP;
 import TYPES.TYPE;
 import TYPES.TYPE_LIST;
 
@@ -65,5 +70,17 @@ public class AST_EXP_LIST extends AST_Node
 			type_list = new TYPE_LIST(t,type_list);
 		}
 		return type_list;
+	}
+	
+	public List<TEMP> IRme()
+	{
+		List<TEMP> argList = new LinkedList<TEMP>();
+		
+		for (AST_EXP_LIST it = this; it  != null; it = it.tail)
+		{
+			TEMP t = it.head.IRMe();
+			argList.add(t);
+		}
+		return argList;
 	}
 }

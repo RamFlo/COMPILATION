@@ -1,6 +1,16 @@
 package AST;
 
+import IR.IR;
+import IR.IRcommand;
+import IR.IRcommandConstInt;
+import IR.IRcommand_Jump_If_Eq_To_Zero;
+import IR.IRcommand_Label;
+import IR.IRcommand_Load;
 import MyExceptions.SemanticRuntimeException;
+import SYMBOL_TABLE.SYMBOL_TABLE;
+import SYMBOL_TABLE.ENUM_OBJECT_CONTEXT.ObjectContext;
+import TEMP.TEMP;
+import TEMP.TEMP_FACTORY;
 import TYPES.TYPE;
 import TYPES.TYPE_CLASS;
 import TYPES.TYPE_CLASS_DATA_MEMBERS_LIST;
@@ -89,8 +99,13 @@ public class AST_VAR_FIELD extends AST_VAR
 		//delete later-debug
 		while (tc != null) {
 			for (TYPE_CLASS_DATA_MEMBERS_LIST it = tc.data_members; it != null; it = it.tail) {
-				if (it.head.name.equals(fieldName))
+				if (it.head.name.equals(fieldName)){
+					this.objIndexInContext = tc.dataMembersMap.get(fieldName);
+					this.objScopeType = SYMBOL_TABLE.getInstance().curScopeType;
+					this.objContext = ObjectContext.classDataMember;
+
 					return it.head.type;
+				}
 			}
 			tc = tc.father;
 		}
@@ -99,5 +114,27 @@ public class AST_VAR_FIELD extends AST_VAR
 		/* [4] fieldName does not exist in class var */
 		/*********************************************/
 		throw new SemanticRuntimeException(lineNum, colNum, String.format("field (%s) does not exist in class (%s)\n",fieldName,t.name));
+	}
+	
+	private void checkNullPtrDeref(TEMP t){
+		
+	}
+	
+	public TEMP IRme() {
+		/*******************/
+		/* [1] IR class object */
+		/*******************/
+		TEMP srcClass = var.IRme();
+		
+		checkNullPtrDeref(srcClass);
+
+		/*************************************/
+		/* [2] load class object data member */
+		/*************************************/
+		TEMP t = TEMP_FACTORY.getInstance().getFreshTEMP();
+		int offset = 4 * this.objIndexInContext;
+		IR.getInstance().Add_codeSegmentIRcommand(new IRcommand_Load(t, srcClass, offset));
+
+		return t;
 	}
 }

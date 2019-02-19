@@ -4,9 +4,16 @@ import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 
+import IR.IR;
+import IR.IRcommand;
+import IR.IRcommand_Create_Class_VFTable;
+import IR.IRcommand_Jump_If_Eq_To_Zero;
+import IR.IRcommand_Label;
 import MyClasses.ClassMethodDetails;
 import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.SYMBOL_TABLE;
+import SYMBOL_TABLE.SYMBOL_TABLE_ENTRY;
+import TEMP.TEMP;
 import TYPES.TYPE;
 import TYPES.TYPE_ARRAY;
 import TYPES.TYPE_CLASS;
@@ -22,6 +29,7 @@ public class AST_DEC_CLASS extends AST_DEC
 	/********/
 	public String name;
 	public String supername;
+	public TYPE_CLASS classInfo;
 
 	/****************/
 	/* DATA MEMBERS */
@@ -225,11 +233,12 @@ public class AST_DEC_CLASS extends AST_DEC
 		
 		if (supername != null){
 			/*Searching for supername in SYMBOL_TABLE*/
-			superType = SYMBOL_TABLE.getInstance().findDataType(supername).type;
+			SYMBOL_TABLE_ENTRY searchRes = SYMBOL_TABLE.getInstance().findDataType(supername);
 			/*Supername is not in SYMBOL_TABLE -> error*/
-			if (superType == null)
+			if (searchRes == null)
 				throw new SemanticRuntimeException(lineNum, colNum, String.format
 						("class %s extends undefined class %s\n", name, supername));
+			superType = searchRes.type;
 			
 			/*Supername is not a class*/
 			if (!(superType instanceof TYPE_CLASS))
@@ -244,6 +253,8 @@ public class AST_DEC_CLASS extends AST_DEC
 		/**********************************************************************/		
 		
 		t = new TYPE_CLASS((TYPE_CLASS)superType,name,null);
+		t.classOriginASTNode = this;
+		this.classInfo = t;
 		if(superType != null) //copy entire super's dataMembersMap and methodMap!
 		{
 			t.dataMembersMap = new LinkedHashMap<String,Integer>(((TYPE_CLASS)superType).dataMembersMap);
@@ -272,7 +283,7 @@ public class AST_DEC_CLASS extends AST_DEC
 		
 		TYPE_FUNCTION curFunction = null;
 		TYPE curVariant = null;
-		TYPE_CLASS_DATA_MEMBERS_LIST dataMembersList = null;
+		//TYPE_CLASS_DATA_MEMBERS_LIST dataMembersList = null;
 		
 		/*************************************************************************************/
 		/* [0] Semant data members and functions (without the functions' bodies\param names) */
@@ -317,5 +328,28 @@ public class AST_DEC_CLASS extends AST_DEC
 		/* [5] Return value is irrelevant for class declarations */
 		/*********************************************************/
 		return null;		
+	}
+	
+	public TEMP IRme()
+	{
+		/**************************************/
+		/* [1] create VFTable in data segment */
+		/**************************************/
+		IR.getInstance().Add_dataSegmentIRcommand(new IRcommand_Create_Class_VFTable(this.classInfo.methodsMap,this.name));		
+	
+		/****************************************/
+		/* [2] add methods code to code segment */
+		/****************************************/
+		AST_DEC_FUNC curHeadFunc;
+		for (AST_CFIELDLIST it = class_fields; it  != null; it = it.tail)
+		{
+			curHeadFunc = it.headFunc;
+			if (curHeadFunc != null)
+				curHeadFunc.IRme(); //TO-DO: make sure DEC_FUNC differentiates methods from functions
+		}
+		
+		//data members IRMe happens in NEWEXP! not here!
+		
+		return null;
 	}
 }

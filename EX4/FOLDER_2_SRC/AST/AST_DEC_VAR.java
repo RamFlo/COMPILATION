@@ -2,9 +2,14 @@ package AST;
 
 import TYPES.TYPE;
 import TYPES.TYPE_ARRAY;
+import IR.IR;
+import IR.IRcommand_Store_Word_Offset;
 import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.COUNTERS;
 import SYMBOL_TABLE.SYMBOL_TABLE;
+import SYMBOL_TABLE.SYMBOL_TABLE_ENTRY;
+import TEMP.TEMP;
+import TEMP.TEMP_FACTORY;
 import SYMBOL_TABLE.ENUM_OBJECT_CONTEXT.ObjectContext;
 import SYMBOL_TABLE.ENUM_SCOPE_TYPES.ScopeTypes;
 import TYPES.TYPE;
@@ -104,12 +109,12 @@ public class AST_DEC_VAR extends AST_DEC
 		/****************************/
 		/* [1] Check If Type exists */
 		/****************************/
-		t1 = SYMBOL_TABLE.getInstance().findDataType(type).type;
-		if (t1 == null)
+		SYMBOL_TABLE_ENTRY searchRes = SYMBOL_TABLE.getInstance().findDataType(type);
+		if (searchRes == null)
 		{
 			throw new SemanticRuntimeException(lineNum,colNum,String.format("non existing type %s\n",type));
 		}
-		
+		t1 = searchRes.type;
 		/***************************************************/
 		/* [2] Check That Name is not an existing dataType */
 		/***************************************************/
@@ -180,12 +185,12 @@ public class AST_DEC_VAR extends AST_DEC
 		/****************************/
 		/* [1] Check If Type exists */
 		/****************************/
-		t1 = SYMBOL_TABLE.getInstance().findDataType(type).type;
-		if (t1 == null)
+		SYMBOL_TABLE_ENTRY searchRes = SYMBOL_TABLE.getInstance().findDataType(type);
+		if (searchRes == null)
 		{
 			throw new SemanticRuntimeException(lineNum,colNum,String.format("non existing type %s\n",type));
 		}
-		
+		t1 = searchRes.type;
 		/***************************************************/
 		/* [2] Check That Name is not an existing dataType */
 		/***************************************************/
@@ -272,5 +277,18 @@ public class AST_DEC_VAR extends AST_DEC
 		TYPE_CLASS tmp = t2.father;
 		return isExtends(t1, tmp);
 		
+	}
+	
+	public TEMP IRmeFromClass(int offset,TEMP allocatedAddress)
+	{
+		//(initialValueNew is always null in this case - no need to check)
+		
+		if (initialValue == null)
+			return null; //no initial value for this data member!
+		
+		TEMP initialValueTemp = initialValue.IRme();
+		IR.getInstance().Add_codeSegmentIRcommand(new IRcommand_Store_Word_Offset(initialValueTemp,offset,allocatedAddress));
+		
+		return null;
 	}
 }

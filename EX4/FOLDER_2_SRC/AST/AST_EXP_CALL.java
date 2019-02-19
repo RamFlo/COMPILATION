@@ -2,6 +2,7 @@ package AST;
 
 import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.SYMBOL_TABLE;
+import SYMBOL_TABLE.SYMBOL_TABLE_ENTRY;
 import TYPES.TYPE;
 import TYPES.TYPE_ARRAY;
 import TYPES.TYPE_CLASS;
@@ -97,12 +98,14 @@ public class AST_EXP_CALL extends AST_EXP
 		if (callingObject == null) {
 			foundFunctionType = findFunctionNameInClassAndItsSupers(funcName,SYMBOL_TABLE.getInstance().curClassExtends);
 			
-			if (foundFunctionType == null) //search funcName in global scope when not found in class scope
-				foundFunctionType = SYMBOL_TABLE.getInstance().find(funcName).type;
-			
-			if (foundFunctionType == null) {
-				throw new SemanticRuntimeException(lineNum,colNum,String.format("function %s does not exist in scope\n",funcName));
+			if (foundFunctionType == null){ //search funcName in global scope when not found in class scope
+				SYMBOL_TABLE_ENTRY searchRes = SYMBOL_TABLE.getInstance().find(funcName);
+				if (searchRes == null) {
+					throw new SemanticRuntimeException(lineNum,colNum,String.format("function %s does not exist in scope\n",funcName));
+				}
+				foundFunctionType = searchRes.type;
 			}
+			
 			if (!(foundFunctionType instanceof TYPE_FUNCTION)) {
 				throw new SemanticRuntimeException(lineNum,colNum,String.format("%s is not a valid function name in this scope\n",funcName));
 			}

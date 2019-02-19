@@ -3,7 +3,6 @@ package AST;
 import IR.IR;
 import IR.IRcommand_Frame_Load;
 import IR.IRcommand_Load;
-import IR.IRcommand_Stack_Load;
 import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.SYMBOL_TABLE;
 import SYMBOL_TABLE.SYMBOL_TABLE_ENTRY;

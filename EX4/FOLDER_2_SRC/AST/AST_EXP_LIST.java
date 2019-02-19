@@ -74,11 +74,12 @@ public class AST_EXP_LIST extends AST_Node
 	
 	public List<TEMP> IRme()
 	{
+		//TO-DO: Fix...
 		List<TEMP> argList = new LinkedList<TEMP>();
 		
 		for (AST_EXP_LIST it = this; it  != null; it = it.tail)
 		{
-			TEMP t = it.head.IRMe();
+			TEMP t = it.head.IRme();
 			argList.add(t);
 		}
 		return argList;

@@ -7,6 +7,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import AST.AST_CFIELDLIST;
+import AST.AST_DEC_CLASS;
 import MyClasses.ClassMethodDetails;
 
 public class TYPE_CLASS extends TYPE
@@ -27,6 +29,8 @@ public class TYPE_CLASS extends TYPE
 	
 	public Map<String, ClassMethodDetails> methodsMap = new LinkedHashMap<String, ClassMethodDetails>();
 	
+	public AST_DEC_CLASS classOriginASTNode;
+	
 	//public List<String[]> listOfFunctionsForClassVFTable = new LinkedList<String[]>();
 	
 	/****************/
@@ -37,10 +41,6 @@ public class TYPE_CLASS extends TYPE
 		this.name = name;
 		this.father = father;
 		this.data_members = data_members;
-	}
-	
-	public int getSizeOfClassVFTable() {
-		return listOfFunctionsForClassVFTable.size();
 	}
 	
 	

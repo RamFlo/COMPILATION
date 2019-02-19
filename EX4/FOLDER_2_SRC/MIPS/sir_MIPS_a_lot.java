@@ -15,7 +15,7 @@ import TEMP.*;
 
 public class sir_MIPS_a_lot
 {
-	private int WORD_SIZE=4;
+	public static int WORD_SIZE=4;
 	/***********************/
 	/* The file writer ... */
 	/***********************/
@@ -59,10 +59,35 @@ public class sir_MIPS_a_lot
 	{
 		fileWriter.format(".text\n");
 	}
+	public void string_creation(int stringNum, String s)
+	{
+		fileWriter.format("string_%d: .asciiz \"%s\"\n",stringNum,s);
+	}
 	public void allocate(String var_name)
 	{
 		fileWriter.format(".data\n");
 		fileWriter.format("\tglobal_%s: .word 721\n",var_name);
+	}
+	public void malloc(TEMP dst, int numWordsToAllocate)
+	{
+		int idxdst=dst.getSerialNumber();
+		fileWriter.format("\tli $a0,%d\n",numWordsToAllocate*WORD_SIZE);
+		fileWriter.format("\tli $v0,9\n");
+		fileWriter.format("\tsyscall\n");
+		fileWriter.format("\tmove Temp_%d,$v0\n",idxdst);
+	}
+	public void malloc_size_in_temp(TEMP dst, TEMP size)
+	{
+		int idxdst=dst.getSerialNumber(), size_serial = size.getSerialNumber();
+		fileWriter.format("\tmove $a0,Temp_%d\n",size_serial);
+		fileWriter.format("\tli $v0,9\n");
+		fileWriter.format("\tsyscall\n");
+		fileWriter.format("\tmove Temp_%d,$v0\n",idxdst);
+	}
+	public void la(TEMP dst, String label)
+	{
+		int idxdst=dst.getSerialNumber();
+		fileWriter.format("\tla Temp_%d,%s\n",idxdst,label);
 	}
 	public void load(TEMP dst,String var_name)
 	{
@@ -94,6 +119,11 @@ public class sir_MIPS_a_lot
 		int idxsrc=src.getSerialNumber();
 		fileWriter.format("\tsw Temp_%d,global_%s\n",idxsrc,var_name);		
 	}
+	public void store_word(TEMP word, int offset, TEMP address)
+	{
+		int word_serial=word.getSerialNumber(), address_serial = address.getSerialNumber();
+		fileWriter.format("\tsw Temp_%d,%d(Temp_%d)\n",word_serial,offset,address_serial);		
+	}
 	public void li(TEMP t,int value)
 	{
 		int idx=t.getSerialNumber();
@@ -117,16 +147,24 @@ public class sir_MIPS_a_lot
 	}
 	public void label(String inlabel)
 	{
-		if (inlabel.equals("main"))
-		{
-			fileWriter.format(".text\n");
 			fileWriter.format("%s:\n",inlabel);
-		}
-		else
-		{
-			fileWriter.format("%s:\n",inlabel);
-		}
-	}	
+	}
+	public void vftable_label(String className)
+	{
+			fileWriter.format("VFTable_%s: .word ",className);
+	}
+	public void vftable_method(String methodName, String originClass)
+	{
+			fileWriter.format("method_%s_%s",originClass,methodName);
+	}
+	public void add_new_line()
+	{
+		fileWriter.format("\n");
+	}
+	public void add_comma()
+	{
+		fileWriter.format(",");
+	}
 	public void jump(String inlabel)
 	{
 		fileWriter.format("\tj %s\n",inlabel);

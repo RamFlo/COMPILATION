@@ -5,6 +5,7 @@ import SYMBOL_TABLE.ENUM_OBJECT_CONTEXT.ObjectContext;
 import SYMBOL_TABLE.ENUM_SCOPE_TYPES.ScopeTypes;
 import SYMBOL_TABLE.COUNTERS;
 import SYMBOL_TABLE.SYMBOL_TABLE;
+import SYMBOL_TABLE.SYMBOL_TABLE_ENTRY;
 import TYPES.TYPE;
 import TYPES.TYPE_FUNCTION;
 import TYPES.TYPE_INT;
@@ -95,11 +96,22 @@ public class AST_DEC_FUNC extends AST_DEC
 		/*******************/
 		/* [0] return type */
 		/*******************/
-		returnType = returnTypeName.equals("void") ? TYPE_VOID.getInstance() : SYMBOL_TABLE.getInstance().findDataType(returnTypeName).type;
-		if (returnType == null)
+		if (returnTypeName.equals("void"))
+			returnType = TYPE_VOID.getInstance();
+		else
 		{
-			throw new SemanticRuntimeException(lineNum, colNum, String.format("non existing return type (%s)\n", returnType));
+			SYMBOL_TABLE_ENTRY searchRes = SYMBOL_TABLE.getInstance().findDataType(returnTypeName);
+			if (searchRes == null)
+				throw new SemanticRuntimeException(lineNum, colNum, String.format("non existing return type (%s)\n", returnType));
+			returnType = searchRes.type;
 		}
+		
+		
+//		returnType = returnTypeName.equals("void") ? TYPE_VOID.getInstance() : SYMBOL_TABLE.getInstance().findDataType(returnTypeName).type;
+//		if (returnType == null)
+//		{
+//			throw new SemanticRuntimeException(lineNum, colNum, String.format("non existing return type (%s)\n", returnType));
+//		}
 		//should function be able to return an array type?
 		
 		this.funcReturnType = returnType;
@@ -133,11 +145,13 @@ public class AST_DEC_FUNC extends AST_DEC
 		{
 			String curParamType = it.head.type;
 			
-			t = SYMBOL_TABLE.getInstance().findDataType(curParamType).type;
+			SYMBOL_TABLE_ENTRY searchRes = SYMBOL_TABLE.getInstance().findDataType(curParamType);
 			
-			if (t == null)
+			if (searchRes == null)
 				throw new SemanticRuntimeException(lineNum, colNum, String.format
 						("non existing type (%s) for parameter (%s) at function (%s) decleration\n", it.head.type,it.head.name,name));
+			
+			t = searchRes.type;
 			
 			type_list = new TYPE_LIST(t,type_list);
 		}

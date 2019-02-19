@@ -2,6 +2,8 @@ package AST;
 
 import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.SYMBOL_TABLE;
+import SYMBOL_TABLE.SYMBOL_TABLE_ENTRY;
+import TEMP.TEMP;
 import SYMBOL_TABLE.ENUM_SCOPE_TYPES.ScopeTypes;
 import TYPES.TYPE;
 import TYPES.TYPE_ARRAY;
@@ -57,11 +59,15 @@ public class AST_DEC_ARRAY extends AST_DEC
 		/********************************************************/
 		/* [0] Semant type array decleration */
 		/********************************************************/
-		t = SYMBOL_TABLE.getInstance().findDataType(type).type;
+		SYMBOL_TABLE_ENTRY searchRes = SYMBOL_TABLE.getInstance().findDataType(type);
 		
-		if (t == null)
+		if (searchRes == null)
 			throw new SemanticRuntimeException(lineNum, colNum, String.format
 					("non existing type (%s) for array (%s)\n", type,name));
+		
+		t = searchRes.type;
+		
+		
 		
 		/*********************/
 		/* [1] array name */
@@ -79,6 +85,11 @@ public class AST_DEC_ARRAY extends AST_DEC
 		/*********************************************************/
 		/* [3] Return value is irrelevant for array declarations */
 		/*********************************************************/
+		return null;
+	}
+	
+	public TEMP IRme(){
+		// nothing to do here??
 		return null;
 	}
 }

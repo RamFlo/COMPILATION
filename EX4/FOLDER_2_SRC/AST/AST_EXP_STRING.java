@@ -1,5 +1,12 @@
 package AST;
 
+import IR.IR;
+import IR.IRcommandConstInt;
+import IR.IRcommand_Load_Address;
+import IR.IRcommand_String_Creation;
+import SYMBOL_TABLE.COUNTERS;
+import TEMP.TEMP;
+import TEMP.TEMP_FACTORY;
 import TYPES.TYPE;
 import TYPES.TYPE_STRING;
 
@@ -41,5 +48,22 @@ public class AST_EXP_STRING extends AST_EXP {
 	
 	public TYPE SemantMe() {
 		return TYPE_STRING.getInstance();
+	}
+	
+	public TEMP IRme() {
+		TEMP t = TEMP_FACTORY.getInstance().getFreshTEMP();
+
+		// create string in data segment
+		IR.getInstance().Add_dataSegmentIRcommand(new IRcommand_String_Creation(value, COUNTERS.stringCounter));
+
+		// load string address (by it's label) into temp t
+		IR.getInstance().Add_codeSegmentIRcommand(
+				new IRcommand_Load_Address(String.format("string_%d", COUNTERS.stringCounter), t));
+
+		// increment string counter
+		COUNTERS.stringCounter++;
+
+		// return string address
+		return t;
 	}
 }

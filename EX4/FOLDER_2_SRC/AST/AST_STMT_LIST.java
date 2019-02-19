@@ -1,5 +1,6 @@
 package AST;
 
+import TEMP.TEMP;
 import TYPES.TYPE;
 
 public class AST_STMT_LIST extends AST_Node
@@ -67,6 +68,13 @@ public class AST_STMT_LIST extends AST_Node
 	{
 		if (head != null) head.SemantMe();
 		if (tail != null) tail.SemantMe();
+		
+		return null;
+	}
+	
+	public TEMP IRme(){
+		if (head != null) head.IRme();
+		if (tail != null) tail.IRme();
 		
 		return null;
 	}

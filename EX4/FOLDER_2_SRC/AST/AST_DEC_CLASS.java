@@ -209,6 +209,7 @@ public class AST_DEC_CLASS extends AST_DEC
 			methodIndex = curClass.methodsMap.get(methodName).methodIndex;
 		else
 			methodIndex = curClass.methodsMap.size() + 1;
+		
 		curClass.methodsMap.put(methodName, new ClassMethodDetails(methodIndex, curClass.name));
 		return methodIndex;
 	}

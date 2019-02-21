@@ -80,15 +80,19 @@ public class IR
 	/***************/
 	public void MIPSme()
 	{
+		
+		//start .data
 		sir_MIPS_a_lot.getInstance().initializeDataSegment();
 		for (IRcommand dataSegmentIRCommand:dataSegmentIRCommandList)
 			dataSegmentIRCommand.MIPSme();
+		
+		//start .text
 		
 		sir_MIPS_a_lot.getInstance().initializeTextSegment();
 		for (IRcommand globalsInitIRCommand:globalsInitIRCommandList)
 			globalsInitIRCommand.MIPSme();
 		
-		//TO-DO: jump to main, then exit()
+		//TO-DO: add jump to main, then exit()
 		
 		sir_MIPS_a_lot.getInstance().initializeTextSegment();
 		for (IRcommand codeSegmentIRCommand:codeSegmentIRCommandList)

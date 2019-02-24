@@ -3,6 +3,8 @@ package AST;
 import java.util.Map;
 
 import IR.IR;
+import IR.IRcommand;
+import IR.IRcommand_Add_Immediate;
 import IR.IRcommand_Create_Class_VFTable;
 import IR.IRcommand_Load_Address;
 import IR.IRcommand_Malloc;
@@ -138,15 +140,15 @@ public class AST_NEWEXP extends AST_Node{
 			int dataMembersNum = classToInstantiate.dataMembersMap.size();
 
 			// malloc dataMembersNum + 1 words for new class data members and vftable address
-			IR.getInstance().Add_codeSegmentIRcommand(new IRcommand_Malloc(dataMembersNum + 1, t));
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Malloc(dataMembersNum + 1, t));
 
 			// load VFTable address into a new TEMP
 			TEMP vftable_address = TEMP_FACTORY.getInstance().getFreshTEMP();
 			String vftable_label = String.format("VFTable_%s", classToInstantiate.name);
-			IR.getInstance().Add_codeSegmentIRcommand(new IRcommand_Load_Address(vftable_label, vftable_address));
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Load_Address(vftable_label, vftable_address));
 
 			// insert (store word) VFTable address to first cell in allocated space
-			IR.getInstance().Add_codeSegmentIRcommand(new IRcommand_Store_Word_Offset(vftable_address, 0, t));
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Store_Word_Offset(vftable_address, 0, t));
 
 			// initialize data members
 			initializeDataMembersIR(classToInstantiate.dataMembersMap, classToInstantiate, t);
@@ -157,11 +159,23 @@ public class AST_NEWEXP extends AST_Node{
 		/********************/
 		else {
 			TEMP arraySizeTemp = e.IRme();
+			TEMP mallocReqSize = TEMP_FACTORY.getInstance().getFreshTEMP();
 
 			// multiply required size by 4
-			IR.getInstance().Add_codeSegmentIRcommand(new IRcommand_Shiftleft(arraySizeTemp, arraySizeTemp, 2));
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Shiftleft(mallocReqSize, arraySizeTemp, 2));
+			
+			//add 4 to malloc size
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Add_Immediate(mallocReqSize,mallocReqSize,IR.getInstance().WORD_SIZE));
+			
 			// allocate space, save address of allocated space in t
-			IR.getInstance().Add_codeSegmentIRcommand(new IRcommand_Malloc(arraySizeTemp, t));
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Malloc(mallocReqSize, t));
+			
+			// store array size in array's first cell
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Store_Word_Offset(arraySizeTemp,0,t));
+			
+			// move array pointer to start of array
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Add_Immediate(t,t,IR.getInstance().WORD_SIZE));
+
 		}
 		return t;
 	}

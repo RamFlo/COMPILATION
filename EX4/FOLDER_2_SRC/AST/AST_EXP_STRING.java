@@ -57,7 +57,7 @@ public class AST_EXP_STRING extends AST_EXP {
 		IR.getInstance().Add_dataSegmentIRcommand(new IRcommand_String_Creation(value, COUNTERS.stringCounter));
 
 		// load string address (by it's label) into temp t
-		IR.getInstance().Add_codeSegmentIRcommand(
+		IR.getInstance().Add_currentListIRcommand(
 				new IRcommand_Load_Address(String.format("string_%d", COUNTERS.stringCounter), t));
 
 		// increment string counter

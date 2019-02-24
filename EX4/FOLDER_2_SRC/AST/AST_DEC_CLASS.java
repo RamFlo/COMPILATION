@@ -346,7 +346,7 @@ public class AST_DEC_CLASS extends AST_DEC
 		{
 			curHeadFunc = it.headFunc;
 			if (curHeadFunc != null)
-				curHeadFunc.IRme(); //TO-DO: make sure DEC_FUNC differentiates methods from functions
+				curHeadFunc.IRmeFromClass(this.name); //TO-DO: make sure DEC_FUNC differentiates methods from functions
 		}
 		
 		//data members IRMe happens in NEWEXP! not here!

@@ -30,6 +30,11 @@ public class sir_MIPS_a_lot
 		fileWriter.print("\tsyscall\n");
 		fileWriter.close();
 	}
+	public void mips_exit()
+	{
+		fileWriter.print("\tli $v0,10\n");
+		fileWriter.print("\tsyscall\n");
+	}
 	public void print_int(TEMP t)
 	{
 		int idx=t.getSerialNumber();
@@ -37,6 +42,18 @@ public class sir_MIPS_a_lot
 		fileWriter.format("\tmove $a0,Temp_%d\n",idx);
 		fileWriter.format("\tli $v0,1\n");
 		fileWriter.format("\tsyscall\n");
+		//print space
+		fileWriter.format("\tli $a0,32\n");
+		fileWriter.format("\tli $v0,11\n");
+		fileWriter.format("\tsyscall\n");
+	}
+	public void print_string_by_address(TEMP strAdd)
+	{
+		int idx=strAdd.getSerialNumber();
+		fileWriter.format("\tmove $a0,Temp_%d\n",idx);
+		fileWriter.format("\tli $v0,4\n");
+		fileWriter.format("\tsyscall\n");
+		//print space
 		fileWriter.format("\tli $a0,32\n");
 		fileWriter.format("\tli $v0,11\n");
 		fileWriter.format("\tsyscall\n");
@@ -61,12 +78,24 @@ public class sir_MIPS_a_lot
 	}
 	public void string_creation(int stringNum, String s)
 	{
-		fileWriter.format("string_%d: .asciiz \"%s\"\n",stringNum,s);
+		fileWriter.format("\tstring_%d: .asciiz \"%s\"\n",stringNum,s);
 	}
 	public void allocate(String var_name)
 	{
-		fileWriter.format(".data\n");
-		fileWriter.format("\tglobal_%s: .word 721\n",var_name);
+		fileWriter.format("\tglobal_%s: .word 0\n",var_name);
+	}
+	public void initiate_function(int numOfLocals)
+	{
+		fileWriter.format("\taddiu $sp,$sp,-%d\n",WORD_SIZE);
+		fileWriter.format("\tsw $fp,0($sp)\n");
+		fileWriter.format("\tmove $fp,$sp\n");
+		
+		int reqSpace = numOfLocals * WORD_SIZE;
+		fileWriter.format("\taddiu $sp,$sp,-%d\n",reqSpace);
+	}
+	public void move(TEMP dst,TEMP src){
+		int idxdst=dst.getSerialNumber(), idxsrc = src.getSerialNumber();
+		fileWriter.format("\tmove Temp_%d,Temp_%d\n",idxdst,idxsrc);
 	}
 	public void malloc(TEMP dst, int numWordsToAllocate)
 	{
@@ -99,6 +128,11 @@ public class sir_MIPS_a_lot
 		int idxdst=dst.getSerialNumber(), idxsrc = src.getSerialNumber();
 		fileWriter.format("\tlw Temp_%d,%d(Temp_%d)\n",idxdst,offset,idxsrc);
 	}
+	public void load_byte(TEMP dst,TEMP src, int offset)
+	{
+		int idxdst=dst.getSerialNumber(), idxsrc = src.getSerialNumber();
+		fileWriter.format("\tlb Temp_%d,%d(Temp_%d)\n",idxdst,offset,idxsrc);
+	}
 	public void stack_load(TEMP dst, int offset)
 	{
 		int idxdst=dst.getSerialNumber();
@@ -124,10 +158,25 @@ public class sir_MIPS_a_lot
 		int word_serial=word.getSerialNumber(), address_serial = address.getSerialNumber();
 		fileWriter.format("\tsw Temp_%d,%d(Temp_%d)\n",word_serial,offset,address_serial);		
 	}
+	public void store_byte(TEMP byteTemp, int offset, TEMP address)
+	{
+		int byte_serial=byteTemp.getSerialNumber(), address_serial = address.getSerialNumber();
+		fileWriter.format("\tsb Temp_%d,%d(Temp_%d)\n",byte_serial,offset,address_serial);		
+	}
+	public void frame_store(TEMP src, int offset)
+	{
+		int idxsrc=src.getSerialNumber();
+		fileWriter.format("\tsw Temp_%d,%d($fp)\n",idxsrc,offset);
+	}
 	public void li(TEMP t,int value)
 	{
 		int idx=t.getSerialNumber();
 		fileWriter.format("\tli Temp_%d,%d\n",idx,value);
+	}
+	public void li_null_terminator(TEMP t)
+	{
+		int idx=t.getSerialNumber();
+		fileWriter.format("\tli Temp_%d,'\0'\n",idx);
 	}
 	public void add(TEMP dst,TEMP oprnd1,TEMP oprnd2)
 	{
@@ -137,6 +186,19 @@ public class sir_MIPS_a_lot
 
 		fileWriter.format("\tadd Temp_%d,Temp_%d,Temp_%d\n",dstidx,i1,i2);
 	}
+	public void sub(TEMP dst,TEMP oprnd1,TEMP oprnd2)
+	{
+		int i1 =oprnd1.getSerialNumber();
+		int i2 =oprnd2.getSerialNumber();
+		int dstidx=dst.getSerialNumber();
+
+		fileWriter.format("\tsub Temp_%d,Temp_%d,Temp_%d\n",dstidx,i1,i2);
+	}
+	public void addi(TEMP dst, TEMP src, int i)
+	{
+		int idxdst=dst.getSerialNumber(), idxsrc = src.getSerialNumber();
+		fileWriter.format("\taddi Temp_%d,Temp_%d,%d\n",idxdst,idxsrc,i);
+	}
 	public void mul(TEMP dst,TEMP oprnd1,TEMP oprnd2)
 	{
 		int i1 =oprnd1.getSerialNumber();
@@ -144,6 +206,14 @@ public class sir_MIPS_a_lot
 		int dstidx=dst.getSerialNumber();
 
 		fileWriter.format("\tmul Temp_%d,Temp_%d,Temp_%d\n",dstidx,i1,i2);
+	}
+	public void div(TEMP dst,TEMP oprnd1,TEMP oprnd2)
+	{
+		int i1 =oprnd1.getSerialNumber();
+		int i2 =oprnd2.getSerialNumber();
+		int dstidx=dst.getSerialNumber();
+
+		fileWriter.format("\tdiv Temp_%d,Temp_%d,Temp_%d\n",dstidx,i1,i2);
 	}
 	public void label(String inlabel)
 	{
@@ -176,6 +246,11 @@ public class sir_MIPS_a_lot
 		
 		fileWriter.format("\tblt Temp_%d,Temp_%d,%s\n",i1,i2,label);				
 	}
+//	public void blti(TEMP oprnd1,int i,String label)
+//	{
+//		int oprnd1_serial =oprnd1.getSerialNumber();
+//		fileWriter.format("\tblti Temp_%d,%d,%s\n",oprnd1_serial,i,label);				
+//	}
 	public void bge(TEMP oprnd1,TEMP oprnd2,String label)
 	{
 		int i1 =oprnd1.getSerialNumber();
@@ -189,6 +264,12 @@ public class sir_MIPS_a_lot
 		int i2 =oprnd2.getSerialNumber();
 		
 		fileWriter.format("\tbne Temp_%d,Temp_%d,%s\n",i1,i2,label);				
+	}
+	public void bnez(TEMP oprnd1,String label)
+	{
+		int i1 =oprnd1.getSerialNumber();
+				
+		fileWriter.format("\tbne Temp_%d,$zero,%s\n",i1,label);				
 	}
 	public void beq(TEMP oprnd1,TEMP oprnd2,String label)
 	{

@@ -113,17 +113,17 @@ public class AST_VAR_SUBSCRIPT extends AST_VAR
 		
 		//multiply offset index by 4
 		//offsetTemp *= 4
-		IR.getInstance().Add_codeSegmentIRcommand(new IRcommand_Shiftleft(offsetTemp, offsetTemp, 2));
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Shiftleft(offsetTemp, offsetTemp, 2));
 		
 		//calculate exact address by adding offset value to original array's address
 		//srcAddress = srcAddress + offsetTemp
-		IR.getInstance().Add_codeSegmentIRcommand(new IRcommand_Binop_Add_Integers(srcAddress, srcAddress, offsetTemp));
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Binop_Add_Integers(srcAddress, srcAddress, offsetTemp));
 
 		/*************************************/
 		/* [3] load array cell value */
 		/*************************************/
 		TEMP t = TEMP_FACTORY.getInstance().getFreshTEMP();
-		IR.getInstance().Add_codeSegmentIRcommand(new IRcommand_Load(t, srcAddress, 0));
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Load(t, srcAddress, 0));
 
 		return t;
 	}

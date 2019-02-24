@@ -133,7 +133,7 @@ public class AST_VAR_FIELD extends AST_VAR
 		/*************************************/
 		TEMP t = TEMP_FACTORY.getInstance().getFreshTEMP();
 		int offset = 4 * this.objIndexInContext;
-		IR.getInstance().Add_codeSegmentIRcommand(new IRcommand_Load(t, srcClass, offset));
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Load(t, srcClass, offset));
 
 		return t;
 	}

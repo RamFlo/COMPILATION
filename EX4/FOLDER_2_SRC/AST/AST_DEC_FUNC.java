@@ -1,11 +1,16 @@
 package AST;
 
+import IR.IR;
+import IR.IRcommand_Create_Class_VFTable;
+import IR.IRcommand_Initiate_Function;
+import IR.IRcommand_Label;
 import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.ENUM_OBJECT_CONTEXT.ObjectContext;
 import SYMBOL_TABLE.ENUM_SCOPE_TYPES.ScopeTypes;
 import SYMBOL_TABLE.COUNTERS;
 import SYMBOL_TABLE.SYMBOL_TABLE;
 import SYMBOL_TABLE.SYMBOL_TABLE_ENTRY;
+import TEMP.TEMP;
 import TYPES.TYPE;
 import TYPES.TYPE_FUNCTION;
 import TYPES.TYPE_INT;
@@ -22,6 +27,9 @@ public class AST_DEC_FUNC extends AST_DEC
 	public String name;
 	public AST_TYPE_NAME_LIST params;
 	public AST_STMT_LIST body;
+	
+	public int numOfLocals = 0;
+	
 	private TYPE funcReturnType = null;
 	
 	/******************/
@@ -106,14 +114,6 @@ public class AST_DEC_FUNC extends AST_DEC
 			returnType = searchRes.type;
 		}
 		
-		
-//		returnType = returnTypeName.equals("void") ? TYPE_VOID.getInstance() : SYMBOL_TABLE.getInstance().findDataType(returnTypeName).type;
-//		if (returnType == null)
-//		{
-//			throw new SemanticRuntimeException(lineNum, colNum, String.format("non existing return type (%s)\n", returnType));
-//		}
-		//should function be able to return an array type?
-		
 		this.funcReturnType = returnType;
 		
 		/*********************/
@@ -183,6 +183,8 @@ public class AST_DEC_FUNC extends AST_DEC
 		/* [6] Semant Body */
 		/*******************/
 		body.SemantMe();
+		
+		this.numOfLocals = COUNTERS.funcLocalVariables - 1;
 
 		/*****************/
 		/* [7] End Scope */
@@ -199,5 +201,18 @@ public class AST_DEC_FUNC extends AST_DEC
 		/* [8] Return value is irrelevant for function declarations */
 		/*********************************************************/
 		return null;		
+	}
+	
+	public TEMP IRme(){
+		
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Label(String.format("global_function_%s",this.name)));
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Initiate_Function(this.numOfLocals));
+		return null;
+	}
+	
+	public TEMP IRmeFromClass(String className) {
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Label(String.format("method_%s_%s", className,this.name)));
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Initiate_Function(this.numOfLocals));
+		return null;
 	}
 }

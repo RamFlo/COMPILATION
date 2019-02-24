@@ -3,6 +3,11 @@ package AST;
 import TYPES.TYPE;
 import TYPES.TYPE_ARRAY;
 import IR.IR;
+import IR.IRcommandConstInt;
+import IR.IRcommand_Allocate;
+import IR.IRcommand_Frame_Load;
+import IR.IRcommand_Frame_Store_Offset;
+import IR.IRcommand_Store;
 import IR.IRcommand_Store_Word_Offset;
 import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.COUNTERS;
@@ -287,7 +292,31 @@ public class AST_DEC_VAR extends AST_DEC
 			return null; //no initial value for this data member!
 		
 		TEMP initialValueTemp = initialValue.IRme();
-		IR.getInstance().Add_codeSegmentIRcommand(new IRcommand_Store_Word_Offset(initialValueTemp,offset,allocatedAddress));
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Store_Word_Offset(initialValueTemp,offset,allocatedAddress));
+		
+		return null;
+	}
+	
+	public TEMP IRme()
+	{
+		TEMP initialValTemp = null;
+		if (this.objContext == ObjectContext.global) {
+			IR.getInstance().Add_dataSegmentIRcommand(new IRcommand_Allocate(this.name));
+			IR.getInstance().switchList_globalInitList();
+			if (this.initialValue != null || this.initialValueNew != null) {
+				initialValTemp = (this.initialValue != null) ? this.initialValue.IRme() : this.initialValueNew.IRme();
+				IR.getInstance().Add_currentListIRcommand(new IRcommand_Store(this.name, initialValTemp));
+			}
+			IR.getInstance().switchList_codeList();
+		} else {
+			if (this.initialValue != null || this.initialValueNew != null)
+				initialValTemp = (this.initialValue != null) ? this.initialValue.IRme() : this.initialValueNew.IRme();
+			else
+				IR.getInstance().Add_currentListIRcommand(new IRcommandConstInt(initialValTemp, 0));
+
+			int offset = -1 * IR.getInstance().WORD_SIZE * this.objIndexInContext; // first local is in fp[-4]
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Frame_Store_Offset(initialValTemp, offset));
+		}
 		
 		return null;
 	}

@@ -32,6 +32,8 @@ public class IR
 	
 	private List<IRcommand> codeSegmentIRCommandList = null;
 	
+	private List<IRcommand> currentIRCommandList = this.codeSegmentIRCommandList;
+	
 
 
 	/******************/
@@ -54,26 +56,53 @@ public class IR
 		dataSegmentIRCommandList.add(cmd);
 	}
 	
-	/******************/
-	/* Add IR command for globals init segment */
-	/******************/
-	public void Add_globalsInitIRcommand(IRcommand cmd)
-	{
-		if (globalsInitIRCommandList == null)
-			globalsInitIRCommandList = new LinkedList<IRcommand>();
-		globalsInitIRCommandList.add(cmd);
-	}
-
+//	/******************/
+//	/* Add IR command for globals init segment */
+//	/******************/
+//	public void Add_globalsInitIRcommand(IRcommand cmd)
+//	{
+//		if (globalsInitIRCommandList == null)
+//			globalsInitIRCommandList = new LinkedList<IRcommand>();
+//		globalsInitIRCommandList.add(cmd);
+//	}
+//
+//	
+//	/******************/
+//	/* Add IR command for code segment */
+//	/******************/
+//	public void Add_codeSegmentIRcommand(IRcommand cmd)
+//	{
+//		if (codeSegmentIRCommandList == null)
+//			codeSegmentIRCommandList = new LinkedList<IRcommand>();
+//		codeSegmentIRCommandList.add(cmd);
+//	}
 	
 	/******************/
-	/* Add IR command for code segment */
+	/* Add IR command for current list */
 	/******************/
-	public void Add_codeSegmentIRcommand(IRcommand cmd)
+	public void Add_currentListIRcommand(IRcommand cmd)
 	{
-		if (codeSegmentIRCommandList == null)
-			codeSegmentIRCommandList = new LinkedList<IRcommand>();
-		codeSegmentIRCommandList.add(cmd);
+		if (currentIRCommandList == null)
+			currentIRCommandList = new LinkedList<IRcommand>();
+		currentIRCommandList.add(cmd);
 	}
+	
+	/******************/
+	/* Switch to global init list */
+	/******************/
+	public void switchList_globalInitList()
+	{
+		this.currentIRCommandList = this.globalsInitIRCommandList;
+	}
+	
+	/******************/
+	/* Switch to code list */
+	/******************/
+	public void switchList_codeList()
+	{
+		this.currentIRCommandList = this.codeSegmentIRCommandList;
+	}
+	
 	
 	/***************/
 	/* MIPS me !!! */

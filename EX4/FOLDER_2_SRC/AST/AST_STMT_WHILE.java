@@ -103,7 +103,7 @@ public class AST_STMT_WHILE extends AST_STMT
 		/*********************************/
 		/* [2] entry label for the while */
 		/*********************************/
-		IR.getInstance().Add_codeSegmentIRcommand(new IRcommand_Label(label_start));
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Label(label_start));
 
 		/********************/
 		/* [3] cond.IRme(); */
@@ -113,7 +113,7 @@ public class AST_STMT_WHILE extends AST_STMT
 		/******************************************/
 		/* [4] Jump conditionally to the loop end */
 		/******************************************/
-		IR.getInstance().Add_codeSegmentIRcommand(new IRcommand_Jump_If_Eq_To_Zero(cond_temp,label_end));		
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Jump_If_Eq_To_Zero(cond_temp,label_end));		
 
 		/*******************/
 		/* [5] body.IRme() */
@@ -123,12 +123,12 @@ public class AST_STMT_WHILE extends AST_STMT
 		/******************************/
 		/* [6] Jump to the loop entry */
 		/******************************/
-		IR.getInstance().Add_codeSegmentIRcommand(new IRcommand_Jump_Label(label_start));		
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Jump_Label(label_start));		
 
 		/**********************/
 		/* [7] Loop end label */
 		/**********************/
-		IR.getInstance().Add_codeSegmentIRcommand(new IRcommand_Label(label_end));
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Label(label_end));
 
 		/*******************/
 		/* [8] return null */

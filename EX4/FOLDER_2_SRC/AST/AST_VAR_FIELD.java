@@ -3,9 +3,15 @@ package AST;
 import IR.IR;
 import IR.IRcommand;
 import IR.IRcommandConstInt;
+import IR.IRcommand_Add_Immediate;
+import IR.IRcommand_BNEZ;
+import IR.IRcommand_Binop_Add_Integers;
+import IR.IRcommand_Exit;
 import IR.IRcommand_Jump_If_Eq_To_Zero;
 import IR.IRcommand_Label;
 import IR.IRcommand_Load;
+import IR.IRcommand_Load_Address;
+import IR.IRcommand_Print_String_By_Address;
 import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.SYMBOL_TABLE;
 import SYMBOL_TABLE.ENUM_OBJECT_CONTEXT.ObjectContext;
@@ -117,23 +123,53 @@ public class AST_VAR_FIELD extends AST_VAR
 	}
 	
 	private void checkNullPtrDeref(TEMP t){
-		
+
+			String label_not_null   = IRcommand.getFreshLabel("not_null_var");
+			
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_BNEZ(t,label_not_null));
+			
+			String label_nullp_exception = "string_invalid_ptr_dref";
+			
+			TEMP nullp_exception_str_address = TEMP_FACTORY.getInstance().getFreshTEMP();
+			
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Load_Address(label_nullp_exception,nullp_exception_str_address));
+			
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Print_String_By_Address(nullp_exception_str_address));
+			
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Exit());
+			
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Label(label_not_null));
 	}
 	
-	public TEMP IRme() {
+	public TEMP get_L_Value()
+	{
 		/*******************/
 		/* [1] IR class object */
 		/*******************/
 		TEMP srcClass = var.IRme();
 		
 		checkNullPtrDeref(srcClass);
-
+		
 		/*************************************/
 		/* [2] load class object data member */
 		/*************************************/
 		TEMP t = TEMP_FACTORY.getInstance().getFreshTEMP();
 		int offset = 4 * this.objIndexInContext;
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_Load(t, srcClass, offset));
+		
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Add_Immediate(srcClass,srcClass,offset));
+		
+		return srcClass;
+
+	}
+	
+	public TEMP IRme() {
+		/*******************/
+		/* [1] IR class object */
+		/*******************/
+		TEMP t = this.get_L_Value();
+
+		
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Load(t, t, 0));
 
 		return t;
 	}

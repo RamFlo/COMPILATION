@@ -1,8 +1,16 @@
 package AST;
 
+import IR.IR;
+import IR.IRcommand_Allocate_On_Stack;
+import IR.IRcommand_Frame_Load;
+import IR.IRcommand_Load;
+import IR.IRcommand_Store_Reg_On_Stack_Offset;
 import MyExceptions.SemanticRuntimeException;
+import SYMBOL_TABLE.ENUM_SCOPE_TYPES.ScopeTypes;
 import SYMBOL_TABLE.SYMBOL_TABLE;
 import SYMBOL_TABLE.SYMBOL_TABLE_ENTRY;
+import TEMP.TEMP;
+import TEMP.TEMP_FACTORY;
 import TYPES.TYPE;
 import TYPES.TYPE_ARRAY;
 import TYPES.TYPE_CLASS;
@@ -19,6 +27,8 @@ public class AST_EXP_CALL extends AST_EXP
 	public AST_VAR callingObject;
 	public String funcName;
 	public AST_EXP_LIST params;
+	
+	public TYPE_CLASS curClassName = null;
 
 	/******************/
 	/* CONSTRUCTOR(S) */
@@ -95,6 +105,8 @@ public class AST_EXP_CALL extends AST_EXP
 		TYPE callingObjectType = null;
 		TYPE funcReturnType = null;
 		TYPE foundFunctionType = null;
+		this.curClassName = SYMBOL_TABLE.getInstance().curClass;
+		this.objScopeType = SYMBOL_TABLE.getInstance().curScopeType;
 		if (callingObject == null) {
 			foundFunctionType = findFunctionNameInClassAndItsSupers(funcName,SYMBOL_TABLE.getInstance().curClassExtends);
 			
@@ -181,5 +193,57 @@ public class AST_EXP_CALL extends AST_EXP
 		if (itOne != null || itTwo !=null)
 			throw new SemanticRuntimeException(lineNum, colNum,
 					"Function call with different number of args than original function\n");
+	}
+
+
+	private void saveAllRegistersOnStack()
+	{
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Allocate_On_Stack(8));
+		for(int i=0;i<8;i++)
+		{
+			String curReg = String.format("t%d", i);
+			int curOffset = i*IR.getInstance().WORD_SIZE;
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Store_Reg_On_Stack_Offset(curReg,curOffset));
+		}
+	}
+	
+	private int countParamNum()
+	
+	public TEMP IRme()
+	{
+		this.saveAllRegistersOnStack();
+		
+		
+		
+		
+		
+		
+		
+		// t should eventually contain function address to jump to
+		TEMP t = TEMP_FACTORY.getInstance().getFreshTEMP();
+		if (this.callingObject == null)
+		{
+			if (this.objScopeType == ScopeTypes.classMethodScope && this.curClassName.methodsMap.containsKey(this.funcName))
+			{
+
+					int offset = IR.getInstance().WORD_SIZE * this.curClassName.methodsMap.get(this.funcName).methodIndex;
+					
+					// classObj is the first method's parameter: fp+12
+					IR.getInstance().Add_currentListIRcommand(new IRcommand_Frame_Load(t, 12));
+
+					// load vftable's address into t
+					IR.getInstance().Add_currentListIRcommand(new IRcommand_Load(t, t, 0));
+					
+					// load object's function address into t
+					IR.getInstance().Add_currentListIRcommand(new IRcommand_Load(t, t, offset));
+					
+					//jump!
+			}
+			else
+			{
+				// j global_function_%s 
+				// %s 
+			}
+		}
 	}
 }

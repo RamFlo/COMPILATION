@@ -1,7 +1,10 @@
 package AST;
 
+import IR.IR;
+import IR.IRcommand_Store_Word_Offset;
 import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.SYMBOL_TABLE;
+import TEMP.TEMP;
 import TYPES.TYPE;
 import TYPES.TYPE_CLASS;
 import TYPES.TYPE_NIL;
@@ -128,5 +131,18 @@ public class AST_STMT_ASSIGN extends AST_STMT
 		if (t1.name.equals(t2.name)) return true;
 		TYPE_CLASS tmp = t2.father;
 		return isExtends(t1, tmp);
+	}
+	
+	public TEMP IRme()
+	{
+		TEMP left, right;
+		
+		right = (this.exp == null)? this.newExp.IRme():this.exp.IRme();
+		
+		left = this.var.get_L_Value();
+		
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Store_Word_Offset(right,0,left));
+		
+		return null;
 	}
 }

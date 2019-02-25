@@ -267,6 +267,7 @@ public class AST_DEC_CLASS extends AST_DEC
 		/* [1] Begin Class Scope */
 		/*************************/
 		SYMBOL_TABLE.getInstance().beginClassScope("CLASS", (TYPE_CLASS)superType);
+		SYMBOL_TABLE.getInstance().curClass = t;
 		
 		
 		

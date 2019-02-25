@@ -1,5 +1,6 @@
 package AST;
 
+import TEMP.TEMP;
 import TYPES.TYPE;
 
 public class AST_STMT_CALL extends AST_STMT
@@ -41,5 +42,9 @@ public class AST_STMT_CALL extends AST_STMT
 	
 	public TYPE SemantMe() {
 		return callExp.SemantMe();
+	}
+	
+	public TEMP IRme(){
+		return callExp.IRme();
 	}
 }

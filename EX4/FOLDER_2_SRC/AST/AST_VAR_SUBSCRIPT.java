@@ -1,8 +1,16 @@
 package AST;
 
 import IR.IR;
+import IR.IRcommand;
+import IR.IRcommand_BGE;
+import IR.IRcommand_BLTZ;
+import IR.IRcommand_BNEZ;
 import IR.IRcommand_Binop_Add_Integers;
+import IR.IRcommand_Exit;
+import IR.IRcommand_Label;
 import IR.IRcommand_Load;
+import IR.IRcommand_Load_Address;
+import IR.IRcommand_Print_String_By_Address;
 import IR.IRcommand_Shiftleft;
 import MyExceptions.SemanticRuntimeException;
 import TEMP.TEMP;
@@ -100,7 +108,40 @@ public class AST_VAR_SUBSCRIPT extends AST_VAR
 		return ta.arrayType;
 	}
 	
-	public TEMP IRme() {
+	private void checkIndexOutOfBounds(TEMP arrAddress, TEMP index) {
+
+		String label_in_bounds = IRcommand.getFreshLabel("index_in_bounds");
+		String label_out_of_bounds = IRcommand.getFreshLabel("index_out_of_bounds");
+
+		// add null pointer handling!
+
+		TEMP arrSize = TEMP_FACTORY.getInstance().getFreshTEMP();
+
+		IR.getInstance()
+				.Add_currentListIRcommand(new IRcommand_Load(arrSize, arrAddress, -1 * IR.getInstance().WORD_SIZE));
+
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_BLTZ(index, label_out_of_bounds));
+
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_BGE(arrSize, index, label_in_bounds));
+
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Label(label_out_of_bounds));
+
+		String label_access_violation_exception = "string_access_violation";
+
+		TEMP access_exception_str_address = TEMP_FACTORY.getInstance().getFreshTEMP();
+
+		IR.getInstance().Add_currentListIRcommand(
+				new IRcommand_Load_Address(label_access_violation_exception, access_exception_str_address));
+
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Print_String_By_Address(access_exception_str_address));
+
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Exit());
+
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Label(label_in_bounds));
+	}
+	
+	public TEMP get_L_Value()
+	{
 		/*******************/
 		/* [1] IR array object */
 		/*******************/
@@ -111,6 +152,8 @@ public class AST_VAR_SUBSCRIPT extends AST_VAR
 		/*******************/
 		TEMP offsetTemp = subscript.IRme();
 		
+		checkIndexOutOfBounds(srcAddress,offsetTemp);
+		
 		//multiply offset index by 4
 		//offsetTemp *= 4
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Shiftleft(offsetTemp, offsetTemp, 2));
@@ -118,12 +161,19 @@ public class AST_VAR_SUBSCRIPT extends AST_VAR
 		//calculate exact address by adding offset value to original array's address
 		//srcAddress = srcAddress + offsetTemp
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Binop_Add_Integers(srcAddress, srcAddress, offsetTemp));
+		
+		return srcAddress;
+	}
+	
+	public TEMP IRme() {
+		
+		TEMP indexInArrAddress = this.get_L_Value();
 
 		/*************************************/
 		/* [3] load array cell value */
 		/*************************************/
 		TEMP t = TEMP_FACTORY.getInstance().getFreshTEMP();
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_Load(t, srcAddress, 0));
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Load(t, indexInArrAddress, 0));
 
 		return t;
 	}

@@ -38,6 +38,7 @@ public class SYMBOL_TABLE
 	//public int curIndexOfVarInFunction = 0; ///TO-DO: check if needed
 	public TYPE curFunctionReturnType = null;
 	public TYPE_CLASS curClassExtends = null;
+	public TYPE_CLASS curClass = null;
 	public ScopeTypes curScopeType = ScopeTypes.globalScope;
 	
 	/****************************************************************************/
@@ -237,6 +238,7 @@ public class SYMBOL_TABLE
 	public void endClassScope()
 	{
 		this.curClassExtends = null;
+		this.curClass = null;
 		//this.isInClassScope = false;
 		this.endScope();
 		this.curScopeType = ScopeTypes.globalScope;

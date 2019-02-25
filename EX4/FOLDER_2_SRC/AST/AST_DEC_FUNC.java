@@ -207,12 +207,14 @@ public class AST_DEC_FUNC extends AST_DEC
 		
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Label(String.format("global_function_%s",this.name)));
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Initiate_Function(this.numOfLocals));
+		this.body.IRme();
 		return null;
 	}
 	
 	public TEMP IRmeFromClass(String className) {
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Label(String.format("method_%s_%s", className,this.name)));
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Initiate_Function(this.numOfLocals));
+		this.body.IRme();
 		return null;
 	}
 }

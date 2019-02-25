@@ -12,7 +12,6 @@ import IR.IRcommand_BNEZ;
 import IR.IRcommand_Binop_Add_Integers;
 import IR.IRcommand_Binop_Div_Integers;
 import IR.IRcommand_Binop_EQ_Integers;
-import IR.IRcommand_Binop_LT_Immediate;
 import IR.IRcommand_Binop_LT_Integers;
 import IR.IRcommand_Binop_Mul_Integers;
 import IR.IRcommand_Binop_Sub_Integers;

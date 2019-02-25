@@ -84,6 +84,14 @@ public class sir_MIPS_a_lot
 	{
 		fileWriter.format("\tglobal_%s: .word 0\n",var_name);
 	}
+	public void allocate_on_stack(int words)
+	{
+		fileWriter.format("\taddiu $sp,$sp,-%d\n", words * WORD_SIZE);
+	}
+	public void save_reg_on_stack_by_offset(String regName,int offset)
+	{
+		fileWriter.format("\tsw $%s,%d($sp)\n", regName, offset);
+	}
 	public void initiate_function(int numOfLocals)
 	{
 		fileWriter.format("\taddiu $sp,$sp,-%d\n",WORD_SIZE);
@@ -141,7 +149,6 @@ public class sir_MIPS_a_lot
 	public void frame_load(TEMP dst, int offset)
 	{
 		int idxdst=dst.getSerialNumber();
-		fileWriter.format("\tlw Temp_%d,%d($fp)\n",idxdst,offset);
 	}
 	public void sll(TEMP dst,TEMP src, int shiftAmount)
 	{
@@ -199,6 +206,11 @@ public class sir_MIPS_a_lot
 		int idxdst=dst.getSerialNumber(), idxsrc = src.getSerialNumber();
 		fileWriter.format("\taddi Temp_%d,Temp_%d,%d\n",idxdst,idxsrc,i);
 	}
+	public void addi_to_fp(TEMP dst, int i)
+	{
+		int idxdst=dst.getSerialNumber();
+		fileWriter.format("\taddi Temp_%d,$fp,%d\n",idxdst,i);
+	}
 	public void mul(TEMP dst,TEMP oprnd1,TEMP oprnd2)
 	{
 		int i1 =oprnd1.getSerialNumber();
@@ -245,6 +257,12 @@ public class sir_MIPS_a_lot
 		int i2 =oprnd2.getSerialNumber();
 		
 		fileWriter.format("\tblt Temp_%d,Temp_%d,%s\n",i1,i2,label);				
+	}
+	public void bltz(TEMP oprnd1,String label)
+	{
+		int i1 =oprnd1.getSerialNumber();
+		
+		fileWriter.format("\tblt Temp_%d,$zero,%s\n",i1,label);				
 	}
 //	public void blti(TEMP oprnd1,int i,String label)
 //	{

@@ -8,6 +8,7 @@ package MIPS;
 /*******************/
 import java.io.PrintWriter;
 
+import IR.IRcommand;
 /*******************/
 /* PROJECT IMPORTS */
 /*******************/
@@ -53,10 +54,20 @@ public class sir_MIPS_a_lot
 		fileWriter.format("\tmove $a0,Temp_%d\n",idx);
 		fileWriter.format("\tli $v0,4\n");
 		fileWriter.format("\tsyscall\n");
-		//print space
-		fileWriter.format("\tli $a0,32\n");
-		fileWriter.format("\tli $v0,11\n");
-		fileWriter.format("\tsyscall\n");
+	}
+	public void print_trace()
+	{
+		TEMP t = TEMP_FACTORY.getInstance().getFreshTEMP();
+		int idx=t.getSerialNumber();
+		fileWriter.format("\tmove Temp_%d,$fp\n",idx);
+		
+		String loop_start = IRcommand.getFreshLabel("print_trace_loop_start");
+		
+		this.label(loop_start);
+		fileWriter.format("\tlw Temp_%d,4(Temp_%d)\n",idx,idx);
+		this.print_string_by_address(t);
+		fileWriter.format("\tlw Temp_%d,0(Temp_%d)\n",idx,idx);
+		this.bnez(t, loop_start);
 	}
 	//public TEMP addressLocalVar(int serialLocalVarNum)
 	//{
@@ -88,9 +99,18 @@ public class sir_MIPS_a_lot
 	{
 		fileWriter.format("\taddiu $sp,$sp,-%d\n", words * WORD_SIZE);
 	}
+	public void deallocate_on_stack(int words)
+	{
+		fileWriter.format("\taddiu $sp,$sp,%d\n", words * WORD_SIZE);
+	}
 	public void save_reg_on_stack_by_offset(String regName,int offset)
 	{
 		fileWriter.format("\tsw $%s,%d($sp)\n", regName, offset);
+	}
+	public void save_word_on_stack_by_offset(TEMP word,int offset)
+	{
+		int idxdst=word.getSerialNumber();
+		fileWriter.format("\tsw Temp_%d,%d($sp)\n", idxdst, offset);
 	}
 	public void initiate_function(int numOfLocals)
 	{
@@ -99,7 +119,19 @@ public class sir_MIPS_a_lot
 		fileWriter.format("\tmove $fp,$sp\n");
 		
 		int reqSpace = numOfLocals * WORD_SIZE;
-		fileWriter.format("\taddiu $sp,$sp,-%d\n",reqSpace);
+		if (numOfLocals != 0)
+			fileWriter.format("\taddiu $sp,$sp,-%d\n",reqSpace);
+	}
+	public void end_function(int numOfLocals)
+	{
+		int localSpace = numOfLocals * WORD_SIZE;
+		if (numOfLocals != 0)
+			fileWriter.format("\taddiu $sp,$sp,%d\n",localSpace);
+		
+		//load prevfp into fp
+		fileWriter.format("\tlw $fp,0($fp)\n");
+		//pop prevfp
+		fileWriter.format("\taddiu $sp,$sp,%d\n",WORD_SIZE);
 	}
 	public void move(TEMP dst,TEMP src){
 		int idxdst=dst.getSerialNumber(), idxsrc = src.getSerialNumber();
@@ -135,6 +167,10 @@ public class sir_MIPS_a_lot
 	{
 		int idxdst=dst.getSerialNumber(), idxsrc = src.getSerialNumber();
 		fileWriter.format("\tlw Temp_%d,%d(Temp_%d)\n",idxdst,offset,idxsrc);
+	}
+	public void lw_to_reg_from_stack_by_offset(String regName,int offset)
+	{
+		fileWriter.format("\tlw $%s,%d($sp)\n", regName, offset);
 	}
 	public void load_byte(TEMP dst,TEMP src, int offset)
 	{
@@ -250,6 +286,19 @@ public class sir_MIPS_a_lot
 	public void jump(String inlabel)
 	{
 		fileWriter.format("\tj %s\n",inlabel);
+	}
+	public void jump_to_ra()
+	{
+		fileWriter.format("\tjr $ra\n");
+	}
+	public void jump_register(TEMP regTemp)
+	{
+		int regSer =regTemp.getSerialNumber();
+		fileWriter.format("\tjalr Temp_%d\n",regSer);
+	}
+	public void jump_and_link(String inlabel)
+	{
+		fileWriter.format("\tjal %s\n",inlabel);
 	}	
 	public void blt(TEMP oprnd1,TEMP oprnd2,String label)
 	{

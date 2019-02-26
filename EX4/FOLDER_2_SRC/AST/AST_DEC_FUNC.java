@@ -1,9 +1,13 @@
 package AST;
 
 import IR.IR;
+import IR.IRcommand_Allocate_On_Stack;
 import IR.IRcommand_Create_Class_VFTable;
+import IR.IRcommand_End_Function;
 import IR.IRcommand_Initiate_Function;
+import IR.IRcommand_Jump_ra;
 import IR.IRcommand_Label;
+import IR.IRcommand_Store_Word_Stack_Offset;
 import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.ENUM_OBJECT_CONTEXT.ObjectContext;
 import SYMBOL_TABLE.ENUM_SCOPE_TYPES.ScopeTypes;
@@ -203,18 +207,38 @@ public class AST_DEC_FUNC extends AST_DEC
 		return null;		
 	}
 	
+	private void voidFuncEndCode()
+	{
+		// pop locals, fp = prevfp, pop prevfp
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_End_Function(this.numOfLocals));
+		
+		// jump to ra
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Jump_ra());
+	}
+	
 	public TEMP IRme(){
+		IR.getInstance().curFunctionParamNum = this.numOfLocals;
 		
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Label(String.format("global_function_%s",this.name)));
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Initiate_Function(this.numOfLocals));
 		this.body.IRme();
+		
+		if (returnTypeName.equals("void"))
+			this.voidFuncEndCode();
+		
 		return null;
 	}
 	
 	public TEMP IRmeFromClass(String className) {
+		IR.getInstance().curFunctionParamNum = this.numOfLocals;
+		
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Label(String.format("method_%s_%s", className,this.name)));
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Initiate_Function(this.numOfLocals));
 		this.body.IRme();
+		
+		if (returnTypeName.equals("void"))
+			this.voidFuncEndCode();
+		
 		return null;
 	}
 }

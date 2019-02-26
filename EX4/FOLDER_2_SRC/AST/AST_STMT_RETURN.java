@@ -1,7 +1,10 @@
 package AST;
 
+import IR.IR;
+import IR.IRcommand_Dealloc_Stack;
 import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.SYMBOL_TABLE;
+import TEMP.TEMP;
 import TYPES.TYPE;
 import TYPES.TYPE_ARRAY;
 import TYPES.TYPE_CLASS;
@@ -98,6 +101,16 @@ public class AST_STMT_RETURN extends AST_STMT
 					throw new SemanticRuntimeException(lineNum, colNum, "type mismatch function's return type and return statement\n");
 			}
 		}
+		return null;
+	}
+	
+	public TEMP IRme()
+	{
+		int funcLocalsNum = IR.getInstance().curFunctionParamNum;
+		
+		if (funcLocalsNum != 0)
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Dealloc_Stack(funcLocalsNum));
+		
 		return null;
 	}
 }

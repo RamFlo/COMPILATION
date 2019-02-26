@@ -1,12 +1,29 @@
 package AST;
 
 import IR.IR;
+import IR.IRcommand;
 import IR.IRcommand_Allocate_On_Stack;
+import IR.IRcommand_BNEZ;
+import IR.IRcommand_Dealloc_Stack;
+import IR.IRcommand_Exit;
 import IR.IRcommand_Frame_Load;
+import IR.IRcommand_JAL_Label;
+import IR.IRcommand_Jump_Label;
+import IR.IRcommand_Jump_Reg;
+import IR.IRcommand_Label;
 import IR.IRcommand_Load;
+import IR.IRcommand_Load_Address;
+import IR.IRcommand_Load_To_Reg_Stack;
+import IR.IRcommand_PrintInt;
+import IR.IRcommand_Print_String_By_Address;
+import IR.IRcommand_Print_Trace;
+import IR.IRcommand_Stack_Load;
 import IR.IRcommand_Store_Reg_On_Stack_Offset;
+import IR.IRcommand_Store_Word_Stack_Offset;
+import IR.IRcommand_String_Creation;
 import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.ENUM_SCOPE_TYPES.ScopeTypes;
+import SYMBOL_TABLE.COUNTERS;
 import SYMBOL_TABLE.SYMBOL_TABLE;
 import SYMBOL_TABLE.SYMBOL_TABLE_ENTRY;
 import TEMP.TEMP;
@@ -18,6 +35,7 @@ import TYPES.TYPE_CLASS_DATA_MEMBERS_LIST;
 import TYPES.TYPE_FUNCTION;
 import TYPES.TYPE_LIST;
 import TYPES.TYPE_NIL;
+import TYPES.TYPE_VOID;
 
 public class AST_EXP_CALL extends AST_EXP
 {
@@ -29,7 +47,9 @@ public class AST_EXP_CALL extends AST_EXP
 	public AST_EXP_LIST params;
 	
 	public TYPE_CLASS curClassName = null;
-
+	public TYPE_CLASS callingObjectClassName = null;
+	
+	public boolean retValue = false;
 	/******************/
 	/* CONSTRUCTOR(S) */
 	/******************/
@@ -133,6 +153,8 @@ public class AST_EXP_CALL extends AST_EXP
 			}
 			TYPE_CLASS callingObjectTypeClass = (TYPE_CLASS) callingObjectType;
 			
+			this.callingObjectClassName = callingObjectTypeClass;
+			
 			foundFunctionType = findFunctionNameInClassAndItsSupers(funcName,callingObjectTypeClass);
 			
 			if (foundFunctionType != null) {
@@ -145,6 +167,9 @@ public class AST_EXP_CALL extends AST_EXP
 			}
 		}
 		compareFunctionsArgsTypes(listOfGivenParams, listOfCalledFunctionParams);
+		
+		if (funcReturnType != TYPE_VOID.getInstance())
+			this.retValue = true;
 		return funcReturnType;
 	}
 	
@@ -208,16 +233,148 @@ public class AST_EXP_CALL extends AST_EXP
 	}
 	
 	private int countParamNum()
+	{
+		int i = 0;
+		for (AST_EXP_LIST it = this.params; it  != null; it = it.tail)
+			i++;
+		return i;
+	}
+	
+	private void createFuncNameStringAndPushToStack()
+	{
+		// create string in data segment
+		IR.getInstance().Add_dataSegmentIRcommand(new IRcommand_String_Creation(this.funcName, COUNTERS.stringCounter));
+
+		TEMP t = TEMP_FACTORY.getInstance().getFreshTEMP();
+		
+		// load string address (by it's label) into temp t
+		IR.getInstance().Add_currentListIRcommand(
+				new IRcommand_Load_Address(String.format("string_%d", COUNTERS.stringCounter), t));
+
+		// increment string counter
+		COUNTERS.stringCounter++;
+		
+		// allocate space for funcname string address on stack
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Allocate_On_Stack(1));
+						
+		// save string address on stack
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Store_Word_Stack_Offset(t,0));
+	}
+	
+	
+	private void pushReturnAddressAndFuncNameToStack()
+	{
+		// allocate space for ra on stack
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Allocate_On_Stack(1));
+				
+		// save ra on stack
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Store_Reg_On_Stack_Offset("ra",0));
+				
+		createFuncNameStringAndPushToStack();
+	}
+	
+	private void checkNullPtrDeref(TEMP t) {
+
+		String label_not_null = IRcommand.getFreshLabel("not_null_var");
+
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_BNEZ(t, label_not_null));
+
+		String label_nullp_exception = "string_invalid_ptr_dref";
+
+		TEMP nullp_exception_str_address = TEMP_FACTORY.getInstance().getFreshTEMP();
+
+		IR.getInstance().Add_currentListIRcommand(
+				new IRcommand_Load_Address(label_nullp_exception, nullp_exception_str_address));
+
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Print_String_By_Address(nullp_exception_str_address));
+
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Exit());
+
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Label(label_not_null));
+	}
+	
+	private void afterReturnCode(int paramNum)
+	{
+		// pop callee's name
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Dealloc_Stack(1));
+		
+		// load prev ra from stack and pop
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Load_To_Reg_Stack("ra",0));
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Dealloc_Stack(1));
+		
+		//deallocate params on stack
+		if (paramNum != 0)
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Dealloc_Stack(paramNum));
+		
+		// load registers values
+		for(int i=0;i<8;i++)
+		{
+			String curReg = String.format("t%d", i);
+			int curOffset = i*IR.getInstance().WORD_SIZE;
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Load_To_Reg_Stack(curReg,curOffset));
+		}
+		
+		// deallocate registers place on stack
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Dealloc_Stack(8));
+	}
+	
+	private boolean isGlobalCall()
+	{
+		if (this.callingObject == null)
+		{
+			if (this.objScopeType == ScopeTypes.classMethodScope && this.curClassName.methodsMap.containsKey(this.funcName))
+				return false;
+			else
+				return true;
+		}
+		return false;
+	}
 	
 	public TEMP IRme()
 	{
+		if (this.isGlobalCall())
+		{
+			if (this.funcName.equals("PrintInt"))
+			{
+				TEMP intToPrint = this.params.head.IRme();
+				IR.getInstance().Add_currentListIRcommand(new IRcommand_PrintInt(intToPrint));
+				return null;
+			}
+			if (this.funcName.equals("PrintString"))
+			{
+				TEMP stringToPrint = this.params.head.IRme();
+				IR.getInstance().Add_currentListIRcommand(new IRcommand_Print_String_By_Address(stringToPrint));
+				return null;
+			}
+			if (this.funcName.equals("PrintTrace"))
+			{
+				IR.getInstance().Add_currentListIRcommand(new IRcommand_Print_Trace());
+				return null;
+			}
+				
+		}
+		
 		this.saveAllRegistersOnStack();
 		
+		int paramNum = countParamNum();
+		
+		//allocate space for params on stack
+		if (paramNum != 0)
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Allocate_On_Stack(paramNum));
 		
 		
+		// push params to stack
+		TEMP curParam;
+		int i = 0;
 		
-		
-		
+		for (AST_EXP_LIST it = this.params; it  != null; it = it.tail)
+		{
+			curParam = it.head.IRme();
+			
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Store_Word_Stack_Offset(curParam,i));
+			
+			i += IR.getInstance().WORD_SIZE;
+		}
 		
 		// t should eventually contain function address to jump to
 		TEMP t = TEMP_FACTORY.getInstance().getFreshTEMP();
@@ -225,11 +382,15 @@ public class AST_EXP_CALL extends AST_EXP
 		{
 			if (this.objScopeType == ScopeTypes.classMethodScope && this.curClassName.methodsMap.containsKey(this.funcName))
 			{
-
 					int offset = IR.getInstance().WORD_SIZE * this.curClassName.methodsMap.get(this.funcName).methodIndex;
 					
 					// classObj is the first method's parameter: fp+12
 					IR.getInstance().Add_currentListIRcommand(new IRcommand_Frame_Load(t, 12));
+					
+					// push t (hidden clasObj) to stack
+					// allocate space for hiddenClassObj on stack
+					IR.getInstance().Add_currentListIRcommand(new IRcommand_Allocate_On_Stack(1));
+					IR.getInstance().Add_currentListIRcommand(new IRcommand_Store_Word_Stack_Offset(t,0));
 
 					// load vftable's address into t
 					IR.getInstance().Add_currentListIRcommand(new IRcommand_Load(t, t, 0));
@@ -237,13 +398,57 @@ public class AST_EXP_CALL extends AST_EXP
 					// load object's function address into t
 					IR.getInstance().Add_currentListIRcommand(new IRcommand_Load(t, t, offset));
 					
-					//jump!
+					pushReturnAddressAndFuncNameToStack();
+					
+					// jump and link!
+					IR.getInstance().Add_currentListIRcommand(new IRcommand_Jump_Reg(t));
 			}
-			else
+			else //global function!
 			{
-				// j global_function_%s 
-				// %s 
+				pushReturnAddressAndFuncNameToStack();
+				
+				// jump and link!
+				String funcLabel = String.format("global_function_%s", this.funcName);
+				IR.getInstance().Add_currentListIRcommand(new IRcommand_JAL_Label(funcLabel));
 			}
 		}
+		else
+		{
+			TEMP t2 = this.callingObject.IRme();
+			
+			checkNullPtrDeref(t2);
+			
+			// push classObj (hidden clasObj) to stack
+			// allocate space for hiddenClassObj on stack
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Allocate_On_Stack(1));
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Store_Word_Stack_Offset(t2,0));
+			
+			int offset2 = IR.getInstance().WORD_SIZE * this.callingObjectClassName.methodsMap.get(this.funcName).methodIndex;
+			
+			// load vftable's address into t2
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Load(t2, t2, 0));
+			
+			// load object's function address into t2
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Load(t2, t2, offset2));
+			
+			pushReturnAddressAndFuncNameToStack();
+			
+			// jump and link!
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Jump_Reg(t2));
+		}
+		
+		//after return code
+		t = null;
+		
+		// load return val into t (if not void function) and pop
+		if (this.retValue)
+		{
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Stack_Load(t,0));
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Dealloc_Stack(1));
+		}
+		
+		afterReturnCode(paramNum);
+		
+		return t;
 	}
 }

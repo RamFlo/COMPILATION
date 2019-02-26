@@ -72,16 +72,18 @@ public class AST_EXP_LIST extends AST_Node
 		return type_list;
 	}
 	
-	public List<TEMP> IRme()
-	{
-		//TO-DO: Fix...
-		List<TEMP> argList = new LinkedList<TEMP>();
-		
-		for (AST_EXP_LIST it = this; it  != null; it = it.tail)
-		{
-			TEMP t = it.head.IRme();
-			argList.add(t);
-		}
-		return argList;
-	}
+	//done in EXP_CALL!
+	
+//	public List<TEMP> IRme()
+//	{
+//		//TO-DO: Fix...
+//		List<TEMP> argList = new LinkedList<TEMP>();
+//		
+//		for (AST_EXP_LIST it = this; it  != null; it = it.tail)
+//		{
+//			TEMP t = it.head.IRme();
+//			argList.add(t);
+//		}
+//		return argList;
+//	}
 }

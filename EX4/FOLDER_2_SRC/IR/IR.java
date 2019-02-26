@@ -24,6 +24,8 @@ public class IR
 //	private IRcommand head=null;
 //	private IRcommandList tail=null;
 	
+	public int curFunctionParamNum = 0;
+	
 	public int WORD_SIZE = 4;
 	
 	private List<IRcommand> dataSegmentIRCommandList = null;

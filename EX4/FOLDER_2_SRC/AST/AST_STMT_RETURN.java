@@ -1,7 +1,11 @@
 package AST;
 
 import IR.IR;
+import IR.IRcommand_Allocate_On_Stack;
 import IR.IRcommand_Dealloc_Stack;
+import IR.IRcommand_End_Function;
+import IR.IRcommand_Jump_ra;
+import IR.IRcommand_Store_Word_Stack_Offset;
 import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.SYMBOL_TABLE;
 import TEMP.TEMP;
@@ -108,8 +112,21 @@ public class AST_STMT_RETURN extends AST_STMT
 	{
 		int funcLocalsNum = IR.getInstance().curFunctionParamNum;
 		
-		if (funcLocalsNum != 0)
-			IR.getInstance().Add_currentListIRcommand(new IRcommand_Dealloc_Stack(funcLocalsNum));
+		// pop locals, fp = prevfp, pop prevfp
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_End_Function(funcLocalsNum));
+		
+		if (this.exp != null)
+		{
+			TEMP retVal = this.exp.IRme();
+			// allocate space for retVal on stack
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Allocate_On_Stack(1));
+							
+			// save retVal on stack
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Store_Word_Stack_Offset(retVal,0));
+		}
+		
+		// jump to ra
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Jump_ra());
 		
 		return null;
 	}

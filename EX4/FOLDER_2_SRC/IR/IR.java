@@ -156,7 +156,7 @@ public class IR
 		for (IRcommand dataSegmentIRCommand:dataSegmentIRCommandList)
 			dataSegmentIRCommand.MIPSme();
 		
-		//add .text header
+		//add .text header and pre-main
 		sir_MIPS_a_lot.getInstance().initializeTextSegment();
 		
 		for (IRcommand globalsInitIRCommand:globalsInitIRCommandList)

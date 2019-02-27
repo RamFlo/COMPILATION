@@ -443,12 +443,12 @@ public class AST_EXP_CALL extends AST_EXP
 		{
 			IR.getInstance().Add_currentListIRcommand(new IRcommand_Stack_Load(t,0));
 			IR.getInstance().Add_currentListIRcommand(new IRcommand_Dealloc_Stack(1));
+			afterReturnCode(paramNum);
 			return t;
 		}
 		
-		afterReturnCode(paramNum);
-		
 		//no ret val!
+		afterReturnCode(paramNum);
 		return null;
 	}
 }

@@ -1,0 +1,223 @@
+/*************/
+/* IMPORT(S) */
+/*************/
+import java_cup.runtime.*;
+import AST.*;
+
+parser code 
+{:
+	public Lexer lexer;
+	
+	public Parser(Lexer lexer)
+	{
+		super(lexer);
+		this.lexer = lexer;
+	}
+	public void report_error(String message, Object info)
+	{
+		System.out.print("ERROR >> ");		
+		System.out.print("[");
+		System.out.print(lexer.getLine());
+		System.out.print(":");
+		System.out.print(lexer.getCharPos());
+		System.out.print("] \n");
+		System.out.print(message);
+		throw new ParserRuntimeException(String.format("ERROR(%d)\n",lexer.getLine()));
+	}
+	
+:}
+
+/************************/
+/* CUSTOMIZE CUP PARSER */
+/************************/
+scan with
+{:
+	Symbol s;
+	s = lexer.next_token();
+	//System.out.print(s.sym);
+	System.out.print("[");
+	System.out.print(lexer.getLine());
+	System.out.print(":");
+	System.out.print(lexer.getCharPos());
+	System.out.print("] ");
+	System.out.print(TokenNames.terminalNames[s.sym]);
+	if (s.value != null)
+	{
+		System.out.print("( ");
+		System.out.print(s.value);
+		System.out.print(" )");
+	}
+	System.out.print("\n");
+	return s; 
+:};
+/*after reduce {:
+	if (AST_Node.class.isInstance(RESULT))
+	{
+		AST_Node curAst = AST_Node.class.cast(RESULT);
+		ast.setLineAndColNum(lexer.getLine(),lexer.getCharPos());
+	}
+:};*/
+
+/*************/
+/* TERMINALS */
+/*************/
+terminal IF;
+terminal EQ;
+terminal DOT;
+terminal PLUS;
+terminal MINUS;
+terminal TIMES;
+terminal WHILE;
+terminal DIVIDE;
+terminal LPAREN;
+terminal RPAREN;
+terminal LBRACK;
+terminal RBRACK;
+terminal LBRACE;
+terminal RBRACE;
+terminal SEMICOLON;
+terminal ASSIGN;
+terminal NEW;
+terminal COMMA;
+terminal EXTENDS;
+terminal ARRAY;
+terminal NIL;
+terminal GT;
+terminal LT;
+terminal CLASS;
+terminal RETURN;
+
+/*************/
+/* TERMINALS */
+/*************/
+terminal Integer INT;
+terminal String ID;
+terminal String STRING;
+
+/*****************/
+/* NON TERMINALS */
+/*****************/
+non terminal AST_DEC_LIST	decList;
+non terminal AST_DEC		dec;
+non terminal AST_DEC_VAR	varDec;
+non terminal AST_DEC_FUNC	funcDec;
+non terminal AST_DEC_CLASS	classDec;
+non terminal AST_DEC_ARRAY	arrayDec;
+non terminal AST_EXP exp;
+non terminal AST_STMT_LIST stmtList;
+non terminal AST_STMT stmt;
+non terminal AST_NEWEXP newExp;
+non terminal AST_VAR var;
+non terminal AST_EXP_CALL	callExp;
+non terminal AST_EXP_LIST	expListComma;
+non terminal AST_TYPE_NAME		typeName;
+non terminal AST_TYPE_NAME_LIST	typeNameListComma;
+non terminal AST_CFIELDLIST cFieldList;
+non terminal Integer binop;
+
+/***********************/
+/* OPERATOR PRECEDENCE */
+/***********************/
+precedence left ASSIGN;
+precedence left EQ;
+precedence left LT, GT;
+precedence left PLUS, MINUS;
+precedence left TIMES, DIVIDE;
+precedence left LBRACK;
+precedence left LPAREN;
+precedence left DOT;
+
+/************************/
+/* START WITH: decList */
+/************************/
+start with decList;
+
+/********************/
+/* DERIVATION RULES */
+/********************/
+
+
+decList		::=		dec:d decList:l	{: RESULT = new AST_DEC_LIST(d,l); RESULT.setLineAndColNum(dleft+1, dright); :}
+					| dec:d			{: RESULT = new AST_DEC_LIST(d,null); RESULT.setLineAndColNum(dleft+1, dright); :};
+
+dec			::=		varDec:d		{: RESULT = d; :}
+					| funcDec:d		{: RESULT = d; :}
+					| classDec:d	{: RESULT = d; :}
+					| arrayDec:d 	{: RESULT = d; :};
+										
+varDec		::=		ID:type ID:var SEMICOLON	            {: RESULT = new AST_DEC_VAR(type,var,null, null); RESULT.setLineAndColNum(varleft+1, varright); :}
+					| ID:type ID:var ASSIGN exp:e SEMICOLON {: RESULT = new AST_DEC_VAR(type,var,e, null); RESULT.setLineAndColNum(varleft+1, varright); :}
+					| ID:type ID:var ASSIGN newExp:e SEMICOLON {: RESULT = new AST_DEC_VAR(type,var,null,e); RESULT.setLineAndColNum(varleft+1, varright); :};				
+
+funcDec		::=		ID:ret ID:name LPAREN typeNameListComma:tnl RPAREN LBRACE stmtList:body RBRACE
+					{: RESULT = new AST_DEC_FUNC(ret,name,tnl,body); RESULT.setLineAndColNum(nameleft+1, nameright); :}
+					| ID:ret ID:name LPAREN RPAREN LBRACE stmtList:body RBRACE
+					{: RESULT = new AST_DEC_FUNC(ret,name,null,body); RESULT.setLineAndColNum(nameleft+1, nameright); :};
+
+classDec	::=		CLASS ID:name LBRACE cFieldList:l RBRACE {: RESULT = new AST_DEC_CLASS(name, null, l); RESULT.setLineAndColNum(nameleft+1, nameright); :}
+					| CLASS ID:name EXTENDS ID:superName LBRACE cFieldList:l RBRACE {: RESULT = new AST_DEC_CLASS(name, superName, l); RESULT.setLineAndColNum(nameleft+1, nameright); :};
+
+arrayDec	::=		ARRAY ID:name EQ ID:type LBRACK RBRACK {: RESULT = new AST_DEC_ARRAY(name, type); RESULT.setLineAndColNum(nameleft+1, nameright); :};
+				
+exp			::=		INT:i			{: RESULT = new AST_EXP_INT(i); RESULT.setLineAndColNum(ileft+1, iright); :}
+					| MINUS INT:i	{: RESULT = new AST_EXP_INT(-i); RESULT.setLineAndColNum(ileft+1, iright); :}
+					| STRING:s		{: RESULT = new AST_EXP_STRING(s); RESULT.setLineAndColNum(sleft+1, sright); :}
+					| LPAREN exp:e RPAREN {:RESULT = e; RESULT.setLineAndColNum(eleft+1, eright); :}
+					| NIL		    {: RESULT = new AST_EXP_NIL(); RESULT.setLineAndColNum(lexer.getLine(), lexer.getCharPos()); :}
+					| var:v			{: RESULT = v; RESULT.setLineAndColNum(vleft+1, vright); :}
+					| callExp:e		{: RESULT = e; RESULT.setLineAndColNum(eleft+1, eright); :}
+					| exp:e1 binop:b exp:e2	{: RESULT = new AST_EXP_BINOP(e1,e2,b); RESULT.setLineAndColNum(bleft+1, bright); :};
+					
+
+				
+stmtList	::=		stmt:s stmtList:l	{: RESULT = new AST_STMT_LIST(s,l); RESULT.setLineAndColNum(sleft+1, sright); :}
+					| stmt:s			{: RESULT = new AST_STMT_LIST(s,null); RESULT.setLineAndColNum(sleft+1, sright);:};
+					
+stmt		::=		varDec:v                                                    {: RESULT = new AST_STMT_DEC_VAR(v); RESULT.setLineAndColNum(vleft+1, vright); :}
+					| callExp:callExp SEMICOLON									{: RESULT = new AST_STMT_CALL(callExp);RESULT.setLineAndColNum(callExpleft+1, callExpright); :}
+					| RETURN exp:e SEMICOLON									{: RESULT = new AST_STMT_RETURN(e);RESULT.setLineAndColNum(eleft+1, eright); :}
+					| RETURN SEMICOLON											{: RESULT = new AST_STMT_RETURN(null); RESULT.setLineAndColNum(lexer.getLine(), lexer.getCharPos());  :}
+					| var:v ASSIGN exp:e SEMICOLON								{: RESULT = new AST_STMT_ASSIGN(v,e,null); RESULT.setLineAndColNum(vleft+1, vright); :}
+					| var:v ASSIGN newExp:e SEMICOLON							{: RESULT = new AST_STMT_ASSIGN(v,null,e); RESULT.setLineAndColNum(vleft+1, vright);:}
+					| IF    LPAREN exp:cond RPAREN LBRACE stmtList:body RBRACE	{: RESULT = new AST_STMT_IF(cond,body); RESULT.setLineAndColNum(condleft+1, condright);   :}
+					| WHILE LPAREN exp:cond RPAREN LBRACE stmtList:body RBRACE	{: RESULT = new AST_STMT_WHILE(cond,body);  RESULT.setLineAndColNum(condleft+1, condright);:};
+
+
+
+newExp		::= 	NEW ID:type 						{: RESULT = new AST_NEWEXP(type,null);  RESULT.setLineAndColNum(typeleft+1, typeright); :}
+					| NEW ID:type LBRACK exp:e RBRACK 	{: RESULT = new AST_NEWEXP(type,e); RESULT.setLineAndColNum(typeleft+1, typeright); :};
+					
+var		::=			ID:name							{: RESULT = new AST_VAR_SIMPLE(name);  RESULT.setLineAndColNum(nameleft+1, nameright); :}
+					| var:v DOT ID:fieldName		{: RESULT = new AST_VAR_FIELD(v,fieldName); RESULT.setLineAndColNum(vleft+1, vright); :} 
+					| var:v LBRACK exp:e RBRACK		{: RESULT = new AST_VAR_SUBSCRIPT(v,e); RESULT.setLineAndColNum(vleft+1, vright); :};
+					
+
+binop		::=		PLUS					{: RESULT = 0; :}
+					| MINUS					{: RESULT = 1; :}
+					| TIMES					{: RESULT = 2; :}
+					| DIVIDE				{: RESULT = 3; :}
+					| LT					{: RESULT = 4; :}
+					| GT					{: RESULT = 5; :}
+					| EQ					{: RESULT = 6; :};
+					 
+					
+callExp		::=		ID:funcName LPAREN expListComma:el RPAREN				{: RESULT = new AST_EXP_CALL(null,funcName,el); RESULT.setLineAndColNum(funcNameleft+1, funcNameright);   :}
+					| ID:funcName LPAREN RPAREN								{: RESULT = new AST_EXP_CALL(null,funcName,null); RESULT.setLineAndColNum(funcNameleft+1, funcNameright); :}
+					| var:v DOT ID:funcName LPAREN expListComma:el RPAREN	{: RESULT = new AST_EXP_CALL(v,funcName,el);  RESULT.setLineAndColNum(funcNameleft+1, funcNameright);  :}
+					| var:v DOT ID:funcName LPAREN RPAREN					{: RESULT = new AST_EXP_CALL(v,funcName,null); RESULT.setLineAndColNum(funcNameleft+1, funcNameright); :};
+
+expListComma	::=		exp:e COMMA expListComma:el	{: RESULT = new AST_EXP_LIST(e,el);  RESULT.setLineAndColNum(eleft+1, eright); :}
+						| exp:e						{: RESULT = new AST_EXP_LIST(e,null); RESULT.setLineAndColNum(eleft+1, eright); :};
+
+typeName				::=		ID:type ID:name									{: RESULT = new AST_TYPE_NAME(type,name); RESULT.setLineAndColNum(nameleft+1, nameright); :};
+
+typeNameListComma		::=		typeName:tn COMMA typeNameListComma:tnl			{: RESULT = new AST_TYPE_NAME_LIST(tn,tnl); RESULT.setLineAndColNum(tnleft+1, tnright); :}
+								| typeName:tn									{: RESULT = new AST_TYPE_NAME_LIST(tn,null); RESULT.setLineAndColNum(tnleft+1, tnright); :};
+
+/*cField					::=		varDec:v										{: RESULT = v; :}
+								| funcDec:f										{: RESULT = f; :};*/
+
+cFieldList				::=		varDec:v cFieldList:l 							{: RESULT = new AST_CFIELDLIST(v,l); RESULT.setLineAndColNum(vleft+1, vright); :}
+								| varDec:v										{: RESULT = new AST_CFIELDLIST(v,null); RESULT.setLineAndColNum(vleft+1, vright); :}
+								| funcDec:f cFieldList:l 						{: RESULT = new AST_CFIELDLIST(f,l); RESULT.setLineAndColNum(fleft+1, fright); :}
+								| funcDec:f										{: RESULT = new AST_CFIELDLIST(f,null); RESULT.setLineAndColNum(fleft+1, fright); :};

@@ -437,18 +437,18 @@ public class AST_EXP_CALL extends AST_EXP
 			IR.getInstance().Add_currentListIRcommand(new IRcommand_Jump_Reg(t2));
 		}
 		
-		//after return code
-		t = null;
-		
+		//after return code	
 		// load return val into t (if not void function) and pop
 		if (this.retValue)
 		{
 			IR.getInstance().Add_currentListIRcommand(new IRcommand_Stack_Load(t,0));
 			IR.getInstance().Add_currentListIRcommand(new IRcommand_Dealloc_Stack(1));
+			return t;
 		}
 		
 		afterReturnCode(paramNum);
 		
-		return t;
+		//no ret val!
+		return null;
 	}
 }

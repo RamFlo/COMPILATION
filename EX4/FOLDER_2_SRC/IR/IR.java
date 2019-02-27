@@ -31,11 +31,11 @@ public class IR
 	
 	public int WORD_SIZE = 4;
 	
-	private List<IRcommand> dataSegmentIRCommandList = null;
+	private List<IRcommand> dataSegmentIRCommandList = new LinkedList<IRcommand>();
 	
-	private List<IRcommand> globalsInitIRCommandList = null;
+	private List<IRcommand> globalsInitIRCommandList = new LinkedList<IRcommand>();
 	
-	private List<IRcommand> codeSegmentIRCommandList = null;
+	private List<IRcommand> codeSegmentIRCommandList = new LinkedList<IRcommand>();
 	
 	private List<IRcommand> currentIRCommandList = this.codeSegmentIRCommandList;
 	
@@ -92,8 +92,8 @@ public class IR
 	/******************/
 	public void Add_dataSegmentIRcommand(IRcommand cmd)
 	{
-		if (dataSegmentIRCommandList == null)
-			dataSegmentIRCommandList = new LinkedList<IRcommand>();
+//		if (dataSegmentIRCommandList == null)
+//			dataSegmentIRCommandList = new LinkedList<IRcommand>();
 		dataSegmentIRCommandList.add(cmd);
 	}
 	
@@ -123,8 +123,8 @@ public class IR
 	/******************/
 	public void Add_currentListIRcommand(IRcommand cmd)
 	{
-		if (currentIRCommandList == null)
-			currentIRCommandList = new LinkedList<IRcommand>();
+//		if (currentIRCommandList == null)
+//			currentIRCommandList = new LinkedList<IRcommand>();
 		currentIRCommandList.add(cmd);
 	}
 	

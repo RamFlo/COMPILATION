@@ -86,6 +86,7 @@ public class sir_MIPS_a_lot
 	public void initializeTextSegment()
 	{
 		fileWriter.format(".text\n");
+		fileWriter.format("main:\n");
 	}
 	public void string_creation(int stringNum, String s)
 	{

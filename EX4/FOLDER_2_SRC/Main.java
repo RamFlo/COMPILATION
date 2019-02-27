@@ -5,6 +5,7 @@ import java_cup.runtime.Symbol;
 import AST.*;
 import IR.*;
 import MIPS.*;
+import MyExceptions.SemanticRuntimeException;
 
 public class Main
 {
@@ -15,7 +16,7 @@ public class Main
 		Symbol s;
 		AST_DEC_LIST AST;
 		FileReader file_reader;
-		PrintWriter file_writer;
+		PrintWriter file_writer = null;
 		String inputFilename = argv[0];
 		String outputFilename = argv[1];
 		
@@ -79,8 +80,29 @@ public class Main
 			/**************************/
 			/* [12] Close output file */
 			/**************************/
+			//ok for semantic parsing!
+			file_writer.println("OK");
 			file_writer.close();
     	}
+		catch (ParserRuntimeException e)
+		{
+			if (file_writer != null) {
+				file_writer.print(e.getMessage());
+				file_writer.close();
+			}
+			e.printStackTrace();
+			return;
+		}
+		catch (SemanticRuntimeException e)
+		{
+			if (file_writer != null) {
+				file_writer.println(String.format("ERROR(%d)",e.getLineNum()));
+				file_writer.close();
+			}
+			System.out.format(">> ERROR [%d:%d] %s", e.getLineNum(),e.getColNum(),e.getMessage());
+			e.printStackTrace();
+			return;
+		}	     
 			     
 		catch (Exception e)
 		{

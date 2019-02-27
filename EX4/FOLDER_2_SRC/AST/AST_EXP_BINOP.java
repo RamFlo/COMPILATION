@@ -325,11 +325,11 @@ public class AST_EXP_BINOP extends AST_EXP
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Load_Byte_Offset(ch1Temp,0,s1add));
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Load_Byte_Offset(ch2Temp,0,s2add));
 		
-		// if ch1Temp != ch2Temp, jump to assign zero and exit
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_BNE(ch1Temp,ch2Temp,label_AssignZero));
+		// if ch1Temp != ch2Temp, jump to assign one and exit
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_BNE(ch1Temp,ch2Temp,label_AssignOne));
 		
-		// if ch1Temp == nullTermTemp (reached end of both strings), jump to assign one and exit
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_BEQ(ch1Temp,nullTermTemp,label_AssignOne));
+		// if ch1Temp == nullTermTemp (reached end of both strings), jump to assign zero and exit
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_BEQ(ch1Temp,nullTermTemp,label_AssignZero));
 		
 		// advance counter to next char
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Add_Immediate(counterTemp,counterTemp,1));

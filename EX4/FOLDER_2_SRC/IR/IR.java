@@ -7,6 +7,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 import MIPS.sir_MIPS_a_lot;
+import SYMBOL_TABLE.COUNTERS;
+import TEMP.TEMP;
+import TEMP.TEMP_FACTORY;
 
 /*******************/
 /* GENERAL IMPORTS */
@@ -38,6 +41,42 @@ public class IR
 	
 
 
+	private void createMainFuncNameStringAndPushToStack()
+	{
+		// create string in data segment
+		IR.getInstance().Add_dataSegmentIRcommand(new IRcommand_String_Creation("main", COUNTERS.stringCounter));
+
+		TEMP t = TEMP_FACTORY.getInstance().getFreshTEMP();
+		
+		// load string address (by it's label) into temp t
+		IR.getInstance().Add_currentListIRcommand(
+				new IRcommand_Load_Address(String.format("string_%d", COUNTERS.stringCounter), t));
+
+		// increment string counter
+		COUNTERS.stringCounter++;
+		
+		// allocate space for main funcname string address on stack
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Allocate_On_Stack(1));
+						
+		// save string address on stack
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Store_Word_Stack_Offset(t,0));
+	}
+	
+	private void initializeProgram()
+	{
+		this.switchList_globalInitList();
+		
+		this.createMainFuncNameStringAndPushToStack();
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_FP_To_Zero());
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_JAL_Label("global_function_main"));
+		//remove main's name from stack
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Dealloc_Stack(1));
+		//exit
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Exit());
+		
+		this.switchList_codeList();
+		
+	}
 	/******************/
 	/* Add IR command */
 	/******************/
@@ -111,19 +150,19 @@ public class IR
 	/***************/
 	public void MIPSme()
 	{
+		this.initializeProgram();
 		
 		//start .data
 		sir_MIPS_a_lot.getInstance().initializeDataSegment();
 		for (IRcommand dataSegmentIRCommand:dataSegmentIRCommandList)
 			dataSegmentIRCommand.MIPSme();
 		
-		//start .text
+		//add .text header
+		sir_MIPS_a_lot.getInstance().add_text_segment_header();
 		
 		sir_MIPS_a_lot.getInstance().initializeTextSegment();
 		for (IRcommand globalsInitIRCommand:globalsInitIRCommandList)
 			globalsInitIRCommand.MIPSme();
-		
-		//TO-DO: add jump to main, then exit()
 		
 		sir_MIPS_a_lot.getInstance().initializeTextSegment();
 		for (IRcommand codeSegmentIRCommand:codeSegmentIRCommandList)

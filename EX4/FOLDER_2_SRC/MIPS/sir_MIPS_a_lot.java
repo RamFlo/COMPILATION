@@ -27,8 +27,8 @@ public class sir_MIPS_a_lot
 	/***********************/
 	public void finalizeFile()
 	{
-		fileWriter.print("\tli $v0,10\n");
-		fileWriter.print("\tsyscall\n");
+//		fileWriter.print("\tli $v0,10\n");
+//		fileWriter.print("\tsyscall\n");
 		fileWriter.close();
 	}
 	public void mips_exit()
@@ -111,6 +111,10 @@ public class sir_MIPS_a_lot
 	{
 		int idxdst=word.getSerialNumber();
 		fileWriter.format("\tsw Temp_%d,%d($sp)\n", idxdst, offset);
+	}
+	public void fp_to_zero()
+	{
+		fileWriter.format("\tmove $fp,$zero\n");
 	}
 	public void initiate_function(int numOfLocals)
 	{
@@ -351,6 +355,10 @@ public class sir_MIPS_a_lot
 				
 		fileWriter.format("\tbeq Temp_%d,$zero,%s\n",i1,label);				
 	}
+	public void add_text_segment_header()
+	{
+		fileWriter.format(".text\n");				
+	}
 	
 	/**************************************/
 	/* USUAL SINGLETON IMPLEMENTATION ... */
@@ -397,7 +405,7 @@ public class sir_MIPS_a_lot
 			/*****************************************************/
 			instance.fileWriter.print(".data\n");
 			instance.fileWriter.print("string_access_violation: .asciiz \"Access Violation\"\n");
-			instance.fileWriter.print("string_illegal_div_by_0: .asciiz \"Illegal Division By Zero\"\n");
+			instance.fileWriter.print("string_illegal_div_by_0: .asciiz \"Division By Zero\"\n");
 			instance.fileWriter.print("string_invalid_ptr_dref: .asciiz \"Invalid Pointer Dereference\"\n");
 		}
 		return instance;

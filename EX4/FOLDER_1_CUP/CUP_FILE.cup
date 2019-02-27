@@ -113,19 +113,16 @@ non terminal AST_EXP_LIST	expListComma;
 non terminal AST_TYPE_NAME		typeName;
 non terminal AST_TYPE_NAME_LIST	typeNameListComma;
 non terminal AST_CFIELDLIST cFieldList;
-non terminal Integer binop;
+non terminal AST_EXP_BINOP	binopExp;
 
 /***********************/
 /* OPERATOR PRECEDENCE */
 /***********************/
 precedence left ASSIGN;
 precedence left EQ;
-precedence left LT;
-precedence left GT;
-precedence left PLUS;
-precedence left MINUS;
-precedence left TIMES;
-precedence left DIVIDE;
+precedence left LT, GT;
+precedence left PLUS, MINUS;
+precedence left TIMES, DIVIDE;
 precedence left LBRACK;
 precedence left LPAREN;
 precedence left DOT;
@@ -169,7 +166,15 @@ exp			::=		INT:i			{: RESULT = new AST_EXP_INT(i); RESULT.setLineAndColNum(ileft
 					| NIL		    {: RESULT = new AST_EXP_NIL(); RESULT.setLineAndColNum(lexer.getLine(), lexer.getCharPos()); :}
 					| var:v			{: RESULT = v; RESULT.setLineAndColNum(vleft+1, vright); :}
 					| callExp:e		{: RESULT = e; RESULT.setLineAndColNum(eleft+1, eright); :}
-					| exp:e1 binop:b exp:e2	{: RESULT = new AST_EXP_BINOP(e1,e2,b); RESULT.setLineAndColNum(bleft+1, bright); :};
+					| binopExp:b	{: RESULT = e; RESULT.setLineAndColNum(bleft+1, bright); :};
+					
+binopExp	::=		exp:e1 PLUS exp:e2		{: RESULT = new AST_EXP_BINOP(e1,e2,0); RESULT.setLineAndColNum(e1left+1, e1right);  :}
+					| exp:e1 MINUS exp:e2	{: RESULT = new AST_EXP_BINOP(e1,e2,1); RESULT.setLineAndColNum(e1left+1, e1right);  :}
+					| exp:e1 TIMES exp:e2	{: RESULT = new AST_EXP_BINOP(e1,e2,2); RESULT.setLineAndColNum(e1left+1, e1right);  :}
+					| exp:e1 DIVIDE exp:e2	{: RESULT = new AST_EXP_BINOP(e1,e2,3); RESULT.setLineAndColNum(e1left+1, e1right);  :}
+					| exp:e1 LT exp:e2		{: RESULT = new AST_EXP_BINOP(e1,e2,4); RESULT.setLineAndColNum(e1left+1, e1right);  :}
+					| exp:e1 GT exp:e2		{: RESULT = new AST_EXP_BINOP(e1,e2,5); RESULT.setLineAndColNum(e1left+1, e1right);  :}
+					| exp:e1 EQ exp:e2		{: RESULT = new AST_EXP_BINOP(e1,e2,6); RESULT.setLineAndColNum(e1left+1, e1right);  :};
 					
 
 				
@@ -194,14 +199,6 @@ var		::=			ID:name							{: RESULT = new AST_VAR_SIMPLE(name);  RESULT.setLineAn
 					| var:v DOT ID:fieldName		{: RESULT = new AST_VAR_FIELD(v,fieldName); RESULT.setLineAndColNum(vleft+1, vright); :} 
 					| var:v LBRACK exp:e RBRACK		{: RESULT = new AST_VAR_SUBSCRIPT(v,e); RESULT.setLineAndColNum(vleft+1, vright); :};
 					
-
-binop		::=		PLUS					{: RESULT = 0; :}
-					| MINUS					{: RESULT = 1; :}
-					| TIMES					{: RESULT = 2; :}
-					| DIVIDE				{: RESULT = 3; :}
-					| LT					{: RESULT = 4; :}
-					| GT					{: RESULT = 5; :}
-					| EQ					{: RESULT = 6; :};
 					 
 					
 callExp		::=		ID:funcName LPAREN expListComma:el RPAREN				{: RESULT = new AST_EXP_CALL(null,funcName,el); RESULT.setLineAndColNum(funcNameleft+1, funcNameright);   :}

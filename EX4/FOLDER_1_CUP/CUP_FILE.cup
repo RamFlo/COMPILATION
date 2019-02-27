@@ -166,7 +166,7 @@ exp			::=		INT:i			{: RESULT = new AST_EXP_INT(i); RESULT.setLineAndColNum(ileft
 					| NIL		    {: RESULT = new AST_EXP_NIL(); RESULT.setLineAndColNum(lexer.getLine(), lexer.getCharPos()); :}
 					| var:v			{: RESULT = v; RESULT.setLineAndColNum(vleft+1, vright); :}
 					| callExp:e		{: RESULT = e; RESULT.setLineAndColNum(eleft+1, eright); :}
-					| binopExp:b	{: RESULT = e; RESULT.setLineAndColNum(bleft+1, bright); :};
+					| binopExp:b	{: RESULT = b; RESULT.setLineAndColNum(bleft+1, bright); :};
 					
 binopExp	::=		exp:e1 PLUS exp:e2		{: RESULT = new AST_EXP_BINOP(e1,e2,0); RESULT.setLineAndColNum(e1left+1, e1right);  :}
 					| exp:e1 MINUS exp:e2	{: RESULT = new AST_EXP_BINOP(e1,e2,1); RESULT.setLineAndColNum(e1left+1, e1right);  :}

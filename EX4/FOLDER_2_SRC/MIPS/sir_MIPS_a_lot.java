@@ -355,10 +355,6 @@ public class sir_MIPS_a_lot
 				
 		fileWriter.format("\tbeq Temp_%d,$zero,%s\n",i1,label);				
 	}
-	public void add_text_segment_header()
-	{
-		fileWriter.format(".text\n");				
-	}
 	
 	/**************************************/
 	/* USUAL SINGLETON IMPLEMENTATION ... */

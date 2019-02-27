@@ -153,18 +153,14 @@ public class IR
 		this.initializeProgram();
 		
 		//start .data
-		sir_MIPS_a_lot.getInstance().initializeDataSegment();
 		for (IRcommand dataSegmentIRCommand:dataSegmentIRCommandList)
 			dataSegmentIRCommand.MIPSme();
 		
 		//add .text header
-		sir_MIPS_a_lot.getInstance().add_text_segment_header();
-		
 		sir_MIPS_a_lot.getInstance().initializeTextSegment();
+		
 		for (IRcommand globalsInitIRCommand:globalsInitIRCommandList)
 			globalsInitIRCommand.MIPSme();
-		
-		sir_MIPS_a_lot.getInstance().initializeTextSegment();
 		for (IRcommand codeSegmentIRCommand:codeSegmentIRCommandList)
 			codeSegmentIRCommand.MIPSme();
 		

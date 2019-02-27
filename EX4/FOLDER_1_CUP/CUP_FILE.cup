@@ -120,9 +120,12 @@ non terminal Integer binop;
 /***********************/
 precedence left ASSIGN;
 precedence left EQ;
-precedence left LT, GT;
-precedence left PLUS, MINUS;
-precedence left TIMES, DIVIDE;
+precedence left LT;
+precedence left GT;
+precedence left PLUS;
+precedence left MINUS;
+precedence left TIMES;
+precedence left DIVIDE;
 precedence left LBRACK;
 precedence left LPAREN;
 precedence left DOT;

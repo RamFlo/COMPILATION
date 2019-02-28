@@ -140,6 +140,10 @@ public class AST_VAR_SIMPLE extends AST_VAR
 	
 	public TEMP IRme() {
 		TEMP t = TEMP_FACTORY.getInstance().getFreshTEMP();
+		
+		//debug print
+		System.out.println(String.format("param name: %s, param obContext: %s, Index: %d", this.name,this.objContext.toString(),this.objIndexInContext));
+		//debug print
 
 		if (this.objContext == ObjectContext.classDataMember) {
 			TEMP classObjAddress = TEMP_FACTORY.getInstance().getFreshTEMP();

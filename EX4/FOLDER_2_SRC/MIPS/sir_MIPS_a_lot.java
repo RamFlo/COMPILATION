@@ -135,8 +135,8 @@ public class sir_MIPS_a_lot
 		
 		//load prevfp into fp
 		fileWriter.format("\tlw $fp,0($fp)\n");
-		//pop prevfp
-		fileWriter.format("\taddiu $sp,$sp,%d\n",WORD_SIZE);
+		//pop prevfp and func name address
+		fileWriter.format("\taddiu $sp,$sp,%d\n",WORD_SIZE*2);
 	}
 	public void move(TEMP dst,TEMP src){
 		int idxdst=dst.getSerialNumber(), idxsrc = src.getSerialNumber();

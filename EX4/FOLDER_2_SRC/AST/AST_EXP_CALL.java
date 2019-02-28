@@ -240,26 +240,27 @@ public class AST_EXP_CALL extends AST_EXP
 		return i;
 	}
 	
-	private void createFuncNameStringAndPushToStack()
-	{
-		// create string in data segment
-		IR.getInstance().Add_dataSegmentIRcommand(new IRcommand_String_Creation(this.funcName, COUNTERS.stringCounter));
-
-		TEMP t = TEMP_FACTORY.getInstance().getFreshTEMP();
-		
-		// load string address (by it's label) into temp t
-		IR.getInstance().Add_currentListIRcommand(
-				new IRcommand_Load_Address(String.format("string_%d", COUNTERS.stringCounter), t));
-
-		// increment string counter
-		COUNTERS.stringCounter++;
-		
-		// allocate space for funcname string address on stack
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_Allocate_On_Stack(1));
-						
-		// save string address on stack
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_Store_Word_Stack_Offset(t,0));
-	}
+	// moved to dec func
+//	private void createFuncNameStringAndPushToStack()
+//	{
+//		// create string in data segment
+//		IR.getInstance().Add_dataSegmentIRcommand(new IRcommand_String_Creation(this.funcName, COUNTERS.stringCounter));
+//
+//		TEMP t = TEMP_FACTORY.getInstance().getFreshTEMP();
+//		
+//		// load string address (by it's label) into temp t
+//		IR.getInstance().Add_currentListIRcommand(
+//				new IRcommand_Load_Address(String.format("string_%d", COUNTERS.stringCounter), t));
+//
+//		// increment string counter
+//		COUNTERS.stringCounter++;
+//		
+//		// allocate space for funcname string address on stack
+//		IR.getInstance().Add_currentListIRcommand(new IRcommand_Allocate_On_Stack(1));
+//						
+//		// save string address on stack
+//		IR.getInstance().Add_currentListIRcommand(new IRcommand_Store_Word_Stack_Offset(t,0));
+//	}
 	
 	
 	private void pushReturnAddressAndFuncNameToStack()
@@ -270,7 +271,7 @@ public class AST_EXP_CALL extends AST_EXP
 		// save ra on stack
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Store_Reg_On_Stack_Offset("ra",0));
 				
-		createFuncNameStringAndPushToStack();
+		//createFuncNameStringAndPushToStack(); //moved to dec func
 	}
 	
 	private void checkNullPtrDeref(TEMP t) {
@@ -295,8 +296,8 @@ public class AST_EXP_CALL extends AST_EXP
 	
 	private void afterReturnCode(int paramNum)
 	{
-		// pop callee's name
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_Dealloc_Stack(1));
+		// pop callee's name - moved to return!
+		//IR.getInstance().Add_currentListIRcommand(new IRcommand_Dealloc_Stack(1));
 		
 		// load prev ra from stack and pop
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Load_To_Reg_Stack("ra",0));

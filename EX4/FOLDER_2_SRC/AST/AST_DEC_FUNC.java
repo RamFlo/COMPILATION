@@ -7,7 +7,9 @@ import IR.IRcommand_End_Function;
 import IR.IRcommand_Initiate_Function;
 import IR.IRcommand_Jump_ra;
 import IR.IRcommand_Label;
+import IR.IRcommand_Load_Address;
 import IR.IRcommand_Store_Word_Stack_Offset;
+import IR.IRcommand_String_Creation;
 import MyExceptions.SemanticRuntimeException;
 import SYMBOL_TABLE.ENUM_OBJECT_CONTEXT.ObjectContext;
 import SYMBOL_TABLE.ENUM_SCOPE_TYPES.ScopeTypes;
@@ -15,6 +17,7 @@ import SYMBOL_TABLE.COUNTERS;
 import SYMBOL_TABLE.SYMBOL_TABLE;
 import SYMBOL_TABLE.SYMBOL_TABLE_ENTRY;
 import TEMP.TEMP;
+import TEMP.TEMP_FACTORY;
 import TYPES.TYPE;
 import TYPES.TYPE_FUNCTION;
 import TYPES.TYPE_INT;
@@ -216,10 +219,34 @@ public class AST_DEC_FUNC extends AST_DEC
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Jump_ra());
 	}
 	
+	private void createFuncNameStringAndPushToStack()
+	{
+		// create string in data segment
+		IR.getInstance().Add_dataSegmentIRcommand(new IRcommand_String_Creation(this.name, COUNTERS.stringCounter));
+
+		TEMP t = TEMP_FACTORY.getInstance().getFreshTEMP();
+		
+		// load string address (by it's label) into temp t
+		IR.getInstance().Add_currentListIRcommand(
+				new IRcommand_Load_Address(String.format("string_%d", COUNTERS.stringCounter), t));
+
+		// increment string counter
+		COUNTERS.stringCounter++;
+		
+		// allocate space for funcname string address on stack
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Allocate_On_Stack(1));
+						
+		// save string address on stack
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Store_Word_Stack_Offset(t,0));
+	}
+	
 	public TEMP IRme(){
 		IR.getInstance().curFunctionParamNum = this.numOfLocals;
 		
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Label(String.format("global_function_%s",this.name)));
+		
+		this.createFuncNameStringAndPushToStack();
+		
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Initiate_Function(this.numOfLocals));
 		this.body.IRme();
 		
@@ -233,6 +260,9 @@ public class AST_DEC_FUNC extends AST_DEC
 		IR.getInstance().curFunctionParamNum = this.numOfLocals;
 		
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Label(String.format("method_%s_%s", className,this.name)));
+		
+		this.createFuncNameStringAndPushToStack();
+		
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Initiate_Function(this.numOfLocals));
 		this.body.IRme();
 		

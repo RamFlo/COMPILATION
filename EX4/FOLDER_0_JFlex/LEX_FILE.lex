@@ -58,6 +58,8 @@ return symbol(TokenNames.EOF);
 	/*********************************************************************************/
 	private Symbol symbol(int type)               {return new Symbol(type, yyline, yycolumn);}
 	private Symbol symbol(int type, Object value) {return new Symbol(type, yyline, yycolumn, value);}
+	
+	private boolean prevIsMinus = false;
 
 	/*******************************************/
 	/* Enable line number extraction from main */
@@ -97,38 +99,40 @@ STRINGS		= \"([a-zA-Z]*)\"
 
 <YYINITIAL> {
 
-"+"					{ return symbol(TokenNames.PLUS);}
-"-"					{ return symbol(TokenNames.MINUS);}
-"*"					{ return symbol(TokenNames.TIMES);}
-"/"					{ return symbol(TokenNames.DIVIDE);}
-"("					{ return symbol(TokenNames.LPAREN);}
-")"					{ return symbol(TokenNames.RPAREN);}
-"["					{ return symbol(TokenNames.LBRACK);}
-"]"					{ return symbol(TokenNames.RBRACK);}
-"{"					{ return symbol(TokenNames.LBRACE);}
-"}"					{ return symbol(TokenNames.RBRACE);}
-","					{ return symbol(TokenNames.COMMA);}
-"."					{ return symbol(TokenNames.DOT);}
-";"					{ return symbol(TokenNames.SEMICOLON);}
-":="				{ return symbol(TokenNames.ASSIGN);}
-"="					{ return symbol(TokenNames.EQ);}
-"<"					{ return symbol(TokenNames.LT);}
-">"					{ return symbol(TokenNames.GT);}
-"class"				{ return symbol(TokenNames.CLASS);}
-"nil"				{ return symbol(TokenNames.NIL);}
-"array"				{ return symbol(TokenNames.ARRAY	);}
-"while"				{ return symbol(TokenNames.WHILE);}
-"extends"			{ return symbol(TokenNames.EXTENDS);}
-"return"			{ return symbol(TokenNames.RETURN);}
-"new"				{ return symbol(TokenNames.NEW);}
-"if"				{ return symbol(TokenNames.IF);}
-{STRINGS}			{ return symbol(TokenNames.STRING, yytext()); }
+"+"					{ prevIsMinus = false; return symbol(TokenNames.PLUS);}
+"-"					{ prevIsMinus = true; return symbol(TokenNames.MINUS);}
+"*"					{ prevIsMinus = false; return symbol(TokenNames.TIMES);}
+"/"					{ prevIsMinus = false; return symbol(TokenNames.DIVIDE);}
+"("					{ prevIsMinus = false; return symbol(TokenNames.LPAREN);}
+")"					{ prevIsMinus = false; return symbol(TokenNames.RPAREN);}
+"["					{ prevIsMinus = false; return symbol(TokenNames.LBRACK);}
+"]"					{ prevIsMinus = false; return symbol(TokenNames.RBRACK);}
+"{"					{ prevIsMinus = false; return symbol(TokenNames.LBRACE);}
+"}"					{ prevIsMinus = false; return symbol(TokenNames.RBRACE);}
+","					{ prevIsMinus = false; return symbol(TokenNames.COMMA);}
+"."					{ prevIsMinus = false; return symbol(TokenNames.DOT);}
+";"					{ prevIsMinus = false; return symbol(TokenNames.SEMICOLON);}
+":="				{ prevIsMinus = false; return symbol(TokenNames.ASSIGN);}
+"="					{ prevIsMinus = false; return symbol(TokenNames.EQ);}
+"<"					{ prevIsMinus = false; return symbol(TokenNames.LT);}
+">"					{ prevIsMinus = false; return symbol(TokenNames.GT);}
+"class"				{ prevIsMinus = false; return symbol(TokenNames.CLASS);}
+"nil"				{ prevIsMinus = false; return symbol(TokenNames.NIL);}
+"array"				{ prevIsMinus = false; return symbol(TokenNames.ARRAY	);}
+"while"				{ prevIsMinus = false; return symbol(TokenNames.WHILE);}
+"extends"			{ prevIsMinus = false; return symbol(TokenNames.EXTENDS);}
+"return"			{ prevIsMinus = false; return symbol(TokenNames.RETURN);}
+"new"				{ prevIsMinus = false; return symbol(TokenNames.NEW);}
+"if"				{ prevIsMinus = false; return symbol(TokenNames.IF);}
+{STRINGS}			{ prevIsMinus = false; return symbol(TokenNames.STRING, yytext()); }
 "//"				{ yybegin(COMMENT_ONE_LINE); }
 "/*"				{ yybegin(COMMENT_MULTI_LINE); }
 {INTEGER}			{ 
 						if (yytext().length() > 5) {System.out.println("Lexer error 4"); return symbol(TokenNames.error);}
 						Integer x = new Integer(yytext());
-						if (x > 32767) {System.out.println("Lexer error 3"); return symbol(TokenNames.error);}
+						int bound = 32767;
+						if (prevIsMinus) {bound++;}
+						if (x > bound) {System.out.println("Lexer error 3"); return symbol(TokenNames.error);}
 						else return symbol(TokenNames.INT, x);
 					}
 /*{MINUS_INTEGER}		{
@@ -139,7 +143,7 @@ STRINGS		= \"([a-zA-Z]*)\"
 					}*/
 {LEADING_ZEROES} 	{ System.out.println("Lexer error 2"); return symbol(TokenNames.error); }				 
 /*"-0"				{ return symbol(TokenNames.error); }*/
-{ID}				{ return symbol(TokenNames.ID, new String( yytext()));}   
+{ID}				{ prevIsMinus = false; return symbol(TokenNames.ID, new String( yytext()));}   
 {WhiteSpace}		{ /* just skip what was found, do nothing */ }
 <<EOF>>				{ return symbol(TokenNames.EOF);}
 }

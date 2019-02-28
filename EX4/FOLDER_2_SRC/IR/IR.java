@@ -66,11 +66,14 @@ public class IR
 	{
 		this.switchList_globalInitList();
 		
-		this.createMainFuncNameStringAndPushToStack();
+		//this.createMainFuncNameStringAndPushToStack(); done in dec func
+		
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_FP_To_Zero());
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_JAL_Label("global_function_main"));
-		//remove main's name from stack
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_Dealloc_Stack(1));
+		
+		//remove main's name from stack - done in return
+		//IR.getInstance().Add_currentListIRcommand(new IRcommand_Dealloc_Stack(1));
+		
 		//exit
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Exit());
 		

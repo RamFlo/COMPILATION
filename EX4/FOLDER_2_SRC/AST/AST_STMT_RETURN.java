@@ -113,15 +113,15 @@ public class AST_STMT_RETURN extends AST_STMT
 	{
 		int funcLocalsNum = IR.getInstance().curFunctionParamNum;
 		
-		// pop locals, fp = prevfp, pop prevfp and func name address
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_End_Function(funcLocalsNum));
-		
 		if (this.exp != null)
 		{
 			TEMP retVal = this.exp.IRme();				
 			// save retVal in v0
 			IR.getInstance().Add_currentListIRcommand(new IRcommand_Move_To_v0(retVal));
 		}
+		
+		// pop locals, fp = prevfp, pop prevfp and func name address
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_End_Function(funcLocalsNum));
 		
 		// jump to ra
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Jump_ra());

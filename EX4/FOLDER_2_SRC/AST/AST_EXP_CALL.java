@@ -332,6 +332,28 @@ public class AST_EXP_CALL extends AST_EXP
 		return false;
 	}
 	
+	private void saveAllRegistersAndFuncParamsOnStack() {
+		this.saveAllRegistersOnStack();
+
+		int paramNum = countParamNum();
+
+		// allocate space for params on stack
+		if (paramNum != 0)
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Allocate_On_Stack(paramNum));
+
+		// push params to stack
+		TEMP curParam;
+		int i = 0;
+
+		for (AST_EXP_LIST it = this.params; it != null; it = it.tail) {
+			curParam = it.head.IRme();
+
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Store_Word_Stack_Offset(curParam, i));
+
+			i += IR.getInstance().WORD_SIZE;
+		}
+	}
+	
 	public TEMP IRme()
 	{
 		if (this.isGlobalCall())
@@ -356,57 +378,42 @@ public class AST_EXP_CALL extends AST_EXP
 				
 		}
 		
-		this.saveAllRegistersOnStack();
 		
-		int paramNum = countParamNum();
-		
-		//allocate space for params on stack
-		if (paramNum != 0)
-			IR.getInstance().Add_currentListIRcommand(new IRcommand_Allocate_On_Stack(paramNum));
-		
-		
-		// push params to stack
-		TEMP curParam;
-		int i = 0;
-		
-		for (AST_EXP_LIST it = this.params; it  != null; it = it.tail)
-		{
-			curParam = it.head.IRme();
-			
-			IR.getInstance().Add_currentListIRcommand(new IRcommand_Store_Word_Stack_Offset(curParam,i));
-			
-			i += IR.getInstance().WORD_SIZE;
-		}
 		
 		// t should eventually contain function address to jump to
 		TEMP t = TEMP_FACTORY.getInstance().getFreshTEMP();
 		if (this.callingObject == null)
 		{
-			if (this.objScopeType == ScopeTypes.classMethodScope && this.curClassName.methodsMap.containsKey(this.funcName))
-			{
-					int offset = IR.getInstance().WORD_SIZE * this.curClassName.methodsMap.get(this.funcName).methodIndex;
-					
-					// classObj is the first method's parameter: fp+12
-					IR.getInstance().Add_currentListIRcommand(new IRcommand_Frame_Load(t, 12));
-					
-					// push t (hidden clasObj) to stack
-					// allocate space for hiddenClassObj on stack
-					IR.getInstance().Add_currentListIRcommand(new IRcommand_Allocate_On_Stack(1));
-					IR.getInstance().Add_currentListIRcommand(new IRcommand_Store_Word_Stack_Offset(t,0));
+			if (this.objScopeType == ScopeTypes.classMethodScope
+					&& this.curClassName.methodsMap.containsKey(this.funcName)) {
+				this.saveAllRegistersAndFuncParamsOnStack();
 
-					// load vftable's address into t
-					IR.getInstance().Add_currentListIRcommand(new IRcommand_Load(t, t, 0));
-					
-					// load object's function address into t
-					IR.getInstance().Add_currentListIRcommand(new IRcommand_Load(t, t, offset));
-					
-					pushReturnAddressAndFuncNameToStack();
-					
-					// jump and link!
-					IR.getInstance().Add_currentListIRcommand(new IRcommand_Jump_Reg(t));
+				int offset = IR.getInstance().WORD_SIZE
+						* (this.curClassName.methodsMap.get(this.funcName).methodIndex - 1);
+
+				// classObj is the first method's parameter: fp+12
+				IR.getInstance().Add_currentListIRcommand(new IRcommand_Frame_Load(t, 12));
+
+				// push t (hidden clasObj) to stack
+				// allocate space for hiddenClassObj on stack
+				IR.getInstance().Add_currentListIRcommand(new IRcommand_Allocate_On_Stack(1));
+				IR.getInstance().Add_currentListIRcommand(new IRcommand_Store_Word_Stack_Offset(t, 0));
+
+				// load vftable's address into t
+				IR.getInstance().Add_currentListIRcommand(new IRcommand_Load(t, t, 0));
+
+				// load object's function address into t
+				IR.getInstance().Add_currentListIRcommand(new IRcommand_Load(t, t, offset));
+
+				pushReturnAddressAndFuncNameToStack();
+
+				// jump and link!
+				IR.getInstance().Add_currentListIRcommand(new IRcommand_Jump_Reg(t));
 			}
 			else //global function!
 			{
+				this.saveAllRegistersAndFuncParamsOnStack();
+				
 				pushReturnAddressAndFuncNameToStack();
 				
 				// jump and link!
@@ -420,12 +427,14 @@ public class AST_EXP_CALL extends AST_EXP
 			
 			checkNullPtrDeref(t2);
 			
+			this.saveAllRegistersAndFuncParamsOnStack();
+			
 			// push classObj (hidden clasObj) to stack
 			// allocate space for hiddenClassObj on stack
 			IR.getInstance().Add_currentListIRcommand(new IRcommand_Allocate_On_Stack(1));
 			IR.getInstance().Add_currentListIRcommand(new IRcommand_Store_Word_Stack_Offset(t2,0));
 			
-			int offset2 = IR.getInstance().WORD_SIZE * this.callingObjectClassName.methodsMap.get(this.funcName).methodIndex;
+			int offset2 = IR.getInstance().WORD_SIZE * (this.callingObjectClassName.methodsMap.get(this.funcName).methodIndex - 1);
 			
 			// load vftable's address into t2
 			IR.getInstance().Add_currentListIRcommand(new IRcommand_Load(t2, t2, 0));
@@ -440,7 +449,7 @@ public class AST_EXP_CALL extends AST_EXP
 		}
 		
 		//after return code	
-		afterReturnCode(paramNum);
+		afterReturnCode(this.countParamNum());
 		
 		// move return val into t (if not void function) and return it as call's value
 		if (this.retValue)

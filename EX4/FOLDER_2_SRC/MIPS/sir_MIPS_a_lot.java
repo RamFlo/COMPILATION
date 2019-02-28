@@ -96,6 +96,10 @@ public class sir_MIPS_a_lot
 	{
 		fileWriter.format("\tstring_%d: .asciiz \"%s\"\n",stringNum,s);
 	}
+	public void string_creation_no_quotes(int stringNum, String s)
+	{
+		fileWriter.format("\tstring_%d: .asciiz %s\n",stringNum,s);
+	}
 	public void allocate(String var_name)
 	{
 		fileWriter.format("\tglobal_%s: .word 0\n",var_name);

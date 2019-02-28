@@ -3,6 +3,7 @@ package AST;
 import IR.IR;
 import IR.IRcommandConstInt;
 import IR.IRcommand_Load_Address;
+import IR.IRcommand_String_Create_No_Quotes;
 import IR.IRcommand_String_Creation;
 import SYMBOL_TABLE.COUNTERS;
 import TEMP.TEMP;
@@ -54,7 +55,7 @@ public class AST_EXP_STRING extends AST_EXP {
 		TEMP t = TEMP_FACTORY.getInstance().getFreshTEMP();
 
 		// create string in data segment
-		IR.getInstance().Add_dataSegmentIRcommand(new IRcommand_String_Creation(value, COUNTERS.stringCounter));
+		IR.getInstance().Add_dataSegmentIRcommand(new IRcommand_String_Create_No_Quotes(value, COUNTERS.stringCounter));
 
 		// load string address (by it's label) into temp t
 		IR.getInstance().Add_currentListIRcommand(

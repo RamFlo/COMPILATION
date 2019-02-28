@@ -214,6 +214,11 @@ public class AST_DEC_CLASS extends AST_DEC
 		return methodIndex;
 	}
 	
+	private void insertToDataMembersMap(String dataMemberName, TYPE_CLASS curClass) {
+		int dataMemberIndex = curClass.dataMembersMap.size() + 1;
+		curClass.dataMembersMap.put(dataMemberName,dataMemberIndex);
+	}
+	
 	
 	public TYPE SemantMe()
 	{	
@@ -307,6 +312,7 @@ public class AST_DEC_CLASS extends AST_DEC
 					curVariant = curHeadVar.SemantMeFromClass();
 					t.data_members = new TYPE_CLASS_DATA_MEMBERS_LIST(new TYPE_CLASS_DATA_MEMBER(curVariant,curHeadVar.name),t.data_members);
 					doesVariableShadow(curHeadVar.name,((TYPE_CLASS)superType),curHeadVar.lineNum,curHeadVar.colNum);
+					insertToDataMembersMap(curHeadVar.name,t);
 				}
 		}
 		

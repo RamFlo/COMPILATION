@@ -204,6 +204,7 @@ public class sir_MIPS_a_lot
 	public void frame_load(TEMP dst, int offset)
 	{
 		int idxdst=dst.getSerialNumber();
+		fileWriter.format("\tlw Temp_%d,%d($fp)\n",idxdst,offset);
 	}
 	public void sll(TEMP dst,TEMP src, int shiftAmount)
 	{

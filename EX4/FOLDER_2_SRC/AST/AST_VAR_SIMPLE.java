@@ -142,7 +142,7 @@ public class AST_VAR_SIMPLE extends AST_VAR
 		TEMP t = TEMP_FACTORY.getInstance().getFreshTEMP();
 		
 		//debug print
-		System.out.println(String.format("param name: %s, param obContext: %s, Index: %d", this.name,this.objContext.toString(),this.objIndexInContext));
+		//System.out.println(String.format("param name: %s, param obContext: %s, Index: %d", this.name,this.objContext.toString(),this.objIndexInContext));
 		//debug print
 
 		if (this.objContext == ObjectContext.classDataMember) {
@@ -155,7 +155,7 @@ public class AST_VAR_SIMPLE extends AST_VAR
 		} 
 		else if (this.objContext == ObjectContext.inputArgumentRecieved) {
 			//debug print
-			System.out.println("went into inputArgumentRecieved IRme");
+			//System.out.println("went into inputArgumentRecieved IRme");
 			//debug print
 			int offset = IR.getInstance().WORD_SIZE * 2 + ( IR.getInstance().WORD_SIZE * this.objIndexInContext); // +4 since fp[0] is prevfp, fp[4] is function name string,
 															// fp[8] is ra

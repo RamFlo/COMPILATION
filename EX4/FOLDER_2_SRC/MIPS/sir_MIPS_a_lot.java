@@ -58,14 +58,18 @@ public class sir_MIPS_a_lot
 	public void print_trace()
 	{
 		TEMP t = TEMP_FACTORY.getInstance().getFreshTEMP();
+		TEMP curStringAdd = TEMP_FACTORY.getInstance().getFreshTEMP();
+		
 		int idx=t.getSerialNumber();
+		int idStrAdd = curStringAdd.getSerialNumber();
+		
 		fileWriter.format("\tmove Temp_%d,$fp\n",idx);
 		
 		String loop_start = IRcommand.getFreshLabel("print_trace_loop_start");
 		
 		this.label(loop_start);
-		fileWriter.format("\tlw Temp_%d,4(Temp_%d)\n",idx,idx);
-		this.print_string_by_address(t);
+		fileWriter.format("\tlw Temp_%d,4(Temp_%d)\n",idStrAdd,idx);
+		this.print_string_by_address(curStringAdd);
 		fileWriter.format("\tlw Temp_%d,0(Temp_%d)\n",idx,idx);
 		this.bnez(t, loop_start);
 	}

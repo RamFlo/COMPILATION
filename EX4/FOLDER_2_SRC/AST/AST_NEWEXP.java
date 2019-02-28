@@ -142,13 +142,14 @@ public class AST_NEWEXP extends AST_Node{
 			// malloc dataMembersNum + 1 words for new class data members and vftable address
 			IR.getInstance().Add_currentListIRcommand(new IRcommand_Malloc(dataMembersNum + 1, t));
 
-			// load VFTable address into a new TEMP
-			TEMP vftable_address = TEMP_FACTORY.getInstance().getFreshTEMP();
-			String vftable_label = String.format("VFTable_%s", classToInstantiate.name);
-			IR.getInstance().Add_currentListIRcommand(new IRcommand_Load_Address(vftable_label, vftable_address));
-
-			// insert (store word) VFTable address to first cell in allocated space
-			IR.getInstance().Add_currentListIRcommand(new IRcommand_Store_Word_Offset(vftable_address, 0, t));
+			if (classToInstantiate.dataMembersMap.size() != 0) {
+				// load VFTable address into a new TEMP
+				TEMP vftable_address = TEMP_FACTORY.getInstance().getFreshTEMP();
+				String vftable_label = String.format("VFTable_%s", classToInstantiate.name);
+				IR.getInstance().Add_currentListIRcommand(new IRcommand_Load_Address(vftable_label, vftable_address));
+				// insert (store word) VFTable address to first cell in allocated space
+				IR.getInstance().Add_currentListIRcommand(new IRcommand_Store_Word_Offset(vftable_address, 0, t));
+			}
 
 			// initialize data members
 			initializeDataMembersIR(classToInstantiate.dataMembersMap, classToInstantiate, t);

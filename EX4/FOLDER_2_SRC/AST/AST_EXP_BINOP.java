@@ -213,23 +213,30 @@ public class AST_EXP_BINOP extends AST_EXP
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Move(strAddCopyTemp,stringAdd));
 		
 		TEMP counterTemp = TEMP_FACTORY.getInstance().getFreshTEMP();
-		IR.getInstance().Add_currentListIRcommand(new IRcommandConstInt(counterTemp,-1));
+		IR.getInstance().Add_currentListIRcommand(new IRcommandConstInt(counterTemp,0));
 		
 		//TEMP nullTermTemp = TEMP_FACTORY.getInstance().getFreshTEMP();
 		//IR.getInstance().Add_currentListIRcommand(new IRcommand_li_Null_Term(nullTermTemp));
 		
 		TEMP curChTemp = TEMP_FACTORY.getInstance().getFreshTEMP();
 		
-		String label_loop_start_s= IRcommand.getFreshLabel("str_len_loop_start");
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_Label(label_loop_start_s));
+		String label_loop_start_s = IRcommand.getFreshLabel("str_len_loop_start");
+		String label_loop_end_s = IRcommand.getFreshLabel("str_len_loop_end");
 		
-		// advance counter to next char
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_Add_Immediate(counterTemp,counterTemp,1));
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_Binop_Add_Integers(strAddCopyTemp,strAddCopyTemp,counterTemp));
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Label(label_loop_start_s));
 		
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Load_Byte_Offset(curChTemp,0,strAddCopyTemp));
 		
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_BNEZ(curChTemp,label_loop_start_s));
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_BEQZ(curChTemp,label_loop_end_s));
+		// advance counter to next char
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Add_Immediate(counterTemp,counterTemp,1));
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Add_Immediate(strAddCopyTemp,strAddCopyTemp,1));
+		
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Jump_Label(label_loop_start_s));
+		
+		//IR.getInstance().Add_currentListIRcommand(new IRcommand_BNEZ(curChTemp,label_loop_start_s));
+		
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Label(label_loop_end_s));
 		
 		return counterTemp;
 	}

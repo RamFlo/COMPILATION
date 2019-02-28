@@ -26,7 +26,7 @@ import IR.IRcommand_Malloc;
 import IR.IRcommand_Move;
 import IR.IRcommand_Print_String_By_Address;
 import IR.IRcommand_Store_Byte_Offset;
-import IR.IRcommand_li_Null_Term;
+import IR.IRcommand_Store_Byte_Zero_Offset;
 import MIPS.sir_MIPS_a_lot;
 import MyExceptions.SemanticRuntimeException;
 import TEMP.TEMP;
@@ -215,8 +215,8 @@ public class AST_EXP_BINOP extends AST_EXP
 		TEMP counterTemp = TEMP_FACTORY.getInstance().getFreshTEMP();
 		IR.getInstance().Add_currentListIRcommand(new IRcommandConstInt(counterTemp,-1));
 		
-		TEMP nullTermTemp = TEMP_FACTORY.getInstance().getFreshTEMP();
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_li_Null_Term(nullTermTemp));
+		//TEMP nullTermTemp = TEMP_FACTORY.getInstance().getFreshTEMP();
+		//IR.getInstance().Add_currentListIRcommand(new IRcommand_li_Null_Term(nullTermTemp));
 		
 		TEMP curChTemp = TEMP_FACTORY.getInstance().getFreshTEMP();
 		
@@ -229,7 +229,7 @@ public class AST_EXP_BINOP extends AST_EXP
 		
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Load_Byte_Offset(curChTemp,0,strAddCopyTemp));
 		
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_BNE(curChTemp,nullTermTemp,label_loop_start_s));
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_BNEZ(curChTemp,label_loop_start_s));
 		
 		return counterTemp;
 	}
@@ -237,8 +237,8 @@ public class AST_EXP_BINOP extends AST_EXP
 	//advances stringAdd!
 	private void copyStringWithoutNullTerm(TEMP stringAdd, TEMP dstAdd)
 	{
-		TEMP nullTermTemp = TEMP_FACTORY.getInstance().getFreshTEMP();
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_li_Null_Term(nullTermTemp));
+		//TEMP nullTermTemp = TEMP_FACTORY.getInstance().getFreshTEMP();
+		//IR.getInstance().Add_currentListIRcommand(new IRcommand_li_Null_Term(nullTermTemp));
 		
 		TEMP curChTemp = TEMP_FACTORY.getInstance().getFreshTEMP();
 		
@@ -248,7 +248,7 @@ public class AST_EXP_BINOP extends AST_EXP
 		
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Load_Byte_Offset(curChTemp,0,stringAdd));
 		
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_BEQ(curChTemp,nullTermTemp,label_copy_end_s));
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_BEQZ(curChTemp,label_copy_end_s));
 		// advance counter to next char
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Add_Immediate(stringAdd,stringAdd,1));
 		
@@ -276,10 +276,10 @@ public class AST_EXP_BINOP extends AST_EXP
 		copyStringWithoutNullTerm(s2add,concatRes);
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Binop_Add_Integers(concatRes,concatRes,s2Len));
 		
-		TEMP nullTermTemp = TEMP_FACTORY.getInstance().getFreshTEMP();
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_li_Null_Term(nullTermTemp));
+		//TEMP nullTermTemp = TEMP_FACTORY.getInstance().getFreshTEMP();
+		//IR.getInstance().Add_currentListIRcommand(new IRcommand_li_Null_Term(nullTermTemp));
 		
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_Store_Byte_Offset(nullTermTemp,0,concatRes));
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Store_Byte_Zero_Offset(0,concatRes));
 		
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Binop_Sub_Integers(concatRes,concatRes,concatLen));
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Add_Immediate(concatRes,concatRes,1));
@@ -308,8 +308,8 @@ public class AST_EXP_BINOP extends AST_EXP
 		IR.getInstance().Add_currentListIRcommand(new IRcommandConstInt(counterTemp,0));
 		
 		// load '\0' into nullTermTemp for future use
-		TEMP nullTermTemp = TEMP_FACTORY.getInstance().getFreshTEMP();
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_li_Null_Term(nullTermTemp));
+		//TEMP nullTermTemp = TEMP_FACTORY.getInstance().getFreshTEMP();
+		//IR.getInstance().Add_currentListIRcommand(new IRcommand_li_Null_Term(nullTermTemp));
 		
 		TEMP ch1Temp = TEMP_FACTORY.getInstance().getFreshTEMP();
 		TEMP ch2Temp = TEMP_FACTORY.getInstance().getFreshTEMP();
@@ -329,7 +329,7 @@ public class AST_EXP_BINOP extends AST_EXP
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_BNE(ch1Temp,ch2Temp,label_AssignOne));
 		
 		// if ch1Temp == nullTermTemp (reached end of both strings), jump to assign zero and exit
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_BEQ(ch1Temp,nullTermTemp,label_AssignZero));
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_BEQZ(ch1Temp,label_AssignZero));
 		
 		// advance counter to next char
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Add_Immediate(counterTemp,counterTemp,1));

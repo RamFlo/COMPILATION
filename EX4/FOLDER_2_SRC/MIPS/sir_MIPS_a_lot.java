@@ -230,6 +230,11 @@ public class sir_MIPS_a_lot
 		int byte_serial=byteTemp.getSerialNumber(), address_serial = address.getSerialNumber();
 		fileWriter.format("\tsb Temp_%d,%d(Temp_%d)\n",byte_serial,offset,address_serial);		
 	}
+	public void store_byte_zero(int offset, TEMP address)
+	{
+		int address_serial = address.getSerialNumber();
+		fileWriter.format("\tsb $zero,%d(Temp_%d)\n",offset,address_serial);		
+	}
 	public void frame_store(TEMP src, int offset)
 	{
 		int idxsrc=src.getSerialNumber();

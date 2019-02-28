@@ -117,6 +117,16 @@ public class sir_MIPS_a_lot
 	{
 		fileWriter.format("\tmove $fp,$zero\n");
 	}
+	public void move_to_v0(TEMP src)
+	{
+		int idxsrc=src.getSerialNumber();
+		fileWriter.format("\tmove $v0,Temp_%d\n",idxsrc);
+	}
+	public void move_from_v0(TEMP dst)
+	{
+		int idxdst=dst.getSerialNumber();
+		fileWriter.format("\tmove Temp_%d,$v0\n",idxdst);
+	}
 	public void initiate_function(int numOfLocals)
 	{
 		fileWriter.format("\taddiu $sp,$sp,-%d\n",WORD_SIZE);

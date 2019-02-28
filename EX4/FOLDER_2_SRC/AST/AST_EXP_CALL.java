@@ -14,6 +14,7 @@ import IR.IRcommand_Label;
 import IR.IRcommand_Load;
 import IR.IRcommand_Load_Address;
 import IR.IRcommand_Load_To_Reg_Stack;
+import IR.IRcommand_Move_From_v0;
 import IR.IRcommand_PrintInt;
 import IR.IRcommand_Print_String_By_Address;
 import IR.IRcommand_Print_Trace;
@@ -439,17 +440,17 @@ public class AST_EXP_CALL extends AST_EXP
 		}
 		
 		//after return code	
-		// load return val into t (if not void function) and pop
+		afterReturnCode(paramNum);
+		
+		// move return val into t (if not void function) and return it as call's value
 		if (this.retValue)
 		{
-			IR.getInstance().Add_currentListIRcommand(new IRcommand_Stack_Load(t,0));
-			IR.getInstance().Add_currentListIRcommand(new IRcommand_Dealloc_Stack(1));
-			afterReturnCode(paramNum);
+			//put retval in t
+			IR.getInstance().Add_currentListIRcommand(new IRcommand_Move_From_v0(t));
 			return t;
 		}
 		
 		//no ret val!
-		afterReturnCode(paramNum);
 		return null;
 	}
 }

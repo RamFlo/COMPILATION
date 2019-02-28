@@ -142,7 +142,7 @@ public class AST_NEWEXP extends AST_Node{
 			// malloc dataMembersNum + 1 words for new class data members and vftable address
 			IR.getInstance().Add_currentListIRcommand(new IRcommand_Malloc(dataMembersNum + 1, t));
 
-			if (classToInstantiate.dataMembersMap.size() != 0) {
+			if (classToInstantiate.methodsMap.size() != 0) {
 				// load VFTable address into a new TEMP
 				TEMP vftable_address = TEMP_FACTORY.getInstance().getFreshTEMP();
 				String vftable_label = String.format("VFTable_%s", classToInstantiate.name);

@@ -154,6 +154,9 @@ public class AST_VAR_SIMPLE extends AST_VAR
 			IR.getInstance().Add_currentListIRcommand(new IRcommand_Load(t, classObjAddress, offset));
 		} 
 		else if (this.objContext == ObjectContext.inputArgumentRecieved) {
+			//debug print
+			System.out.println("went into inputArgumentRecieved IRme");
+			//debug print
 			int offset = IR.getInstance().WORD_SIZE * 2 + ( IR.getInstance().WORD_SIZE * this.objIndexInContext); // +4 since fp[0] is prevfp, fp[4] is function name string,
 															// fp[8] is ra
 			IR.getInstance().Add_currentListIRcommand(new IRcommand_Frame_Load(t, offset));

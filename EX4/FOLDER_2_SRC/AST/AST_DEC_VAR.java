@@ -297,12 +297,12 @@ public class AST_DEC_VAR extends AST_DEC
 		return null;
 	}
 	
-	public TEMP IRme()
-	{
+	public TEMP IRme() {
 		TEMP initialValTemp = null;
 		if (this.objContext == ObjectContext.global) {
 			IR.getInstance().Add_dataSegmentIRcommand(new IRcommand_Allocate(this.name));
 			IR.getInstance().switchList_globalInitList();
+			// if both are null, default value is 0!
 			if (this.initialValue != null || this.initialValueNew != null) {
 				initialValTemp = (this.initialValue != null) ? this.initialValue.IRme() : this.initialValueNew.IRme();
 				IR.getInstance().Add_currentListIRcommand(new IRcommand_Store(this.name, initialValTemp));
@@ -311,13 +311,16 @@ public class AST_DEC_VAR extends AST_DEC
 		} else {
 			if (this.initialValue != null || this.initialValueNew != null)
 				initialValTemp = (this.initialValue != null) ? this.initialValue.IRme() : this.initialValueNew.IRme();
-			else
+			// both are null
+			else {
+				initialValTemp = TEMP_FACTORY.getInstance().getFreshTEMP();
 				IR.getInstance().Add_currentListIRcommand(new IRcommandConstInt(initialValTemp, 0));
+			}
 
 			int offset = -1 * IR.getInstance().WORD_SIZE * this.objIndexInContext; // first local is in fp[-4]
 			IR.getInstance().Add_currentListIRcommand(new IRcommand_Frame_Store_Offset(initialValTemp, offset));
 		}
-		
+
 		return null;
 	}
 }

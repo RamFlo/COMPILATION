@@ -8,6 +8,9 @@ package MIPS;
 /*******************/
 import java.io.PrintWriter;
 
+import CFG.CFGBuilder;
+import CFG.CommandBlock;
+import CFG.CommandData;
 import IR.IRcommand;
 /*******************/
 /* PROJECT IMPORTS */
@@ -27,19 +30,18 @@ public class sir_MIPS_a_lot
 	/***********************/
 	public void finalizeFile()
 	{
-//		fileWriter.print("\tli $v0,10\n");
-//		fileWriter.print("\tsyscall\n");
 		fileWriter.close();
 	}
 	public void mips_exit()
 	{
 		fileWriter.print("\tli $v0,10\n");
 		fileWriter.print("\tsyscall\n");
+		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("exit",null,null,null,null)));
+		CFGBuilder.doNotLinkNextCommand();
 	}
 	public void print_int(TEMP t)
 	{
 		int idx=t.getSerialNumber();
-		// fileWriter.format("\taddi $a0,Temp_%d,0\n",idx);
 		fileWriter.format("\tmove $a0,Temp_%d\n",idx);
 		fileWriter.format("\tli $v0,1\n");
 		fileWriter.format("\tsyscall\n");
@@ -47,6 +49,8 @@ public class sir_MIPS_a_lot
 		fileWriter.format("\tli $a0,32\n");
 		fileWriter.format("\tli $v0,11\n");
 		fileWriter.format("\tsyscall\n");
+		
+		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("PrintInt",idx,null,null,null)));
 	}
 	public void print_string_by_address(TEMP strAdd)
 	{
@@ -54,6 +58,8 @@ public class sir_MIPS_a_lot
 		fileWriter.format("\tmove $a0,Temp_%d\n",idx);
 		fileWriter.format("\tli $v0,4\n");
 		fileWriter.format("\tsyscall\n");
+		
+		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("PrintString",idx,null,null,null)));
 	}
 	public void print_trace()
 	{
@@ -64,13 +70,20 @@ public class sir_MIPS_a_lot
 		int idStrAdd = curStringAdd.getSerialNumber();
 		
 		fileWriter.format("\tmove Temp_%d,$fp\n",idx);
+		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("move",idx,null,null,null)));
 		
 		String loop_start = IRcommand.getFreshLabel("print_trace_loop_start");
-		
 		this.label(loop_start);
+		
 		fileWriter.format("\tlw Temp_%d,4(Temp_%d)\n",idStrAdd,idx);
+		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("lw",idStrAdd,idx,null,null)));
+		
 		this.print_string_by_address(curStringAdd);
+		
+		
 		fileWriter.format("\tlw Temp_%d,0(Temp_%d)\n",idx,idx);
+		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("lw",idx,idx,null,null)));
+		
 		this.bnez(t, loop_start);
 	}
 	//public TEMP addressLocalVar(int serialLocalVarNum)

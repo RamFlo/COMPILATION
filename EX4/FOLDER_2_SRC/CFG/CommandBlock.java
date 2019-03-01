@@ -11,4 +11,10 @@ public class CommandBlock {
 	CommandData cd = null;
 	
 	List<CommandBlock> commandLeadingToThisCommand = new ArrayList<CommandBlock>();
+	
+	public CommandBlock(CommandData cd)
+	{
+		this.cd = cd;
+	}
+	
 }

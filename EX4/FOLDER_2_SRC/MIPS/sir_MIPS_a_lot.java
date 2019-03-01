@@ -233,7 +233,7 @@ public class sir_MIPS_a_lot
 	public void store_byte_zero(int offset, TEMP address)
 	{
 		int address_serial = address.getSerialNumber();
-		fileWriter.format("\tsb $zero,%d(Temp_%d)\n",offset,address_serial);		
+		fileWriter.format("\tsb $zero,%d(Temp_%d)\n",offset,address_serial);
 	}
 	public void frame_store(TEMP src, int offset)
 	{
@@ -342,11 +342,6 @@ public class sir_MIPS_a_lot
 		
 		fileWriter.format("\tblt Temp_%d,$zero,%s\n",i1,label);				
 	}
-//	public void blti(TEMP oprnd1,int i,String label)
-//	{
-//		int oprnd1_serial =oprnd1.getSerialNumber();
-//		fileWriter.format("\tblti Temp_%d,%d,%s\n",oprnd1_serial,i,label);				
-//	}
 	public void bge(TEMP oprnd1,TEMP oprnd2,String label)
 	{
 		int i1 =oprnd1.getSerialNumber();

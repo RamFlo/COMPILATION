@@ -52,7 +52,7 @@ public class sir_MIPS_a_lot
 		fileWriter.format("\tli $v0,11\n");
 		fileWriter.format("\tsyscall\n");
 		
-		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("PrintInt",idx,null,null,null)));
+		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("PrintInt",null,idx,null,null)));
 	}
 	public void print_string_by_address(TEMP strAdd)
 	{
@@ -61,7 +61,7 @@ public class sir_MIPS_a_lot
 		fileWriter.format("\tli $v0,4\n");
 		fileWriter.format("\tsyscall\n");
 		
-		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("PrintString",idx,null,null,null)));
+		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("PrintString",null,idx,null,null)));
 	}
 	public void print_trace()
 	{
@@ -135,7 +135,7 @@ public class sir_MIPS_a_lot
 	{
 		int idxdst=word.getSerialNumber();
 		fileWriter.format("\tsw Temp_%d,%d($sp)\n", idxdst, offset);
-		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("sw",idxdst,null,null,null)));
+		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("sw",null,idxdst,null,null)));
 	}
 	public void fp_to_zero()
 	{
@@ -248,31 +248,31 @@ public class sir_MIPS_a_lot
 	{
 		int idxsrc=src.getSerialNumber();
 		fileWriter.format("\tsw Temp_%d,global_%s\n",idxsrc,var_name);
-		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("sw",idxsrc,null,null,null)));
+		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("sw",null,idxsrc,null,null)));
 	}
 	public void store_word(TEMP word, int offset, TEMP address)
 	{
 		int word_serial=word.getSerialNumber(), address_serial = address.getSerialNumber();
 		fileWriter.format("\tsw Temp_%d,%d(Temp_%d)\n",word_serial,offset,address_serial);	
-		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("sw",word_serial,address_serial,null,null)));
+		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("sw",null,word_serial,address_serial,null)));
 	}
 	public void store_byte(TEMP byteTemp, int offset, TEMP address)
 	{
 		int byte_serial=byteTemp.getSerialNumber(), address_serial = address.getSerialNumber();
 		fileWriter.format("\tsb Temp_%d,%d(Temp_%d)\n",byte_serial,offset,address_serial);	
-		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("sb",byte_serial,address_serial,null,null)));
+		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("sb",null,byte_serial,address_serial,null)));
 	}
 	public void store_byte_zero(int offset, TEMP address)
 	{
 		int address_serial = address.getSerialNumber();
 		fileWriter.format("\tsb $zero,%d(Temp_%d)\n",offset,address_serial);
-		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("sb",null,address_serial,null,null)));
+		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("sb",null,null,address_serial,null)));
 	}
 	public void frame_store(TEMP src, int offset)
 	{
 		int idxsrc=src.getSerialNumber();
 		fileWriter.format("\tsw Temp_%d,%d($fp)\n",idxsrc,offset);
-		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("sw",idxsrc,null,null,null)));
+		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("sw",null,idxsrc,null,null)));
 	}
 	public void li(TEMP t,int value)
 	{
@@ -375,7 +375,7 @@ public class sir_MIPS_a_lot
 		//method call
 		int regSer =regTemp.getSerialNumber();
 		fileWriter.format("\tjalr Temp_%d\n",regSer);
-		CommandBlock cb = new CommandBlock(new CommandData("jalr", regSer, null, null, null));
+		CommandBlock cb = new CommandBlock(new CommandData("jalr", null,regSer, null, null));
 	}
 	public void jump_and_link(String inlabel)
 	{
@@ -388,14 +388,14 @@ public class sir_MIPS_a_lot
 		int i2 =oprnd2.getSerialNumber();
 		
 		fileWriter.format("\tblt Temp_%d,Temp_%d,%s\n",i1,i2,label);
-		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("blt", i1, i2, null, label)));
+		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("blt",null, i1, i2, label)));
 	}
 	public void bltz(TEMP oprnd1,String label)
 	{
 		int i1 =oprnd1.getSerialNumber();
 		
 		fileWriter.format("\tblt Temp_%d,$zero,%s\n",i1,label);
-		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("bltz", i1, null, null, label)));
+		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("bltz", null, i1, null, label)));
 	}
 	public void bge(TEMP oprnd1,TEMP oprnd2,String label)
 	{
@@ -403,7 +403,7 @@ public class sir_MIPS_a_lot
 		int i2 =oprnd2.getSerialNumber();
 		
 		fileWriter.format("\tbge Temp_%d,Temp_%d,%s\n",i1,i2,label);
-		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("bge", i1, i2, null, label)));
+		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("bge", null,i1, i2, label)));
 	}
 	public void bne(TEMP oprnd1,TEMP oprnd2,String label)
 	{
@@ -411,14 +411,14 @@ public class sir_MIPS_a_lot
 		int i2 =oprnd2.getSerialNumber();
 		
 		fileWriter.format("\tbne Temp_%d,Temp_%d,%s\n",i1,i2,label);
-		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("bne", i1, i2, null, label)));
+		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("bne", null,i1, i2, label)));
 	}
 	public void bnez(TEMP oprnd1,String label)
 	{
 		int i1 =oprnd1.getSerialNumber();
 				
 		fileWriter.format("\tbne Temp_%d,$zero,%s\n",i1,label);	
-		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("bnez", i1, null, null, label)));
+		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("bnez",null, i1, null, label)));
 	}
 	public void beq(TEMP oprnd1,TEMP oprnd2,String label)
 	{
@@ -426,14 +426,14 @@ public class sir_MIPS_a_lot
 		int i2 =oprnd2.getSerialNumber();
 		
 		fileWriter.format("\tbeq Temp_%d,Temp_%d,%s\n",i1,i2,label);
-		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("beq", i1, i2, null, label)));
+		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("beq", null,i1, i2, label)));
 	}
 	public void beqz(TEMP oprnd1,String label)
 	{
 		int i1 =oprnd1.getSerialNumber();
 				
 		fileWriter.format("\tbeq Temp_%d,$zero,%s\n",i1,label);		
-		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("beqz", i1, null, null, label)));
+		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("beqz", null,i1, null, label)));
 	}
 	
 	/**************************************/
@@ -480,9 +480,9 @@ public class sir_MIPS_a_lot
 			/* [3] Print data section with error message strings */
 			/*****************************************************/
 			instance.fileWriter.print(".data\n");
-			instance.fileWriter.print("string_access_violation: .asciiz \"Access Violation\"\n");
-			instance.fileWriter.print("string_illegal_div_by_0: .asciiz \"Division By Zero\"\n");
-			instance.fileWriter.print("string_invalid_ptr_dref: .asciiz \"Invalid Pointer Dereference\"\n");
+			instance.fileWriter.print("\tstring_access_violation: .asciiz \"Access Violation\"\n");
+			instance.fileWriter.print("\tstring_illegal_div_by_0: .asciiz \"Division By Zero\"\n");
+			instance.fileWriter.print("\tstring_invalid_ptr_dref: .asciiz \"Invalid Pointer Dereference\"\n");
 		}
 		return instance;
 	}

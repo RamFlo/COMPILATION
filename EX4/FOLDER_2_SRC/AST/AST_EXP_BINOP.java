@@ -284,10 +284,10 @@ public class AST_EXP_BINOP extends AST_EXP
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Malloc(concatLen,concatRes));
 		
 		copyStringWithoutNullTerm(s1add,concatRes);
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_Binop_Add_Integers(concatRes,concatRes,s1Len));
+		//IR.getInstance().Add_currentListIRcommand(new IRcommand_Binop_Add_Integers(concatRes,concatRes,s1Len));
 		
 		copyStringWithoutNullTerm(s2add,concatRes);
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_Binop_Add_Integers(concatRes,concatRes,s2Len));
+		//IR.getInstance().Add_currentListIRcommand(new IRcommand_Binop_Add_Integers(concatRes,concatRes,s2Len));
 		
 		//TEMP nullTermTemp = TEMP_FACTORY.getInstance().getFreshTEMP();
 		//IR.getInstance().Add_currentListIRcommand(new IRcommand_li_Null_Term(nullTermTemp));

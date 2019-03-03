@@ -132,8 +132,8 @@ STRINGS		= \"([a-zA-Z]*)\"
 						Integer x = new Integer(yytext());
 						int bound = 32767;
 						if (prevIsMinus) {bound++;}
-						if (x > bound) {System.out.println("Lexer error 3"); return symbol(TokenNames.error);}
-						else return symbol(TokenNames.INT, x);
+						if (x > bound) {System.out.println(String.format("Lexer error 3: bound is %d, integer is %d",bound,x)); return symbol(TokenNames.error);}
+						else {prevIsMinus = false; return symbol(TokenNames.INT, x);}
 					}
 /*{MINUS_INTEGER}		{
 						if (yytext().length() > 6) return symbol(TokenNames.error);

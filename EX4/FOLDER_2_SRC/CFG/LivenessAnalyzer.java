@@ -16,30 +16,31 @@ public class LivenessAnalyzer {
 	//Temporary:
 	List<CommandBlock> allCommands = null;
 	
-	public LivenessAnalyzer(CommandBlock startingBlock) {
+	public LivenessAnalyzer(CommandBlock startingBlock, List<CommandBlock> allCommands) {
 		this.startingBlock = startingBlock;
+		this.allCommands = allCommands;
 	}
 	
-	List<String> getAllAssignmentCommands() {
-		List<String> allAssignCommands = new ArrayList<String>();
-		//have I missed anything? anything out of place?
-		String[] assignmentCommands = {"add", "sub", "addi", "mul", "div", "li", "la", "move", "lw", "lb"};
-		for (String command: assignmentCommands)
-			allAssignCommands.add(command);
-		return allAssignCommands;
-	}
+//	List<String> getAllAssignmentCommands() {
+//		List<String> allAssignCommands = new ArrayList<String>();
+//		//have I missed anything? anything out of place?
+//		String[] assignmentCommands = {"add", "sub", "addi", "mul", "div", "li", "la", "move", "lw", "lb"};
+//		for (String command: assignmentCommands)
+//			allAssignCommands.add(command);
+//		return allAssignCommands;
+//	}
 	
-	boolean isAssignmentCommand(CommandBlock command) {
-		String actualCommand = command.cd.command;
-		List<String> allAssignmentCommands = getAllAssignmentCommands();
-		return allAssignmentCommands.contains(actualCommand);
-	}
+//	boolean isAssignmentCommand(CommandBlock command) {
+//		String actualCommand = command.cd.command;
+//		List<String> allAssignmentCommands = getAllAssignmentCommands();
+//		return allAssignmentCommands.contains(actualCommand);
+//	}
 	
 	public List<Integer> getTempsNeededByCommand(CommandBlock command) {
 		List<Integer> tempsUsedByCommand = new ArrayList<Integer>();
-		//if command is assignment, the first temp isn't really needed by it
-		if (command.cd.t1 != null && !isAssignmentCommand(command)) 
-			tempsUsedByCommand.add(command.cd.t1);
+		//t1 is the assignee - never needed by command
+		//if (command.cd.t1 != null && !isAssignmentCommand(command)) 
+				//tempsUsedByCommand.add(command.cd.t1);
 		if (command.cd.t2 != null && !tempsUsedByCommand.contains(command.cd.t2))
 			tempsUsedByCommand.add(command.cd.t2);
 		if (command.cd.t3 != null && !tempsUsedByCommand.contains(command.cd.t3))
@@ -73,7 +74,8 @@ public class LivenessAnalyzer {
 	
 	public void addCommandLiveOutToLiveIn(CommandBlock command) {
 		for (Integer temp : command.live_out) {
-			if (!command.live_in.contains(temp) && command.cd.t1 != temp) {
+			// changed (command.cd.t1 != temp) to (!command.cd.t1.equals(temp))
+			if (!command.live_in.contains(temp) && !command.cd.t1.equals(temp)) {
 				changedAnyBlock = true;
 				command.live_in.add(temp);
 			}
@@ -85,8 +87,9 @@ public class LivenessAnalyzer {
 			changedAnyBlock = false;
 			for (CommandBlock command: allCommands) {
 				addValuesUsedByCommandToLiveIn(command);
-				addCommandLiveInToParentsLiveOut(command);
+				// switched order of addCommandLiveOutToLiveIn and addCommandLiveInToParentsLiveOut!
 				addCommandLiveOutToLiveIn(command);
+				addCommandLiveInToParentsLiveOut(command);
 			}
 		}
 	}

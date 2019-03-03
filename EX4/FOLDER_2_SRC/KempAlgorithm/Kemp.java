@@ -21,7 +21,8 @@ public class Kemp {
 		List<Integer> allVertexNeighbors = this.graph.edges.get(vertexIndex);
 		List<Integer> allLiveVertices = this.graph.vertices;
 		for (Integer liveVertexIndex : allLiveVertices) {
-			if (allVertexNeighbors.contains(liveVertexIndex))
+			//added allVertexNeighbors != null check
+			if (allVertexNeighbors != null && allVertexNeighbors.contains(liveVertexIndex))
 				liveNeighbors.add(liveVertexIndex);
 		}
 		return liveNeighbors;

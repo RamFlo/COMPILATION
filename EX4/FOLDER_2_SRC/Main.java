@@ -100,7 +100,7 @@ public class Main
 				content = content.replaceAll(String.format("Temp_%d", curTemp), String.format("$t%d", coloring.get(curTemp)));
 			
 			//debug print
-			System.out.println(content);
+			System.out.println(String.format("Program is: \n\n %s", content));
 			//debug print
 			
 			Files.write(path, content.getBytes(charset));

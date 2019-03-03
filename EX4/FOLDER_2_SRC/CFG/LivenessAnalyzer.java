@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import KempAlgorithm.KempGraph;
+import TEMP.TEMP_FACTORY;
 
 /* Need to add access to real all commands list instead of allCommands
  * Need to change the code a bit considering that now t1 is never important to us. Might still work as is though.
@@ -74,7 +75,7 @@ public class LivenessAnalyzer {
 	
 	public void addCommandLiveOutToLiveIn(CommandBlock command) {
 		for (Integer temp : command.live_out) {
-			// changed (command.cd.t1 != temp) to (!command.cd.t1.equals(temp))
+			// changed (command.cd.t1 != temp) to (!temp.equals(command.cd.t1))
 			if (!command.live_in.contains(temp) && !temp.equals(command.cd.t1)) {
 				changedAnyBlock = true;
 				command.live_in.add(temp);
@@ -95,9 +96,16 @@ public class LivenessAnalyzer {
 	}
 	
 	public void addAllTempsInLiveInToGraph(CommandBlock command, KempGraph graph) {
-		for (Integer temp: command.live_in) {
-			if (!graph.isVerticeInGraph(temp)) {
-				graph.vertices.add(temp);
+//		for (Integer temp: command.live_in) {
+//			if (!graph.isVerticeInGraph(temp)) {
+//				graph.vertices.add(temp);
+//			}
+//		}
+		int totalTempNum = TEMP_FACTORY.getInstance().getTempNum();
+		for(int i=0;i<totalTempNum;i++)
+		{
+			if (!graph.isVerticeInGraph(i)) {
+				graph.vertices.add(i);
 			}
 		}
 	}

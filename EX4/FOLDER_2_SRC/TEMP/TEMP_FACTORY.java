@@ -20,6 +20,11 @@ public class TEMP_FACTORY
 		return new TEMP(counter++);
 	}
 	
+	public int getTempNum()
+	{
+		return counter;
+	}
+	
 	/**************************************/
 	/* USUAL SINGLETON IMPLEMENTATION ... */
 	/**************************************/

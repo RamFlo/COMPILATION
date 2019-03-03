@@ -86,6 +86,10 @@ public class Main
 			Kemp kempAlgRunner = new Kemp(graphToColor);
 			Map<Integer,Integer> coloring = kempAlgRunner.kempAlg();
 			
+			//debug print
+			for(Integer curTemp:coloring.keySet())
+				System.out.println(String.format("Temp_%d: $t%d", curTemp,coloring.get(curTemp)));
+			//debug print
 			
 			Path path = Paths.get("./FOLDER_5_OUTPUT/MIPS.txt");
 			Charset charset = StandardCharsets.UTF_8;

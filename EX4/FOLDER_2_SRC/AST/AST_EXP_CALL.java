@@ -264,7 +264,7 @@ public class AST_EXP_CALL extends AST_EXP
 //	}
 	
 	
-	private void pushReturnAddressAndFuncNameToStack()
+	private void pushReturnAddressToStack()
 	{
 		// allocate space for ra on stack
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Allocate_On_Stack(1));
@@ -379,7 +379,7 @@ public class AST_EXP_CALL extends AST_EXP
 		}
 		
 		
-		
+		int paramNum = this.countParamNum();
 		// t should eventually contain function address to jump to
 		TEMP t = TEMP_FACTORY.getInstance().getFreshTEMP();
 		if (this.callingObject == null)
@@ -391,9 +391,12 @@ public class AST_EXP_CALL extends AST_EXP
 				int offset = IR.getInstance().WORD_SIZE
 						* (this.curClassName.methodsMap.get(this.funcName).methodIndex - 1);
 
+				// count hidden class object
+				paramNum++;
+				
 				// classObj is the first method's parameter: fp+12
 				IR.getInstance().Add_currentListIRcommand(new IRcommand_Frame_Load(t, 12));
-
+				
 				// push t (hidden clasObj) to stack
 				// allocate space for hiddenClassObj on stack
 				IR.getInstance().Add_currentListIRcommand(new IRcommand_Allocate_On_Stack(1));
@@ -405,7 +408,7 @@ public class AST_EXP_CALL extends AST_EXP
 				// load object's function address into t
 				IR.getInstance().Add_currentListIRcommand(new IRcommand_Load(t, t, offset));
 
-				pushReturnAddressAndFuncNameToStack();
+				pushReturnAddressToStack();
 
 				// jump and link!
 				IR.getInstance().Add_currentListIRcommand(new IRcommand_Jump_Reg(t));
@@ -414,7 +417,7 @@ public class AST_EXP_CALL extends AST_EXP
 			{
 				this.saveAllRegistersAndFuncParamsOnStack();
 				
-				pushReturnAddressAndFuncNameToStack();
+				pushReturnAddressToStack();
 				
 				// jump and link!
 				String funcLabel = String.format("global_function_%s", this.funcName);
@@ -423,6 +426,9 @@ public class AST_EXP_CALL extends AST_EXP
 		}
 		else
 		{
+			// count hidden class object
+			paramNum++;
+			
 			TEMP t2 = this.callingObject.IRme();
 			
 			checkNullPtrDeref(t2);
@@ -442,14 +448,14 @@ public class AST_EXP_CALL extends AST_EXP
 			// load object's function address into t2
 			IR.getInstance().Add_currentListIRcommand(new IRcommand_Load(t2, t2, offset2));
 			
-			pushReturnAddressAndFuncNameToStack();
+			pushReturnAddressToStack();
 			
 			// jump and link!
 			IR.getInstance().Add_currentListIRcommand(new IRcommand_Jump_Reg(t2));
 		}
 		
 		//after return code	
-		afterReturnCode(this.countParamNum());
+		afterReturnCode(paramNum);
 		
 		// move return val into t (if not void function) and return it as call's value
 		if (this.retValue)

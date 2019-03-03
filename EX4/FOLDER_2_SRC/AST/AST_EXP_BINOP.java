@@ -256,10 +256,16 @@ public class AST_EXP_BINOP extends AST_EXP
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Load_Byte_Offset(curChTemp,0,stringAdd));
 		
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_BEQZ(curChTemp,label_copy_end_s));
+		
+		// copy next char
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Store_Byte_Offset(curChTemp, 0, dstAdd));
+		
+		//advance dest address
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Add_Immediate(dstAdd,dstAdd,1));
+		
 		// advance counter to next char
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Add_Immediate(stringAdd,stringAdd,1));
 		
-		// copy next char
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Jump_Label(label_copy_start_s));
 		
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Label(label_copy_end_s));

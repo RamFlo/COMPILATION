@@ -115,7 +115,13 @@ public class Main
 			String content = new String(Files.readAllBytes(path), charset);
 			
 			for(Integer curTemp:coloring.keySet())
-				content = content.replaceAll(String.format("Temp_%d[^0-9]", curTemp), String.format("\\$t%d", coloring.get(curTemp)));
+			{
+				content = content.replaceAll(String.format("Temp_%d\n", curTemp), String.format("\\$t%d\n", coloring.get(curTemp)));
+				content = content.replaceAll(String.format("Temp_%d\r", curTemp), String.format("\\$t%d\r", coloring.get(curTemp)));
+				content = content.replaceAll(String.format("Temp_%d,", curTemp), String.format("\\$t%d,", coloring.get(curTemp)));
+				content = content.replaceAll(String.format("Temp_%d ", curTemp), String.format("\\$t%d ", coloring.get(curTemp)));
+				content = content.replaceAll(String.format("Temp_%d\\)", curTemp), String.format("\\$t%d\\)", coloring.get(curTemp)));
+			}
 			
 			//debug print
 //			System.out.println(String.format("Program is: \n\n %s", content));

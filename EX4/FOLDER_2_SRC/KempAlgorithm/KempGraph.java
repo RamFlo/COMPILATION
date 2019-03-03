@@ -5,13 +5,23 @@ import java.util.HashMap;
 import java.util.List;
 
 public class KempGraph {
-	List<Integer> vertices = new ArrayList<Integer>();
-	HashMap<Integer, List<Integer>> edges = new HashMap<Integer, List<Integer>>();
+	public List<Integer> vertices = new ArrayList<Integer>();
+	public HashMap<Integer, List<Integer>> edges = new HashMap<Integer, List<Integer>>();
 	
 	
 	public void addNode(int verticeIndex) {
 		if (!vertices.contains(verticeIndex))
 			vertices.add(verticeIndex);
+	}
+	
+	public boolean isVerticeInGraph(int index) {
+		return vertices.contains(index);
+	}
+	
+	public boolean hasEdge(int verticeA, int verticeB) {
+		if (!edges.containsKey(verticeA))
+			return false;
+		return edges.get(verticeA).contains(verticeB);
 	}
 	
 	public void addEdgeToBToAList(int verticeIndexA, int verticeIndexB) {

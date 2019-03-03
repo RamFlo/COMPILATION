@@ -8,9 +8,13 @@ import java.util.Stack;
 import com.sun.javafx.collections.MappingChange.Map;
 
 public class Kemp {
-	KempGraph graph = new KempGraph();
+	KempGraph graph = null;
 	Stack<Integer> stackOfVertices = new Stack<Integer>();
 	HashMap <Integer, Integer> coloring = new HashMap<Integer, Integer>();
+	
+	public Kemp(KempGraph graphToColor) {
+		this.graph = graphToColor;
+	}
 	
 	public List<Integer> getLiveNeighbors(int vertexIndex) {
 		List<Integer> liveNeighbors = new ArrayList<Integer>();

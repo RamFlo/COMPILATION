@@ -214,86 +214,86 @@ everything:
 	@echo "*                                                         *"
 	@echo "*                                                         *"
 	@echo "***********************************************************"
-	sed -i 's/\bTemp_0\b/$$t0/g'  ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_1\b/$$t1/g'  ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_2\b/$$t2/g'  ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_3\b/$$t3/g'  ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_4\b/$$t4/g'  ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_5\b/$$t5/g'  ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_6\b/$$t6/g'  ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_7\b/$$t7/g'  ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_8\b/$$t0/g'  ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_9\b/$$t1/g'  ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_10\b/$$t2/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_11\b/$$t3/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_12\b/$$t4/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_13\b/$$t5/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_14\b/$$t6/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_15\b/$$t7/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_16\b/$$t0/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_17\b/$$t1/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_18\b/$$t2/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_19\b/$$t3/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_20\b/$$t4/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_21\b/$$t5/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_22\b/$$t6/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_23\b/$$t7/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_24\b/$$t0/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_25\b/$$t1/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_26\b/$$t2/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_27\b/$$t3/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_28\b/$$t4/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_29\b/$$t5/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_30\b/$$t6/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_31\b/$$t7/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_32\b/$$t0/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_33\b/$$t1/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_34\b/$$t2/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_35\b/$$t3/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_36\b/$$t4/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_37\b/$$t5/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_38\b/$$t6/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_39\b/$$t7/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_40\b/$$t0/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_41\b/$$t1/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_42\b/$$t2/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_43\b/$$t3/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_44\b/$$t4/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_45\b/$$t5/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_46\b/$$t6/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_47\b/$$t7/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_48\b/$$t0/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_49\b/$$t1/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_50\b/$$t2/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_51\b/$$t3/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_52\b/$$t4/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_53\b/$$t5/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_54\b/$$t6/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_55\b/$$t7/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_56\b/$$t0/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_57\b/$$t1/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_58\b/$$t2/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_59\b/$$t3/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_60\b/$$t4/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_61\b/$$t5/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_62\b/$$t6/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_63\b/$$t7/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_64\b/$$t0/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_65\b/$$t1/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_66\b/$$t2/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_67\b/$$t3/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_68\b/$$t4/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_69\b/$$t5/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_70\b/$$t6/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_71\b/$$t7/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_72\b/$$t0/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_73\b/$$t1/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_74\b/$$t2/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_75\b/$$t3/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_76\b/$$t4/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_77\b/$$t5/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_78\b/$$t6/g' ${OUTPUT_DIR}/MIPS.txt
-	sed -i 's/\bTemp_79\b/$$t7/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_0\b/$$t0/g'  ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_1\b/$$t1/g'  ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_2\b/$$t2/g'  ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_3\b/$$t3/g'  ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_4\b/$$t4/g'  ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_5\b/$$t5/g'  ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_6\b/$$t6/g'  ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_7\b/$$t7/g'  ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_8\b/$$t0/g'  ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_9\b/$$t1/g'  ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_10\b/$$t2/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_11\b/$$t3/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_12\b/$$t4/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_13\b/$$t5/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_14\b/$$t6/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_15\b/$$t7/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_16\b/$$t0/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_17\b/$$t1/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_18\b/$$t2/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_19\b/$$t3/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_20\b/$$t4/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_21\b/$$t5/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_22\b/$$t6/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_23\b/$$t7/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_24\b/$$t0/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_25\b/$$t1/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_26\b/$$t2/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_27\b/$$t3/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_28\b/$$t4/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_29\b/$$t5/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_30\b/$$t6/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_31\b/$$t7/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_32\b/$$t0/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_33\b/$$t1/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_34\b/$$t2/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_35\b/$$t3/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_36\b/$$t4/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_37\b/$$t5/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_38\b/$$t6/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_39\b/$$t7/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_40\b/$$t0/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_41\b/$$t1/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_42\b/$$t2/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_43\b/$$t3/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_44\b/$$t4/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_45\b/$$t5/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_46\b/$$t6/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_47\b/$$t7/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_48\b/$$t0/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_49\b/$$t1/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_50\b/$$t2/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_51\b/$$t3/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_52\b/$$t4/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_53\b/$$t5/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_54\b/$$t6/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_55\b/$$t7/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_56\b/$$t0/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_57\b/$$t1/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_58\b/$$t2/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_59\b/$$t3/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_60\b/$$t4/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_61\b/$$t5/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_62\b/$$t6/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_63\b/$$t7/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_64\b/$$t0/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_65\b/$$t1/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_66\b/$$t2/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_67\b/$$t3/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_68\b/$$t4/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_69\b/$$t5/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_70\b/$$t6/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_71\b/$$t7/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_72\b/$$t0/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_73\b/$$t1/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_74\b/$$t2/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_75\b/$$t3/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_76\b/$$t4/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_77\b/$$t5/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_78\b/$$t6/g' ${OUTPUT_DIR}/MIPS.txt
+	# sed -i 's/\bTemp_79\b/$$t7/g' ${OUTPUT_DIR}/MIPS.txt
 	@echo "\n"
 	@echo "*****************************************"
 	@echo "*                                       *"

@@ -39,7 +39,8 @@ public class Kemp {
 	}
 	
 	public boolean simplify() {
-		List<Integer> curVerticesInGraph = this.graph.vertices;
+//		List<Integer> curVerticesInGraph = this.graph.vertices;
+		List<Integer> curVerticesInGraph = new ArrayList<Integer>(this.graph.vertices);
 		boolean hasRemovedVertex = false;
 		for (Integer vertexIndex: curVerticesInGraph) {
 			if (canSimplifyVertex(vertexIndex)) {
@@ -76,12 +77,16 @@ public class Kemp {
 			couldSimplify = simplify();
 		}
 		if (!this.graph.isGraphEmpty())
+			throw new KempAlgorithmException("could not simplify graph");
 			//throw error at this point, could not simplify so Adi must bake brownies
 		
 		while (!stackOfVertices.isEmpty()) {
 			int curPoppedVertex = stackOfVertices.pop();
 			int availableColor = findColorForVertex(curPoppedVertex);
 			this.coloring.put(curPoppedVertex, availableColor);
+			
+			//missing?:
+			this.graph.vertices.add(curPoppedVertex);
 		}
 		return this.coloring;
 	}

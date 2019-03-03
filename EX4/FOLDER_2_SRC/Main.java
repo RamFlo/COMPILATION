@@ -1,9 +1,21 @@
    
 import java.io.*;
 import java.io.PrintWriter;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.Map;
+
 import java_cup.runtime.Symbol;
 import AST.*;
+import CFG.CFGBuilder;
+import CFG.LivenessAnalyzer;
 import IR.*;
+import KempAlgorithm.Kemp;
+import KempAlgorithm.KempAlgorithmException;
+import KempAlgorithm.KempGraph;
 import MIPS.*;
 import MyExceptions.SemanticRuntimeException;
 
@@ -66,6 +78,25 @@ public class Main
 			/* [9] MIPS the IR ... */
 			/***********************/
 			IR.getInstance().MIPSme();
+			
+			CFGBuilder.linkBlockByLabels();
+			LivenessAnalyzer la = new LivenessAnalyzer(CFGBuilder.buttomElement, CFGBuilder.CFG);
+			la.analyzeLiveness();
+			KempGraph graphToColor = la.buildKempGraphFromLiveAnalysis();
+			Kemp kempAlgRunner = new Kemp(graphToColor);
+			Map<Integer,Integer> coloring = kempAlgRunner.kempAlg();
+			
+			
+			Path path = Paths.get("./FOLDER_5_OUTPUT/MIPS.txt");
+			Charset charset = StandardCharsets.UTF_8;
+
+			String content = new String(Files.readAllBytes(path), charset);
+			
+			for(Integer curTemp:coloring.keySet())
+				content = content.replaceAll(String.format("Temp_%d", curTemp), String.format("$t%d", coloring.get(curTemp)));
+			
+			Files.write(path, content.getBytes(charset));
+			
 
 			/**************************************/
 			/* [10] Finalize AST GRAPHIZ DOT file */
@@ -102,7 +133,11 @@ public class Main
 			System.out.format(">> ERROR [%d:%d] %s", e.getLineNum(),e.getColNum(),e.getMessage());
 			e.printStackTrace();
 			return;
-		}	     
+		}	
+		catch (KempAlgorithmException e)
+		{
+			System.out.println(e.getMessage());
+		}
 			     
 		catch (Exception e)
 		{

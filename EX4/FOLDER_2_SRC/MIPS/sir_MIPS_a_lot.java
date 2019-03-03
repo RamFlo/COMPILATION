@@ -376,6 +376,7 @@ public class sir_MIPS_a_lot
 		int regSer =regTemp.getSerialNumber();
 		fileWriter.format("\tjalr Temp_%d\n",regSer);
 		CommandBlock cb = new CommandBlock(new CommandData("jalr", null,regSer, null, null));
+		CFGBuilder.insertCommandBlock(cb);
 	}
 	public void jump_and_link(String inlabel)
 	{

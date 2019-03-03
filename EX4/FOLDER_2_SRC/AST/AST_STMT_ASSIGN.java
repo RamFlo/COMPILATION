@@ -136,10 +136,9 @@ public class AST_STMT_ASSIGN extends AST_STMT
 	public TEMP IRme()
 	{
 		TEMP left, right;
+		left = this.var.get_L_Value();
 		
 		right = (this.exp == null)? this.newExp.IRme():this.exp.IRme();
-		
-		left = this.var.get_L_Value();
 		
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Store_Word_Offset(right,0,left));
 		

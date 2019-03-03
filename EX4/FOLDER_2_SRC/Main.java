@@ -93,8 +93,8 @@ public class Main
 			/* [12] Close output file */
 			/**************************/
 			//ok for semantic parsing!
-			file_writer.println("OK");
-			file_writer.close();
+//			file_writer.println("OK");
+//			file_writer.close();
 			
 			
 			CFGBuilder.linkBlockByLabels();
@@ -128,6 +128,11 @@ public class Main
 			//debug print
 			
 			Files.write(path, content.getBytes(charset));
+			
+			// print to main prog's file
+			file_writer.print(content);
+			file_writer.close();
+			
     	}
 		catch (ParserRuntimeException e)
 		{

@@ -78,6 +78,24 @@ public class Main
 			/* [9] MIPS the IR ... */
 			/***********************/
 			IR.getInstance().MIPSme();
+
+			/**************************************/
+			/* [10] Finalize AST GRAPHIZ DOT file */
+			/**************************************/
+			AST_GRAPHVIZ.getInstance().finalizeFile();			
+
+			/***************************/
+			/* [11] Finalize MIPS file */
+			/***************************/
+			sir_MIPS_a_lot.getInstance().finalizeFile();			
+
+			/**************************/
+			/* [12] Close output file */
+			/**************************/
+			//ok for semantic parsing!
+			file_writer.println("OK");
+			file_writer.close();
+			
 			
 			CFGBuilder.linkBlockByLabels();
 			LivenessAnalyzer la = new LivenessAnalyzer(CFGBuilder.buttomElement, CFGBuilder.CFG);
@@ -100,28 +118,10 @@ public class Main
 				content = content.replaceAll(String.format("Temp_%d", curTemp), String.format("$t%d", coloring.get(curTemp)));
 			
 			//debug print
-			System.out.println(String.format("Program is: \n\n %s", content));
+//			System.out.println(String.format("Program is: \n\n %s", content));
 			//debug print
 			
 			Files.write(path, content.getBytes(charset));
-			
-
-			/**************************************/
-			/* [10] Finalize AST GRAPHIZ DOT file */
-			/**************************************/
-			AST_GRAPHVIZ.getInstance().finalizeFile();			
-
-			/***************************/
-			/* [11] Finalize MIPS file */
-			/***************************/
-			sir_MIPS_a_lot.getInstance().finalizeFile();			
-
-			/**************************/
-			/* [12] Close output file */
-			/**************************/
-			//ok for semantic parsing!
-			file_writer.println("OK");
-			file_writer.close();
     	}
 		catch (ParserRuntimeException e)
 		{

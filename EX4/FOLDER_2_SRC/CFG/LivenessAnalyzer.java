@@ -75,7 +75,7 @@ public class LivenessAnalyzer {
 	public void addCommandLiveOutToLiveIn(CommandBlock command) {
 		for (Integer temp : command.live_out) {
 			// changed (command.cd.t1 != temp) to (!command.cd.t1.equals(temp))
-			if (!command.live_in.contains(temp) && !command.cd.t1.equals(temp)) {
+			if (!command.live_in.contains(temp) && !temp.equals(command.cd.t1)) {
 				changedAnyBlock = true;
 				command.live_in.add(temp);
 			}

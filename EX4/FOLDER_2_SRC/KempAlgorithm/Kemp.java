@@ -65,7 +65,8 @@ public class Kemp {
 		List<Integer> liveNeighborsOfVertex = getLiveNeighbors(vertexIndex);
 		List<Integer> listOfAvailableColors = getListOfAllColors();
 		for (Integer neighborVertexIndex : liveNeighborsOfVertex) {
-			int neighborColor = this.coloring.get(neighborVertexIndex);
+			//changed int to Integer here
+			Integer neighborColor = this.coloring.get(neighborVertexIndex);
 			listOfAvailableColors.remove(neighborColor);
 		}
 		int foundAvailableColor = listOfAvailableColors.get(0);

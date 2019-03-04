@@ -105,8 +105,8 @@ public class Main
 			Map<Integer,Integer> coloring = kempAlgRunner.kempAlg();
 			
 			//debug print
-			for(Integer curTemp:coloring.keySet())
-				System.out.println(String.format("Temp_%d: $t%d", curTemp,coloring.get(curTemp)));
+//			for(Integer curTemp:coloring.keySet())
+//				System.out.println(String.format("Temp_%d: $t%d", curTemp,coloring.get(curTemp)));
 			//debug print
 			
 			Path path = Paths.get("./FOLDER_5_OUTPUT/MIPS.txt");

@@ -309,12 +309,12 @@ public class AST_EXP_BINOP extends AST_EXP
 		String label_AssignOne  = IRcommand.getFreshLabel("AssignOne");
 		String label_AssignZero = IRcommand.getFreshLabel("AssignZero");
 		
-		// if addresses are equal, Assign 1 and exit
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_BEQ(s1add,s2add,label_AssignOne));
+		// if addresses are equal, Assign 0 and exit
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_BEQ(s1add,s2add,label_AssignZero));
 		
-		// if one of the addresses is NIL, Assign 0 and exit (undefined behavior - we decided)
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_BEQZ(s1add,label_AssignZero));
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_BEQZ(s2add,label_AssignZero));
+		// if one of the addresses is NIL, Assign 1 and exit (undefined behavior - we decided)
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_BEQZ(s1add,label_AssignOne));
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_BEQZ(s2add,label_AssignOne));
 		
 		// count current char in both strings
 		TEMP counterTemp = TEMP_FACTORY.getInstance().getFreshTEMP();

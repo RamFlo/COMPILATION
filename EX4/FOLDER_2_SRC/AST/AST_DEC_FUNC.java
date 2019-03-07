@@ -250,8 +250,8 @@ public class AST_DEC_FUNC extends AST_DEC
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Initiate_Function(this.numOfLocals));
 		this.body.IRme();
 		
-		if (returnTypeName.equals("void"))
-			this.voidFuncEndCode();
+		//if (returnTypeName.equals("void"))
+		this.voidFuncEndCode();
 		
 		return null;
 	}
@@ -266,8 +266,8 @@ public class AST_DEC_FUNC extends AST_DEC
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Initiate_Function(this.numOfLocals));
 		this.body.IRme();
 		
-		if (returnTypeName.equals("void"))
-			this.voidFuncEndCode();
+		//if (returnTypeName.equals("void"))
+		this.voidFuncEndCode();
 		
 		return null;
 	}

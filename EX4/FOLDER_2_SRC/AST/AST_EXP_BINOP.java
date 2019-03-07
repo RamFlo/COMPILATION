@@ -317,8 +317,8 @@ public class AST_EXP_BINOP extends AST_EXP
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_BEQZ(s2add,label_AssignOne));
 		
 		// count current char in both strings
-		TEMP counterTemp = TEMP_FACTORY.getInstance().getFreshTEMP();
-		IR.getInstance().Add_currentListIRcommand(new IRcommandConstInt(counterTemp,0));
+		//TEMP counterTemp = TEMP_FACTORY.getInstance().getFreshTEMP();
+		//IR.getInstance().Add_currentListIRcommand(new IRcommandConstInt(counterTemp,0));
 		
 		// load '\0' into nullTermTemp for future use
 		//TEMP nullTermTemp = TEMP_FACTORY.getInstance().getFreshTEMP();
@@ -330,9 +330,12 @@ public class AST_EXP_BINOP extends AST_EXP
 		// string comparison loop start
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Label(label_loop_start));
 		
-		// advance both string addresses by the counter
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_Binop_Add_Integers(s1add,s1add,counterTemp));
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_Binop_Add_Integers(s2add,s2add,counterTemp));
+		// advance both string addresses by 1
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Add_Immediate(s1add,s1add,1));
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Add_Immediate(s2add,s2add,1));
+		
+		//IR.getInstance().Add_currentListIRcommand(new IRcommand_Binop_Add_Integers(s1add,s1add,counterTemp));
+		//IR.getInstance().Add_currentListIRcommand(new IRcommand_Binop_Add_Integers(s2add,s2add,counterTemp));
 		
 		// load current char into ch1Temp, ch2Temp
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Load_Byte_Offset(ch1Temp,0,s1add));
@@ -345,7 +348,7 @@ public class AST_EXP_BINOP extends AST_EXP
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_BEQZ(ch1Temp,label_AssignZero));
 		
 		// advance counter to next char
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_Add_Immediate(counterTemp,counterTemp,1));
+		//IR.getInstance().Add_currentListIRcommand(new IRcommand_Add_Immediate(counterTemp,counterTemp,1));
 		
 		// compare next char
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Jump_Label(label_loop_start));

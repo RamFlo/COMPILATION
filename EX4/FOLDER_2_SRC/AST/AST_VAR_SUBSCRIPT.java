@@ -3,6 +3,7 @@ package AST;
 import IR.IR;
 import IR.IRcommand;
 import IR.IRcommand_BGE;
+import IR.IRcommand_BGT;
 import IR.IRcommand_BLTZ;
 import IR.IRcommand_BNEZ;
 import IR.IRcommand_Binop_Add_Integers;
@@ -122,7 +123,7 @@ public class AST_VAR_SUBSCRIPT extends AST_VAR
 
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_BLTZ(index, label_out_of_bounds));
 
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_BGE(arrSize, index, label_in_bounds));
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_BGT(arrSize, index, label_in_bounds));
 
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Label(label_out_of_bounds));
 

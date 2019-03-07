@@ -406,6 +406,14 @@ public class sir_MIPS_a_lot
 		fileWriter.format("\tbge Temp_%d,Temp_%d,%s\n",i1,i2,label);
 		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("bge", null,i1, i2, label)));
 	}
+	public void bgt(TEMP oprnd1,TEMP oprnd2,String label)
+	{
+		int i1 =oprnd1.getSerialNumber();
+		int i2 =oprnd2.getSerialNumber();
+		
+		fileWriter.format("\tbgt Temp_%d,Temp_%d,%s\n",i1,i2,label);
+		CFGBuilder.insertCommandBlock(new CommandBlock(new CommandData("bgt", null,i1, i2, label)));
+	}
 	public void bne(TEMP oprnd1,TEMP oprnd2,String label)
 	{
 		int i1 =oprnd1.getSerialNumber();

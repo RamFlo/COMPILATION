@@ -2,6 +2,7 @@ package AST;
 
 import IR.IR;
 import IR.IRcommand;
+import IR.IRcommand_BEQZ;
 import IR.IRcommand_BGE;
 import IR.IRcommand_BGT;
 import IR.IRcommand_BLTZ;
@@ -114,7 +115,8 @@ public class AST_VAR_SUBSCRIPT extends AST_VAR
 		String label_in_bounds = IRcommand.getFreshLabel("index_in_bounds");
 		String label_out_of_bounds = IRcommand.getFreshLabel("index_out_of_bounds");
 
-		// add null pointer handling!
+		// null pointer handling!
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_BEQZ(arrAddress,label_out_of_bounds));
 
 		TEMP arrSize = TEMP_FACTORY.getInstance().getFreshTEMP();
 

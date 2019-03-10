@@ -330,16 +330,16 @@ public class AST_EXP_BINOP extends AST_EXP
 		// string comparison loop start
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Label(label_loop_start));
 		
-		// advance both string addresses by 1
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_Add_Immediate(s1add,s1add,1));
-		IR.getInstance().Add_currentListIRcommand(new IRcommand_Add_Immediate(s2add,s2add,1));
-		
 		//IR.getInstance().Add_currentListIRcommand(new IRcommand_Binop_Add_Integers(s1add,s1add,counterTemp));
 		//IR.getInstance().Add_currentListIRcommand(new IRcommand_Binop_Add_Integers(s2add,s2add,counterTemp));
 		
 		// load current char into ch1Temp, ch2Temp
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Load_Byte_Offset(ch1Temp,0,s1add));
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_Load_Byte_Offset(ch2Temp,0,s2add));
+		
+		// advance both string addresses by 1
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Add_Immediate(s1add,s1add,1));
+		IR.getInstance().Add_currentListIRcommand(new IRcommand_Add_Immediate(s2add,s2add,1));
 		
 		// if ch1Temp != ch2Temp, jump to assign one and exit
 		IR.getInstance().Add_currentListIRcommand(new IRcommand_BNE(ch1Temp,ch2Temp,label_AssignOne));

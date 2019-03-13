@@ -86,25 +86,63 @@ public class AST_VAR_SIMPLE extends AST_VAR
 	
 	public TYPE SemantMe()
 	{
-		SYMBOL_TABLE_ENTRY searchRes = null;
-		TYPE t = findVarNameInClassAndItsSupers(name,SYMBOL_TABLE.getInstance().curClassExtends);
-		if (t != null) //found object in class's supers!
-		{
-			this.objIndexInContext = SYMBOL_TABLE.getInstance().curClassExtends.dataMembersMap.get(name);
+//		SYMBOL_TABLE_ENTRY searchRes = null;
+//		TYPE t = findVarNameInClassAndItsSupers(name,SYMBOL_TABLE.getInstance().curClassExtends);
+//		if (t != null) //found object in class's supers!
+//		{
+//			this.objIndexInContext = SYMBOL_TABLE.getInstance().curClassExtends.dataMembersMap.get(name);
+//			this.objScopeType = SYMBOL_TABLE.getInstance().curScopeType;
+//			this.objContext = ObjectContext.classDataMember;
+//		}
+//		else //not found, search in global scope
+//		{
+//			searchRes = SYMBOL_TABLE.getInstance().findObject(name);
+//			if (searchRes != null){ 
+//				t = searchRes.type;
+//				this.objIndexInContext = searchRes.entryOriginASTNode.objIndexInContext;
+//				this.objScopeType = SYMBOL_TABLE.getInstance().curScopeType;
+//				this.objContext = searchRes.entryOriginASTNode.objContext;
+//			
+//			}
+//		}
+//		if (t == null || t instanceof TYPE_FUNCTION)
+//			throw new SemanticRuntimeException(lineNum, colNum, String.format("(%s) cannot be resolved to a variable\n",name));
+//		return t;
+		
+		
+		
+		TYPE t = null;
+		SYMBOL_TABLE_ENTRY searchRes = SYMBOL_TABLE.getInstance().findInCurrentScope_Entry(name);
+		
+		// found in current scope!
+		if (searchRes != null)
+		{ 
+			t = searchRes.type;
+			this.objIndexInContext = searchRes.entryOriginASTNode.objIndexInContext;
 			this.objScopeType = SYMBOL_TABLE.getInstance().curScopeType;
-			this.objContext = ObjectContext.classDataMember;
+			this.objContext = searchRes.entryOriginASTNode.objContext;
 		}
-		else //not found, search in global scope
+		else //not found in current scope, search in class/global scope!
 		{
-			searchRes = SYMBOL_TABLE.getInstance().findObject(name);
-			if (searchRes != null){ 
-				t = searchRes.type;
-				this.objIndexInContext = searchRes.entryOriginASTNode.objIndexInContext;
+			t = findVarNameInClassAndItsSupers(name, SYMBOL_TABLE.getInstance().curClassExtends);
+			if (t != null) // found object in class's supers!
+			{
+				this.objIndexInContext = SYMBOL_TABLE.getInstance().curClassExtends.dataMembersMap.get(name);
 				this.objScopeType = SYMBOL_TABLE.getInstance().curScopeType;
-				this.objContext = searchRes.entryOriginASTNode.objContext;
-			
+				this.objContext = ObjectContext.classDataMember;
+			} 
+			else // not found, search in global scope
+			{
+				searchRes = SYMBOL_TABLE.getInstance().findObject(name);
+				if (searchRes != null) {
+					t = searchRes.type;
+					this.objIndexInContext = searchRes.entryOriginASTNode.objIndexInContext;
+					this.objScopeType = SYMBOL_TABLE.getInstance().curScopeType;
+					this.objContext = searchRes.entryOriginASTNode.objContext;
+				}
 			}
 		}
+		
 		if (t == null || t instanceof TYPE_FUNCTION)
 			throw new SemanticRuntimeException(lineNum, colNum, String.format("(%s) cannot be resolved to a variable\n",name));
 		return t;

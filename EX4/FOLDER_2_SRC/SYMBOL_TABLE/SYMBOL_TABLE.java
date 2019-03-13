@@ -115,6 +115,17 @@ public class SYMBOL_TABLE
 		return null;
 	}
 	
+	public SYMBOL_TABLE_ENTRY findInCurrentScope_Entry(String name)
+	{
+		if (symbol_table_hash.containsKey(name))
+		{ 
+			SYMBOL_TABLE_ENTRY temp = ((LinkedList<SYMBOL_TABLE_ENTRY>)(symbol_table_hash.get(name))).getLast();
+			if (temp.scope_level == cur_scope_level)
+				return temp;
+		}
+		return null;
+	}
+	
 	/***********************************************/
 	/* Update symbol table entry */
 	/***********************************************/
